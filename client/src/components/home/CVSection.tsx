@@ -11,8 +11,8 @@ interface CVData {
 }
 
 const CVSection = () => {
-  const { data: cvData, isLoading } = useQuery<CVData>({
-    queryKey: ['/api/cv'],
+  const { data: cvData, isLoading, isError } = useQuery<CVData>({
+    queryKey: ['/api/cv']
   });
 
   const containerAnimation = {
@@ -84,8 +84,16 @@ const CVSection = () => {
                     <Skeleton className="h-4 w-5/6" />
                   </div>
                 ))
+              ) : isError ? (
+                <div className="text-center py-6">
+                  <p className="text-red-500">Error al cargar datos de experiencia. Por favor, intenta recargar la página.</p>
+                </div>
+              ) : !cvData?.experiences?.length ? (
+                <div className="text-center py-6">
+                  <p className="text-text/70">No hay experiencia profesional disponible.</p>
+                </div>
               ) : (
-                cvData?.experiences.map((experience) => (
+                cvData.experiences.map((experience) => (
                   <motion.div 
                     key={experience.id} 
                     className="relative pl-8 border-l-2 border-slate-200 pb-8"

@@ -271,10 +271,6 @@ El panel de administración está disponible en la ruta `/admin`. Las credencial
 - Email: `admin@example.com`
 - Contraseña: `admin123`
 
-También se ha creado un usuario personalizado:
-- Email: `aaguirreb16@gmail.com`
-- Contraseña: `Ka260314!`
-
 Se recomienda cambiar estas credenciales después del primer inicio de sesión.
 
 ### Gestión de Contenido

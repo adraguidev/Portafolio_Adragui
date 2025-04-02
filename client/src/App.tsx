@@ -62,7 +62,11 @@ function Router() {
       <AdminRoute path="/admin" component={AdminHome} />
       <AdminRoute path="/admin/cv" component={CVManagement} />
       <AdminRoute path="/admin/articles" component={ArticleManagement} />
+      <AdminRoute path="/admin/articles/new" component={ArticleManagement} />
+      <AdminRoute path="/admin/articles/edit/:id" component={ArticleManagement} />
       <AdminRoute path="/admin/projects" component={ProjectManagement} />
+      <AdminRoute path="/admin/projects/new" component={ProjectManagement} />
+      <AdminRoute path="/admin/projects/edit/:id" component={ProjectManagement} />
       <AdminRoute path="/admin/messages" component={Messages} />
       <AdminRoute path="/admin/settings" component={Settings} />
       

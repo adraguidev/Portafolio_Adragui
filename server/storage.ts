@@ -847,8 +847,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProject(id: number): Promise<boolean> {
-    const result = await db.delete(projects).where(eq(projects.id, id));
-    return result.count > 0;
+    try {
+      // Primero verificamos si el proyecto existe
+      const project = await this.getProject(id);
+      if (!project) {
+        return false;
+      }
+      
+      // Luego eliminamos el proyecto
+      await db.delete(projects).where(eq(projects.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar proyecto:', error);
+      return false;
+    }
   }
 
   // Experience
@@ -875,8 +887,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteExperience(id: number): Promise<boolean> {
-    const result = await db.delete(experiences).where(eq(experiences.id, id));
-    return result.count > 0;
+    try {
+      // Primero verificamos si la experiencia existe
+      const experience = await this.getExperience(id);
+      if (!experience) {
+        return false;
+      }
+      
+      // Luego eliminamos la experiencia
+      await db.delete(experiences).where(eq(experiences.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar experiencia:', error);
+      return false;
+    }
   }
 
   // Education
@@ -903,8 +927,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteEducation(id: number): Promise<boolean> {
-    const result = await db.delete(education).where(eq(education.id, id));
-    return result.count > 0;
+    try {
+      // Primero verificamos si el ítem de educación existe
+      const educationItem = await this.getEducationItem(id);
+      if (!educationItem) {
+        return false;
+      }
+      
+      // Luego eliminamos el ítem de educación
+      await db.delete(education).where(eq(education.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar educación:', error);
+      return false;
+    }
   }
 
   // Skills
@@ -931,8 +967,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteSkill(id: number): Promise<boolean> {
-    const result = await db.delete(skills).where(eq(skills.id, id));
-    return result.count > 0;
+    try {
+      // Primero verificamos si la habilidad existe
+      const skill = await this.getSkill(id);
+      if (!skill) {
+        return false;
+      }
+      
+      // Luego eliminamos la habilidad
+      await db.delete(skills).where(eq(skills.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar habilidad:', error);
+      return false;
+    }
   }
 
   // Articles
@@ -994,8 +1042,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteArticle(id: number): Promise<boolean> {
-    const result = await db.delete(articles).where(eq(articles.id, id));
-    return result.count > 0;
+    try {
+      // Primero verificamos si el artículo existe
+      const article = await this.getArticle(id);
+      if (!article) {
+        return false;
+      }
+      
+      // Luego eliminamos el artículo
+      await db.delete(articles).where(eq(articles.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar artículo:', error);
+      return false;
+    }
   }
 
   // Messages
@@ -1022,8 +1082,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteMessage(id: number): Promise<boolean> {
-    const result = await db.delete(messages).where(eq(messages.id, id));
-    return result.count > 0;
+    try {
+      // Primero verificamos si el mensaje existe
+      const message = await this.getMessage(id);
+      if (!message) {
+        return false;
+      }
+      
+      // Luego eliminamos el mensaje
+      await db.delete(messages).where(eq(messages.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar mensaje:', error);
+      return false;
+    }
   }
 
   // Site Info

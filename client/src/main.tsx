@@ -1,6 +1,9 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { I18nProvider } from "@/lib/i18n/context";
 
 // Import fonts
 const loadFonts = () => {
@@ -24,9 +27,15 @@ const loadFonts = () => {
 };
 
 // Set page title
-document.title = "Alex Morgan | Web Developer Portfolio";
+document.title = "Adrián Aguirre | Portafolio Profesional";
 
 // Load fonts
 loadFonts();
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <QueryClientProvider client={queryClient}>
+    <I18nProvider>
+      <App />
+    </I18nProvider>
+  </QueryClientProvider>
+);

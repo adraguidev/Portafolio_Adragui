@@ -3,11 +3,11 @@ export const WEBSITE_TITLE = "Adrián Aguirre | Portafolio Profesional";
 export const WEBSITE_DESCRIPTION = "Adrián Aguirre es un analista de operaciones y desarrollador full stack en formación con más de 5 años de experiencia en análisis de datos y mejora de procesos operativos.";
 
 export const NAV_ITEMS = [
-  { label: "Inicio", href: "/" },
-  { label: "Proyectos", href: "/#work" },
-  { label: "Currículum", href: "/#cv" },
-  { label: "Artículos", href: "/#articles" },
-  { label: "Contacto", href: "/#contact" }
+  { key: "home", label: "Inicio", href: "/" },
+  { key: "projects", label: "Proyectos", href: "/#work" },
+  { key: "cv", label: "Currículum", href: "/#cv" },
+  { key: "articles", label: "Artículos", href: "/#articles" },
+  { key: "contact", label: "Contacto", href: "/#contact" }
 ];
 
 export const SOCIAL_LINKS = {

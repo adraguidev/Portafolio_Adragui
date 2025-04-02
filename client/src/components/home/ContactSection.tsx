@@ -93,7 +93,7 @@ const ContactSection = () => {
                   <div className="space-y-6 mt-auto">
                     <div className="flex items-center text-white/90">
                       <i className="ri-mail-line text-accent text-xl mr-4"></i>
-                      <span>{siteInfo?.contactEmail || 'hello@alexmorgan.dev'}</span>
+                      <span>{siteInfo?.contactEmail || 'hello@example.com'}</span>
                     </div>
                     <div className="flex items-center text-white/90">
                       <i className="ri-phone-line text-accent text-xl mr-4"></i>
@@ -107,18 +107,26 @@ const ContactSection = () => {
                   
                   <div className="mt-8">
                     <div className="flex space-x-4">
-                      <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                        <i className="ri-github-fill"></i>
-                      </a>
-                      <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                        <i className="ri-linkedin-fill"></i>
-                      </a>
-                      <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                        <i className="ri-twitter-fill"></i>
-                      </a>
-                      <a href={SOCIAL_LINKS.dribbble} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                        <i className="ri-dribbble-fill"></i>
-                      </a>
+                      {(siteInfo?.socialLinks?.github || SOCIAL_LINKS.github) && (
+                        <a href={siteInfo?.socialLinks?.github || SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                          <i className="ri-github-fill"></i>
+                        </a>
+                      )}
+                      {(siteInfo?.socialLinks?.linkedin || SOCIAL_LINKS.linkedin) && (
+                        <a href={siteInfo?.socialLinks?.linkedin || SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                          <i className="ri-linkedin-fill"></i>
+                        </a>
+                      )}
+                      {(siteInfo?.socialLinks?.twitter || SOCIAL_LINKS.twitter) && (
+                        <a href={siteInfo?.socialLinks?.twitter || SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                          <i className="ri-twitter-fill"></i>
+                        </a>
+                      )}
+                      {(siteInfo?.socialLinks?.dribbble || SOCIAL_LINKS.dribbble) && (
+                        <a href={siteInfo?.socialLinks?.dribbble || SOCIAL_LINKS.dribbble} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                          <i className="ri-dribbble-fill"></i>
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>

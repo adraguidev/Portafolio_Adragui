@@ -45,7 +45,7 @@ const Settings = () => {
   const [isImporting, setIsImporting] = useState(false);
 
   // Consulta para obtener la información del sitio
-  const { data: siteInfo, isLoading } = useQuery({
+  const { data: siteInfo, isLoading } = useQuery<SiteInfo>({
     queryKey: ['/api/site-info'],
   });
 

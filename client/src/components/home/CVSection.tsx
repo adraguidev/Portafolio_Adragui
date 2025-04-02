@@ -118,53 +118,8 @@ const CVSection = () => {
             </motion.div>
           </div>
           
-          {/* Skills */}
-          <div className="mb-16">
-            <h3 className="font-clash font-semibold text-2xl text-primary mb-6 flex items-center">
-              <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
-                <i className="ri-tools-line"></i>
-              </span>
-              Habilidades y Tecnologías
-            </h3>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              {isLoading ? (
-                [...Array(4)].map((_, index) => (
-                  <div key={index} className="space-y-4">
-                    <Skeleton className="h-6 w-24 mb-3" />
-                    <div className="flex flex-wrap gap-3">
-                      {[...Array(6)].map((_, i) => (
-                        <Skeleton key={i} className="h-9 w-24 rounded-md" />
-                      ))}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                cvData?.skills.map((skill) => (
-                  <motion.div 
-                    key={skill.id} 
-                    className="space-y-4"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                  >
-                    <h4 className="font-clash font-semibold text-lg text-primary mb-3">{skill.category}</h4>
-                    <div className="flex flex-wrap gap-3">
-                      {skill.items.map((item, index) => (
-                        <span key={index} className="bg-slate-100 text-primary/80 px-3 py-2 rounded-md text-sm">
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </div>
-          
           {/* Education */}
-          <div>
+          <div className="mb-16">
             <h3 className="font-clash font-semibold text-2xl text-primary mb-6 flex items-center">
               <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
                 <i className="ri-graduation-cap-line"></i>
@@ -190,26 +145,87 @@ const CVSection = () => {
                   <Skeleton className="h-4 w-full mb-1" />
                   <Skeleton className="h-4 w-5/6" />
                 </div>
+              ) : isError ? (
+                <div className="text-center py-6">
+                  <p className="text-red-500">Error al cargar datos de educación. Por favor, intenta recargar la página.</p>
+                </div>
+              ) : !cvData?.education?.length ? (
+                <div className="text-center py-6">
+                  <p className="text-text/70">No hay información educativa disponible.</p>
+                </div>
               ) : (
-                cvData?.education.map((edu) => (
+                cvData.education.map((edu) => (
                   <motion.div 
                     key={edu.id} 
                     className="relative pl-8 border-l-2 border-slate-200 pb-8"
                     variants={itemAnimation}
                   >
-                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-300"></div>
+                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-secondary"></div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                       <h4 className="font-clash font-semibold text-xl text-primary">{edu.degree}</h4>
                       <span className="bg-slate-100 text-primary/70 px-3 py-1 rounded-full text-sm mt-1 sm:mt-0">
-                        {edu.startDate} - {edu.endDate}
+                        {edu.startDate} - {edu.endDate || 'Actual'}
                       </span>
                     </div>
                     <h5 className="text-secondary font-medium mb-2">{edu.institution}</h5>
-                    <p className="text-text/70">{edu.description}</p>
+                    <p className="text-text/70 whitespace-pre-line">{edu.description}</p>
                   </motion.div>
                 ))
               )}
             </motion.div>
+          </div>
+          
+          {/* Skills */}
+          <div>
+            <h3 className="font-clash font-semibold text-2xl text-primary mb-6 flex items-center">
+              <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
+                <i className="ri-tools-line"></i>
+              </span>
+              Habilidades y Tecnologías
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {isLoading ? (
+                [...Array(4)].map((_, index) => (
+                  <div key={index} className="space-y-4">
+                    <Skeleton className="h-6 w-24 mb-3" />
+                    <div className="flex flex-wrap gap-3">
+                      {[...Array(6)].map((_, i) => (
+                        <Skeleton key={i} className="h-9 w-24 rounded-md" />
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : isError ? (
+                <div className="text-center py-6">
+                  <p className="text-red-500">Error al cargar datos de habilidades. Por favor, intenta recargar la página.</p>
+                </div>
+              ) : !cvData?.skills?.length ? (
+                <div className="text-center py-6">
+                  <p className="text-text/70">No hay habilidades disponibles.</p>
+                </div>
+              ) : (
+                cvData.skills.map((skill) => (
+                  <motion.div 
+                    key={skill.id} 
+                    className="space-y-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    viewport={{ once: true }}
+                  >
+                    <h4 className="font-clash font-semibold text-lg text-primary mb-3">{skill.category}</h4>
+                    <div className="flex flex-wrap gap-3">
+                      {skill.items.map((item, index) => (
+                        <span key={index} className="bg-slate-100 text-primary/80 px-3 py-2 rounded-md text-sm">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </div>
           </div>
           
           <div className="mt-12 flex justify-center">

@@ -152,6 +152,7 @@ export class MemStorage implements IStorage {
       contactPhone: "+1 (555) 123-4567",
       contactLocation: "San Francisco, CA",
       cvFileUrl: null, // Nuevo campo para el archivo CV
+      heroImageUrl: null, // Nuevo campo para la imagen del Hero
       socialLinks: {
         github: "https://github.com",
         linkedin: "https://linkedin.com",
@@ -692,8 +693,14 @@ export class MemStorage implements IStorage {
     if (!this.siteInfo) {
       this.siteInfo = {
         id: this.siteInfoId,
-        ...info
-      } as SiteInfo;
+        about: info.about || null,
+        contactEmail: info.contactEmail || null,
+        contactPhone: info.contactPhone || null,
+        contactLocation: info.contactLocation || null,
+        cvFileUrl: info.cvFileUrl || null,
+        heroImageUrl: info.heroImageUrl || null,
+        socialLinks: info.socialLinks || null
+      };
       return this.siteInfo;
     }
 

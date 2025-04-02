@@ -1,8 +1,33 @@
 import { Button } from '@/components/ui/button';
 import { PROFILE_IMAGE_URL } from '@/lib/constants';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+
+interface SiteInfo {
+  id: number;
+  about: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  contactLocation: string | null;
+  cvFileUrl: string | null;
+  heroImageUrl: string | null;
+  socialLinks: {
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    dribbble?: string;
+  } | null;
+}
 
 const HeroSection = () => {
+  // Consulta para obtener la información del sitio
+  const { data: siteInfo } = useQuery<SiteInfo>({
+    queryKey: ['/api/site-info'],
+  });
+
+  // Usar la imagen del hero desde la base de datos o la imagen por defecto
+  const heroImageUrl = siteInfo?.heroImageUrl || PROFILE_IMAGE_URL;
+
   return (
     <section id="home" className="relative py-6 md:py-10 mt-6 md:mt-8 overflow-hidden">
       <div className="animated-bg absolute top-0 left-0 w-full h-full bg-gradient-45 from-primary/3 via-secondary/3 to-accent/3 bg-size-400 animate-gradient-slow z-[-1]"></div>
@@ -53,7 +78,7 @@ const HeroSection = () => {
           >
             <div className="relative aspect-[4/5] md:aspect-[1/1] bg-slate-100 rounded-2xl overflow-hidden">
               <img 
-                src={PROFILE_IMAGE_URL}
+                src={heroImageUrl}
                 alt="Adrián Aguirre, analista de operaciones" 
                 className="w-full h-full object-cover"
               />

@@ -28,6 +28,7 @@ interface SiteInfo {
   contactPhone: string | null;
   contactLocation: string | null;
   cvFileUrl: string | null;
+  heroImageUrl: string | null;
   socialLinks: SocialLinks | null;
 }
 
@@ -341,6 +342,46 @@ const Settings = () => {
 
                     <Separator className="my-4" />
                     
+                    <h3 className="text-lg font-semibold">Imagen del Héroe</h3>
+                    <div className="mt-2">
+                      <Label>Imagen actual en la sección inicial</Label>
+                      <div className="mt-2 flex items-center gap-2">
+                        {siteInfo?.heroImageUrl ? (
+                          <>
+                            <div className="flex items-center gap-2 p-2 bg-slate-100 rounded-md flex-1">
+                              <CheckCircle className="h-5 w-5 text-green-600" />
+                              <span className="text-sm truncate max-w-[250px]">
+                                Imagen personalizada
+                              </span>
+                            </div>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                updateSiteInfoMutation.mutate({
+                                  heroImageUrl: null
+                                });
+                                toast({
+                                  title: 'Imagen restablecida',
+                                  description: 'Se ha vuelto a la imagen predeterminada',
+                                  variant: 'default'
+                                });
+                              }}
+                            >
+                              Restablecer predeterminada
+                            </Button>
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-slate-100 rounded-md flex-1">
+                            <AlertCircle className="h-5 w-5 text-amber-600" />
+                            <span className="text-sm">Usando imagen predeterminada</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <Separator className="my-4" />
+                    
                     <h3 className="text-lg font-semibold">Currículum Vitae (CV)</h3>
                     <div className="mt-2">
                       <Label>Archivo CV actual</Label>
@@ -371,6 +412,134 @@ const Settings = () => {
                     </div>
                   </div>
                 </form>
+                
+                {/* Formulario para subir la imagen del héroe */}
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <h3 className="text-lg font-semibold mb-4">Cambiar imagen del héroe</h3>
+                  
+                  {/* Mostrar la imagen actual si existe */}
+                  {siteInfo?.heroImageUrl && (
+                    <div className="mb-4 p-3 bg-slate-50 rounded-md">
+                      <p className="text-sm font-medium mb-2">Imagen actual:</p>
+                      <div className="relative w-full max-w-[200px] aspect-square mb-3 mx-auto">
+                        <img 
+                          src={siteInfo.heroImageUrl} 
+                          alt="Imagen actual del héroe" 
+                          className="w-full h-full object-cover rounded-md border border-slate-200"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const formData = new FormData(e.target as HTMLFormElement);
+                      
+                      // Para FormData, no debemos establecer Content-Type, el navegador lo hará automáticamente
+                      fetch('/api/hero-image/upload', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                          'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                      })
+                      .then(response => {
+                        if (!response.ok) {
+                          throw new Error('Error al subir la imagen');
+                        }
+                        return response.json();
+                      })
+                      .then(data => {
+                        toast({
+                          title: 'Imagen subida correctamente',
+                          description: 'La imagen del héroe ha sido actualizada',
+                          variant: 'default'
+                        });
+                        queryClient.invalidateQueries({ queryKey: ['/api/site-info'] });
+                        
+                        // Limpiar el input de archivo
+                        const fileInput = document.getElementById('heroImage') as HTMLInputElement;
+                        if (fileInput) {
+                          fileInput.value = '';
+                        }
+                      })
+                      .catch(error => {
+                        toast({
+                          title: 'Error',
+                          description: error.message || 'No se pudo subir la imagen',
+                          variant: 'destructive'
+                        });
+                      });
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <Label htmlFor="heroImage">Seleccionar imagen</Label>
+                      <Input
+                        id="heroImage"
+                        name="heroImage"
+                        type="file"
+                        accept="image/*"
+                        className="cursor-pointer mt-1"
+                        required
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        Formatos aceptados: JPG, PNG, GIF, WEBP. Tamaño máximo: 5MB. Se recomienda una imagen de aspecto 1:1.
+                      </p>
+                    </div>
+                    
+                    <Button type="submit" className="w-full" size="sm">
+                      <FileUp className="mr-2 h-4 w-4" /> Subir imagen
+                    </Button>
+                  </form>
+                  
+                  {/* Botón para restaurar la imagen por defecto */}
+                  <div className="mt-4 pt-4 border-t border-slate-200">
+                    <p className="text-sm text-slate-600 mb-3">
+                      ¿Quieres volver a la imagen por defecto? Puedes restaurarla con un solo clic.
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        // Confirmar antes de restaurar
+                        if (confirm('¿Estás seguro que deseas restaurar la imagen por defecto?')) {
+                          fetch('/api/hero-image/reset', {
+                            method: 'POST',
+                            headers: {
+                              'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                          })
+                          .then(response => {
+                            if (!response.ok) {
+                              throw new Error('Error al restaurar la imagen');
+                            }
+                            return response.json();
+                          })
+                          .then(data => {
+                            toast({
+                              title: 'Imagen restaurada',
+                              description: 'Se ha restaurado la imagen por defecto',
+                              variant: 'default'
+                            });
+                            queryClient.invalidateQueries({ queryKey: ['/api/site-info'] });
+                          })
+                          .catch(error => {
+                            toast({
+                              title: 'Error',
+                              description: error.message || 'No se pudo restaurar la imagen',
+                              variant: 'destructive'
+                            });
+                          });
+                        }
+                      }}
+                    >
+                      Restaurar imagen por defecto
+                    </Button>
+                  </div>
+                </div>
 
                 {/* Formulario para subir el CV como un formulario separado */}
                 <div className="mt-6 pt-6 border-t border-slate-200">

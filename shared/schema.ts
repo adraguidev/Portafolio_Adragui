@@ -122,6 +122,7 @@ export const siteInfo = pgTable("site_info", {
   contactPhone: text("contact_phone"),
   contactLocation: text("contact_location"),
   cvFileUrl: text("cv_file_url"), // URL al archivo CV
+  heroImageUrl: text("hero_image_url"), // URL a la imagen del Hero
   socialLinks: json("social_links").$type<{
     github?: string;
     linkedin?: string;

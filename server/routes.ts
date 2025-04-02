@@ -19,14 +19,20 @@ import {
 } from '@shared/schema';
 import { z } from 'zod';
 
+// Configuración de directorios de carga
+const setupUploadDirectory = () => {
+  const uploadDir = 'uploads';
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+  return uploadDir;
+};
+
 // Configurar almacenamiento para archivos CV
 const cvStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Asegurarse de que el directorio de uploads existe
-    const uploadDir = 'uploads';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
+    const uploadDir = setupUploadDirectory();
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
@@ -37,8 +43,21 @@ const cvStorage = multer.diskStorage({
   }
 });
 
-// Filtro para permitir solo ciertos tipos de archivos
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+// Configurar almacenamiento para imágenes del hero
+const heroImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = setupUploadDirectory();
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'hero-' + uniqueSuffix + ext);
+  }
+});
+
+// Filtro para permitir solo ciertos tipos de archivos CV
+const cvFileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   // Aceptar solo archivos PDF, DOC y DOCX
   if (file.mimetype === 'application/pdf' || 
       file.mimetype === 'application/msword' || 
@@ -50,10 +69,30 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
   }
 };
 
-// Inicializar multer con la configuración
+// Filtro para permitir solo imágenes
+const imageFileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  // Aceptar solo imágenes
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+    return cb(new Error('Solo se permiten archivos de imagen'));
+  }
+};
+
+// Inicializar multer para CV
 const cvUpload = multer({ 
   storage: cvStorage,
-  fileFilter: fileFilter,
+  fileFilter: cvFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // Limitar tamaño a 5MB
+  }
+});
+
+// Inicializar multer para imágenes del hero
+const heroImageUpload = multer({ 
+  storage: heroImageStorage,
+  fileFilter: imageFileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024 // Limitar tamaño a 5MB
   }
@@ -831,6 +870,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error uploading CV file:', error);
       res.status(500).json({ message: 'Failed to upload CV file' });
+    }
+  });
+  
+  // Ruta para subir la imagen del hero
+  app.post('/api/hero-image/upload', authenticateJWT, heroImageUpload.single('heroImage'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No image uploaded' });
+      }
+      
+      const file = req.file;
+      // Guardar la ruta sin el slash inicial
+      const filePath = req.file.path;
+      
+      // Actualizar la información del sitio con la URL de la imagen del hero
+      const siteInfo = await storage.getSiteInfo();
+      
+      if (!siteInfo) {
+        return res.status(500).json({ message: 'Site info not found' });
+      }
+      
+      // Si ya existía una imagen, eliminarla (limpieza)
+      if (siteInfo.heroImageUrl) {
+        const oldFilePath = siteInfo.heroImageUrl.startsWith('/') 
+          ? siteInfo.heroImageUrl.substring(1) 
+          : siteInfo.heroImageUrl;
+          
+        if (fs.existsSync(oldFilePath)) {
+          try {
+            fs.unlinkSync(oldFilePath);
+            console.log(`Previous hero image deleted: ${oldFilePath}`);
+          } catch (err) {
+            console.error('Error deleting previous hero image:', err);
+          }
+        }
+      }
+      
+      // Actualizar la URL de la imagen del hero
+      const updatedSiteInfo = await storage.updateSiteInfo({
+        heroImageUrl: filePath
+      });
+      
+      console.log(`Hero image uploaded successfully: ${filePath}`);
+      
+      res.status(200).json({ 
+        message: 'Hero image uploaded successfully',
+        heroImageUrl: filePath,
+        file: {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          size: file.size
+        }
+      });
+    } catch (error) {
+      console.error('Error uploading hero image:', error);
+      res.status(500).json({ message: 'Failed to upload hero image' });
+    }
+  });
+  
+  // Ruta para restaurar la imagen por defecto del hero
+  app.post('/api/hero-image/reset', authenticateJWT, async (req, res) => {
+    try {
+      // Obtener la información actual del sitio
+      const siteInfo = await storage.getSiteInfo();
+      
+      if (!siteInfo) {
+        return res.status(500).json({ message: 'Site info not found' });
+      }
+      
+      // Si hay una imagen personalizada, borrarla
+      if (siteInfo.heroImageUrl) {
+        const oldFilePath = siteInfo.heroImageUrl.startsWith('/') 
+          ? siteInfo.heroImageUrl.substring(1) 
+          : siteInfo.heroImageUrl;
+          
+        if (fs.existsSync(oldFilePath)) {
+          try {
+            fs.unlinkSync(oldFilePath);
+            console.log(`Hero image deleted: ${oldFilePath}`);
+          } catch (err) {
+            console.error('Error deleting hero image:', err);
+          }
+        }
+      }
+      
+      // Establecer el heroImageUrl a null para usar la imagen por defecto
+      const updatedSiteInfo = await storage.updateSiteInfo({
+        heroImageUrl: null
+      });
+      
+      console.log('Hero image reset to default');
+      
+      res.status(200).json({ 
+        message: 'Hero image reset to default',
+        siteInfo: updatedSiteInfo
+      });
+    } catch (error) {
+      console.error('Error resetting hero image:', error);
+      res.status(500).json({ message: 'Failed to reset hero image' });
     }
   });
 

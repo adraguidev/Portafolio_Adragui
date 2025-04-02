@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative py-8 md:py-12 mt-8 overflow-hidden">
+    <section id="home" className="relative py-6 md:py-10 mt-6 md:mt-8 overflow-hidden">
       <div className="animated-bg absolute top-0 left-0 w-full h-full bg-gradient-45 from-primary/3 via-secondary/3 to-accent/3 bg-size-400 animate-gradient-slow z-[-1]"></div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <motion.div 
-            className="order-2 md:order-1"
+            className="order-2 md:order-1 -mt-2 md:mt-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -44,7 +44,7 @@ const HeroSection = () => {
           </motion.div>
           
           <motion.div 
-            className="order-1 md:order-2 relative"
+            className="order-1 md:order-2 relative -mt-2 md:mt-0"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}

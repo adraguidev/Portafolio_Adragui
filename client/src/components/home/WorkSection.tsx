@@ -65,7 +65,7 @@ const WorkSection = () => {
   });
 
   return (
-    <section id="work" className="py-20 bg-slate-50">
+    <section id="work" className="py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <motion.h2 

@@ -24,7 +24,19 @@ const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   
-  const { data: siteInfo } = useQuery({
+  const { data: siteInfo } = useQuery<{
+    id: number;
+    contactEmail: string;
+    contactPhone: string;
+    contactLocation: string;
+    about: string;
+    socialLinks: {
+      github?: string;
+      linkedin?: string;
+      twitter?: string;
+      dribbble?: string;
+    };
+  }>({
     queryKey: ['/api/site-info'],
   });
 

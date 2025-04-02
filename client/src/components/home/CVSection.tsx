@@ -12,7 +12,9 @@ interface CVData {
 
 const CVSection = () => {
   const { data: cvData, isLoading, isError } = useQuery<CVData>({
-    queryKey: ['/api/cv']
+    queryKey: ['/api/cv'],
+    staleTime: 1000,
+    refetchOnWindowFocus: false
   });
 
   const containerAnimation = {
@@ -98,6 +100,8 @@ const CVSection = () => {
                     key={experience.id} 
                     className="relative pl-8 border-l-2 border-slate-200 pb-8"
                     variants={itemAnimation}
+                    initial="hidden"
+                    animate="visible"
                   >
                     <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-secondary"></div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
@@ -107,7 +111,7 @@ const CVSection = () => {
                       </span>
                     </div>
                     <h5 className="text-secondary font-medium mb-2">{experience.company}</h5>
-                    <p className="text-text/70">{experience.description}</p>
+                    <p className="text-text/70 whitespace-pre-line">{experience.description}</p>
                   </motion.div>
                 ))
               )}

@@ -46,8 +46,8 @@ const Home = () => {
       <Navbar />
       <main className="flex-grow pt-16">
         <HeroSection />
-        <WorkSection />
         <CVSection />
+        <WorkSection />
         <ArticlesSection />
         <ContactSection />
       </main>

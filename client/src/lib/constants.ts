@@ -4,8 +4,8 @@ export const WEBSITE_DESCRIPTION = "Adrián Aguirre es un analista de operacione
 
 export const NAV_ITEMS = [
   { label: "Inicio", href: "/" },
-  { label: "Proyectos", href: "/#work" },
   { label: "Currículum", href: "/#cv" },
+  { label: "Proyectos", href: "/#work" },
   { label: "Artículos", href: "/#articles" },
   { label: "Contacto", href: "/#contact" }
 ];

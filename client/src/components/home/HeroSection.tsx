@@ -27,8 +27,8 @@ const HeroSection = () => {
                 size="default" 
                 className="bg-primary text-white hover:bg-primary/90 font-medium"
               >
-                <a href="#work">
-                  Ver mi trabajo
+                <a href="#cv">
+                  Ver mi currículum
                   <i className="ri-arrow-right-line ml-2"></i>
                 </a>
               </Button>

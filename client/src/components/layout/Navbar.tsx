@@ -29,7 +29,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-clash font-bold text-2xl text-primary">AM.</span>
+            <span className="font-clash font-bold text-2xl text-primary">AA.</span>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
@@ -46,7 +46,7 @@ const Navbar = () => {
           
           <div className="flex items-center space-x-4">
             <a href="#contact" className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
-              Get in Touch
+              Contáctame
             </a>
             <button 
               onClick={toggleMobileMenu}
@@ -77,7 +77,7 @@ const Navbar = () => {
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Get in Touch
+            Contáctame
           </a>
         </div>
       </div>

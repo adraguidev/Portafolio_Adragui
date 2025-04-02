@@ -14,12 +14,12 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-medium mb-6">Available for work</span>
+            <span className="inline-block bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-medium mb-6">🟣 Disponible para trabajar</span>
             <h1 className="font-clash font-bold text-5xl md:text-6xl lg:text-7xl text-primary mb-6 leading-tight">
-              Crafting <span className="text-secondary">digital</span> experiences
+              Analista de <span className="text-secondary">Operaciones</span> | Full Stack Developer en formación
             </h1>
             <p className="text-lg text-text/80 mb-8 max-w-lg">
-              I'm Alex, a web developer and designer focused on creating intuitive, user-centered applications that solve real problems.
+              Soy Adrián Aguirre, profesional con más de 5 años de experiencia en análisis de datos, visualización de indicadores y mejora de procesos operativos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
@@ -28,7 +28,7 @@ const HeroSection = () => {
                 className="bg-primary text-white hover:bg-primary/90 font-medium"
               >
                 <a href="#work">
-                  View my Work
+                  Ver mi trabajo
                   <i className="ri-arrow-right-line ml-2"></i>
                 </a>
               </Button>
@@ -38,7 +38,7 @@ const HeroSection = () => {
                 size="lg"
                 className="border-slate-200 text-primary hover:bg-slate-50 font-medium"
               >
-                <a href="#contact">Contact Me</a>
+                <a href="#contact">Contáctame</a>
               </Button>
             </div>
           </motion.div>
@@ -52,13 +52,13 @@ const HeroSection = () => {
             <div className="relative aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden">
               <img 
                 src={PROFILE_IMAGE_URL}
-                alt="Alex Morgan, web developer" 
+                alt="Adrián Aguirre, analista de operaciones" 
                 className="w-full h-full object-cover"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/70 to-transparent pt-20 pb-6 px-6">
                 <div className="text-white">
-                  <h3 className="text-xl font-semibold">Alex Morgan</h3>
-                  <p className="text-white/80">Full-Stack Developer</p>
+                  <h3 className="text-xl font-semibold">Adrián Aguirre</h3>
+                  <p className="text-white/80">Analista de Operaciones</p>
                 </div>
               </div>
             </div>
@@ -68,7 +68,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <p className="text-primary font-medium text-sm">5+ years experience</p>
+              <p className="text-primary font-medium text-sm">+5 años de experiencia</p>
             </motion.div>
           </motion.div>
         </div>

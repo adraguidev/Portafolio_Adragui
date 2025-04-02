@@ -1,6 +1,6 @@
-export const WEBSITE_NAME = "Alex Morgan";
-export const WEBSITE_TITLE = "Alex Morgan | Portafolio de Desarrollador Web";
-export const WEBSITE_DESCRIPTION = "Alex Morgan es un desarrollador web y diseñador enfocado en crear aplicaciones intuitivas y centradas en el usuario que resuelven problemas reales.";
+export const WEBSITE_NAME = "Adrián Aguirre";
+export const WEBSITE_TITLE = "Adrián Aguirre | Portafolio Profesional";
+export const WEBSITE_DESCRIPTION = "Adrián Aguirre es un analista de operaciones y desarrollador full stack en formación con más de 5 años de experiencia en análisis de datos y mejora de procesos operativos.";
 
 export const NAV_ITEMS = [
   { label: "Inicio", href: "/" },

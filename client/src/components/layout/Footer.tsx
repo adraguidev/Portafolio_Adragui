@@ -46,6 +46,7 @@ const Footer = () => {
               <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Terms of Service</a></li>
               <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Cookie Policy</a></li>
+              <li><Link to="/login" className="text-white/70 hover:text-accent transition-colors">Admin Panel</Link></li>
             </ul>
           </div>
         </div>

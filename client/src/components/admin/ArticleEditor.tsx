@@ -1,6 +1,6 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { insertArticleSchema, Article } from '@shared/schema';
@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useLocation, useRoute } from 'wouter';
+import { Editor } from '@tinymce/tinymce-react';
 
 // Extended schema for article form
 const articleFormSchema = insertArticleSchema.extend({
@@ -359,12 +360,36 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
                 <FormItem>
                   <FormLabel>Content</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Write your article content here..."
-                      className="resize-none h-96"
-                      {...field}
-                    />
+                    <div className="border rounded-md overflow-hidden">
+                      <Editor
+                        apiKey="no-api-key"
+                        value={field.value}
+                        onEditorChange={(content) => {
+                          field.onChange(content);
+                        }}
+                        init={{
+                          height: 500,
+                          menubar: true,
+                          plugins: [
+                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
+                            'codesample', 'emoticons', 'hr'
+                          ],
+                          toolbar: 'undo redo | blocks | ' +
+                            'bold italic forecolor backcolor | alignleft aligncenter ' +
+                            'alignright alignjustify | bullist numlist outdent indent | ' +
+                            'removeformat | link image codesample emoticons | help',
+                          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                          branding: false,
+                          promotion: false
+                        }}
+                      />
+                    </div>
                   </FormControl>
+                  <FormDescription>
+                    Usa el editor para dar formato a tu contenido con negritas, listas, enlaces y más.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

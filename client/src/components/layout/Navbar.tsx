@@ -2,14 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
-import LanguageSwitcher from '@/components/ui/language-switcher';
-import { useI18n } from '@/lib/i18n/context';
+import TranslateButton from '@/components/ui/TranslateButton';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
-  const { t } = useI18n();
+
   
   useEffect(() => {
     const handleScroll = () => {
@@ -42,15 +41,15 @@ const Navbar = () => {
                 href={item.href} 
                 className={`nav-link text-primary font-medium relative after:absolute after:content-[''] after:w-0 after:h-0.5 after:bg-accent after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full ${location === item.href.split('#')[0] ? 'after:w-full' : ''}`}
               >
-                {t(`navbar.${item.key}`)}
+                {item.label}
               </a>
             ))}
           </nav>
           
           <div className="flex items-center space-x-4">
-            <LanguageSwitcher />
+            <TranslateButton />
             <a href="#contact" className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
-              {t('contact.formTitle')}
+              Contáctame
             </a>
             <button 
               onClick={toggleMobileMenu}
@@ -73,18 +72,18 @@ const Navbar = () => {
               className="block text-primary font-medium py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              {t(`navbar.${item.key}`)}
+              {item.label}
             </a>
           ))}
           <div className="flex justify-center mb-2">
-            <LanguageSwitcher />
+            <TranslateButton />
           </div>
           <a 
             href="#contact" 
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            {t('contact.formTitle')}
+            Contáctame
           </a>
         </div>
       </div>

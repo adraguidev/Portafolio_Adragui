@@ -121,6 +121,7 @@ export const siteInfo = pgTable("site_info", {
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),
   contactLocation: text("contact_location"),
+  cvFileUrl: text("cv_file_url"), // URL al archivo CV
   socialLinks: json("social_links").$type<{
     github?: string;
     linkedin?: string;

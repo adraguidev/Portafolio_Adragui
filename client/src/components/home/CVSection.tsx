@@ -8,6 +8,7 @@ interface CVData {
   experiences: Experience[];
   education: Education[];
   skills: Skill[];
+  cvFileUrl: string | null;
 }
 
 const CVSection = () => {
@@ -229,15 +230,25 @@ const CVSection = () => {
           </div>
           
           <div className="mt-12 flex justify-center">
-            <Button 
-              asChild
-              className="bg-primary text-white hover:bg-primary/90 font-medium"
-            >
-              <a href="#" download>
+            {cvData?.cvFileUrl ? (
+              <Button 
+                asChild
+                className="bg-primary text-white hover:bg-primary/90 font-medium"
+              >
+                <a href="/api/cv/download" target="_blank">
+                  <i className="ri-download-line mr-2"></i>
+                  Descargar CV Completo
+                </a>
+              </Button>
+            ) : (
+              <Button 
+                disabled
+                className="bg-primary/60 text-white font-medium cursor-not-allowed"
+              >
                 <i className="ri-download-line mr-2"></i>
-                Descargar CV Completo
-              </a>
-            </Button>
+                CV no disponible
+              </Button>
+            )}
           </div>
         </div>
       </div>

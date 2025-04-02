@@ -151,6 +151,7 @@ export class MemStorage implements IStorage {
       contactEmail: "hello@alexmorgan.dev",
       contactPhone: "+1 (555) 123-4567",
       contactLocation: "San Francisco, CA",
+      cvFileUrl: null, // Nuevo campo para el archivo CV
       socialLinks: {
         github: "https://github.com",
         linkedin: "https://linkedin.com",

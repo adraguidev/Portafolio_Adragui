@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
+import { FileUp, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Definir tipos necesarios aquí hasta que podamos importarlos correctamente
 interface SocialLinks {
@@ -26,6 +27,7 @@ interface SiteInfo {
   contactEmail: string | null;
   contactPhone: string | null;
   contactLocation: string | null;
+  cvFileUrl: string | null;
   socialLinks: SocialLinks | null;
 }
 
@@ -336,8 +338,107 @@ const Settings = () => {
                         placeholder="https://dribbble.com/tu-usuario"
                       />
                     </div>
+
+                    <Separator className="my-4" />
+                    
+                    <h3 className="text-lg font-semibold">Currículum Vitae (CV)</h3>
+                    <div className="mt-2">
+                      <Label>Archivo CV actual</Label>
+                      <div className="mt-2 flex items-center gap-2">
+                        {siteInfo?.cvFileUrl ? (
+                          <>
+                            <div className="flex items-center gap-2 p-2 bg-slate-100 rounded-md flex-1">
+                              <CheckCircle className="h-5 w-5 text-green-600" />
+                              <span className="text-sm truncate max-w-[250px]">
+                                {siteInfo.cvFileUrl.split('/').pop()}
+                              </span>
+                            </div>
+                            <a 
+                              href={`/api/cv/download`} 
+                              target="_blank" 
+                              className="px-3 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition-colors"
+                            >
+                              Descargar
+                            </a>
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-slate-100 rounded-md flex-1">
+                            <AlertCircle className="h-5 w-5 text-amber-600" />
+                            <span className="text-sm">No hay ningún archivo CV cargado</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </form>
+
+                {/* Formulario para subir el CV como un formulario separado */}
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <h3 className="text-lg font-semibold mb-4">Subir nuevo CV</h3>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const formData = new FormData(e.target as HTMLFormElement);
+                      
+                      // Para FormData, no debemos establecer Content-Type, el navegador lo hará automáticamente
+                      fetch('/api/cv/upload', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                          'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                      })
+                      .then(response => {
+                        if (!response.ok) {
+                          throw new Error('Error al subir el archivo');
+                        }
+                        return response.json();
+                      })
+                      .then(data => {
+                        toast({
+                          title: 'CV subido correctamente',
+                          description: 'El archivo CV ha sido actualizado',
+                          variant: 'default'
+                        });
+                        queryClient.invalidateQueries({ queryKey: ['/api/site-info'] });
+                        queryClient.invalidateQueries({ queryKey: ['/api/cv'] });
+                        
+                        // Limpiar el input de archivo
+                        const fileInput = document.getElementById('cvFile') as HTMLInputElement;
+                        if (fileInput) {
+                          fileInput.value = '';
+                        }
+                      })
+                      .catch(error => {
+                        toast({
+                          title: 'Error',
+                          description: error.message || 'No se pudo subir el archivo CV',
+                          variant: 'destructive'
+                        });
+                      });
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <Label htmlFor="cvFile">Seleccionar archivo CV</Label>
+                      <Input
+                        id="cvFile"
+                        name="cvFile"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        className="cursor-pointer mt-1"
+                        required
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        Formatos aceptados: PDF, DOC, DOCX. Tamaño máximo: 5MB
+                      </p>
+                    </div>
+                    
+                    <Button type="submit" className="w-full" size="sm">
+                      <FileUp className="mr-2 h-4 w-4" /> Subir CV
+                    </Button>
+                  </form>
+                </div>
               </CardContent>
               <CardFooter>
                 <Button 

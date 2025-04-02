@@ -1,9 +1,12 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import jwt from 'jsonwebtoken';
 import session from 'express-session';
 import MemoryStore from 'memorystore';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { 
   insertProjectSchema, 
   insertExperienceSchema, 
@@ -15,6 +18,46 @@ import {
   insertUserSchema
 } from '@shared/schema';
 import { z } from 'zod';
+
+// Configurar almacenamiento para archivos CV
+const cvStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Asegurarse de que el directorio de uploads existe
+    const uploadDir = 'uploads';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    // Generar un nombre de archivo único basado en la fecha y el nombre original
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'cv-' + uniqueSuffix + ext);
+  }
+});
+
+// Filtro para permitir solo ciertos tipos de archivos
+const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  // Aceptar solo archivos PDF, DOC y DOCX
+  if (file.mimetype === 'application/pdf' || 
+      file.mimetype === 'application/msword' || 
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+    return cb(new Error('Solo se permiten archivos PDF, DOC y DOCX'));
+  }
+};
+
+// Inicializar multer con la configuración
+const cvUpload = multer({ 
+  storage: cvStorage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // Limitar tamaño a 5MB
+  }
+});
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'session-secret-key';
@@ -53,6 +96,11 @@ const authenticateJWT = (req: Request, res: Response, next: Function) => {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const SessionStore = MemoryStore(session);
+  
+  // Asegurarse de que existe el directorio uploads
+  if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads', { recursive: true });
+  }
   
   // Set up session middleware
   app.use(session({
@@ -688,14 +736,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const experiences = await storage.getExperiences();
       const education = await storage.getEducation();
       const skills = await storage.getSkills();
+      const siteInfo = await storage.getSiteInfo();
       
       res.json({
         experiences,
         education,
-        skills
+        skills,
+        cvFileUrl: siteInfo?.cvFileUrl || null
       });
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch CV data' });
+    }
+  });
+  
+  // Ruta para descargar el archivo CV
+  app.get('/api/cv/download', async (req, res) => {
+    try {
+      const siteInfo = await storage.getSiteInfo();
+      
+      if (!siteInfo || !siteInfo.cvFileUrl) {
+        return res.status(404).json({ message: 'CV file not found' });
+      }
+      
+      // Eliminar el '/' inicial si existe
+      const relativePath = siteInfo.cvFileUrl.startsWith('/') 
+        ? siteInfo.cvFileUrl.substring(1) 
+        : siteInfo.cvFileUrl;
+      
+      const filePath = path.resolve(relativePath);
+      
+      // Verificar si el archivo existe
+      if (!fs.existsSync(filePath)) {
+        console.error(`CV file not found at path: ${filePath}`);
+        return res.status(404).json({ message: 'CV file not found' });
+      }
+      
+      res.download(filePath);
+    } catch (error) {
+      console.error('Error downloading CV file:', error);
+      res.status(500).json({ message: 'Failed to download CV file' });
+    }
+  });
+  
+  // Ruta para subir el archivo CV
+  app.post('/api/cv/upload', authenticateJWT, cvUpload.single('cvFile'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      
+      const file = req.file;
+      // Guardar la ruta sin el slash inicial
+      const filePath = req.file.path;
+      
+      // Actualizar la información del sitio con la URL del CV
+      const siteInfo = await storage.getSiteInfo();
+      
+      if (!siteInfo) {
+        return res.status(500).json({ message: 'Site info not found' });
+      }
+      
+      // Si ya existía un archivo, eliminarlo (limpieza)
+      if (siteInfo.cvFileUrl) {
+        const oldFilePath = siteInfo.cvFileUrl.startsWith('/') 
+          ? siteInfo.cvFileUrl.substring(1) 
+          : siteInfo.cvFileUrl;
+          
+        if (fs.existsSync(oldFilePath)) {
+          try {
+            fs.unlinkSync(oldFilePath);
+            console.log(`Previous CV file deleted: ${oldFilePath}`);
+          } catch (err) {
+            console.error('Error deleting previous CV file:', err);
+          }
+        }
+      }
+      
+      // Actualizar la URL del archivo CV
+      const updatedSiteInfo = await storage.updateSiteInfo({
+        cvFileUrl: filePath
+      });
+      
+      console.log(`CV file uploaded successfully: ${filePath}`);
+      
+      res.status(200).json({ 
+        message: 'CV file uploaded successfully',
+        cvFileUrl: filePath,
+        file: {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          size: file.size
+        }
+      });
+    } catch (error) {
+      console.error('Error uploading CV file:', error);
+      res.status(500).json({ message: 'Failed to upload CV file' });
     }
   });
 

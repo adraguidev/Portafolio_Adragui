@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/home/HeroSection';
 import WorkSection from '@/components/home/WorkSection';
 import CVSection from '@/components/home/CVSection';
@@ -42,17 +40,13 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-16">
-        <HeroSection />
-        <CVSection />
-        <WorkSection />
-        <ArticlesSection />
-        <ContactSection />
-      </main>
-      <Footer />
-    </div>
+    <main className="pt-16">
+      <HeroSection />
+      <CVSection />
+      <WorkSection />
+      <ArticlesSection />
+      <ContactSection />
+    </main>
   );
 };
 

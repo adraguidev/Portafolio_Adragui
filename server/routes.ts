@@ -464,10 +464,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/articles/:id', async (req, res) => {
+  app.get('/api/articles/slug/:slug', async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const article = await storage.getArticle(id);
+      const slug = req.params.slug;
+      const article = await storage.getArticleBySlug(slug);
       
       if (!article) {
         return res.status(404).json({ message: 'Article not found' });
@@ -483,11 +483,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to fetch article' });
     }
   });
-
-  app.get('/api/articles/slug/:slug', async (req, res) => {
+  
+  app.get('/api/articles/:id', async (req, res) => {
     try {
-      const slug = req.params.slug;
-      const article = await storage.getArticleBySlug(slug);
+      const id = parseInt(req.params.id);
+      const article = await storage.getArticle(id);
       
       if (!article) {
         return res.status(404).json({ message: 'Article not found' });

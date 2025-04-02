@@ -11,6 +11,8 @@ import ArticleManagement from "@/pages/admin/ArticleManagement";
 import ProjectManagement from "@/pages/admin/ProjectManagement";
 import Messages from "@/pages/admin/Messages";
 import ArticleDetail from "@/pages/ArticleDetail";
+import ArticlesPage from "@/pages/ArticlesPage";
+import ProjectsPage from "@/pages/ProjectsPage";
 import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 import TermsOfService from "@/pages/legal/TermsOfService";
 import CookiePolicy from "@/pages/legal/CookiePolicy";
@@ -21,6 +23,8 @@ function Router() {
       {/* Public Routes */}
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
+      <Route path="/projects" component={ProjectsPage} />
+      <Route path="/articles" component={ArticlesPage} />
       <Route path="/articles/:slug" component={ArticleDetail} />
       
       {/* Legal Routes */}

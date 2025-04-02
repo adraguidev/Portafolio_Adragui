@@ -135,17 +135,18 @@ const ArticlesSection = () => {
         </div>
         
         <div className="mt-12 text-center">
-          <motion.a 
-            href="#" 
-            className="inline-flex items-center border-b-2 border-secondary/70 text-secondary font-medium hover:border-secondary transition-colors"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            Ver Todos los Artículos
-            <i className="ri-arrow-right-line ml-2"></i>
-          </motion.a>
+          <Link href="/articles">
+            <motion.div 
+              className="inline-flex items-center border-b-2 border-secondary/70 text-secondary font-medium hover:border-secondary transition-colors cursor-pointer"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              Ver Todos los Artículos
+              <i className="ri-arrow-right-line ml-2"></i>
+            </motion.div>
+          </Link>
         </div>
       </div>
     </section>

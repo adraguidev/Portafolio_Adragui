@@ -1,13 +1,13 @@
 export const WEBSITE_NAME = "Alex Morgan";
-export const WEBSITE_TITLE = "Alex Morgan | Web Developer Portfolio";
-export const WEBSITE_DESCRIPTION = "Alex Morgan is a web developer and designer focused on creating intuitive, user-centered applications that solve real problems.";
+export const WEBSITE_TITLE = "Alex Morgan | Portafolio de Desarrollador Web";
+export const WEBSITE_DESCRIPTION = "Alex Morgan es un desarrollador web y diseñador enfocado en crear aplicaciones intuitivas y centradas en el usuario que resuelven problemas reales.";
 
 export const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "Work", href: "/#work" },
-  { label: "CV", href: "/#cv" },
-  { label: "Articles", href: "/#articles" },
-  { label: "Contact", href: "/#contact" }
+  { label: "Inicio", href: "/" },
+  { label: "Proyectos", href: "/#work" },
+  { label: "Currículum", href: "/#cv" },
+  { label: "Artículos", href: "/#articles" },
+  { label: "Contacto", href: "/#contact" }
 ];
 
 export const SOCIAL_LINKS = {
@@ -18,12 +18,12 @@ export const SOCIAL_LINKS = {
 };
 
 export const ADMIN_NAV_ITEMS = [
-  { label: "Dashboard", href: "/admin", icon: "ri-dashboard-line" },
-  { label: "CV Editor", href: "/admin/cv", icon: "ri-file-list-3-line" },
-  { label: "Articles", href: "/admin/articles", icon: "ri-article-line" },
-  { label: "Projects", href: "/admin/projects", icon: "ri-folder-line" },
-  { label: "Messages", href: "/admin/messages", icon: "ri-message-3-line" },
-  { label: "Settings", href: "/admin/settings", icon: "ri-settings-4-line" }
+  { label: "Panel Principal", href: "/admin", icon: "ri-dashboard-line" },
+  { label: "Editor CV", href: "/admin/cv", icon: "ri-file-list-3-line" },
+  { label: "Artículos", href: "/admin/articles", icon: "ri-article-line" },
+  { label: "Proyectos", href: "/admin/projects", icon: "ri-folder-line" },
+  { label: "Mensajes", href: "/admin/messages", icon: "ri-message-3-line" },
+  { label: "Configuración", href: "/admin/settings", icon: "ri-settings-4-line" }
 ];
 
 export const COLORS = {

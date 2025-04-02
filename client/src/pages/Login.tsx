@@ -13,8 +13,8 @@ import { WEBSITE_NAME } from '@/lib/constants';
 
 // Login form schema
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  email: z.string().email({ message: 'Por favor, introduce un correo electrónico válido' }),
+  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -45,16 +45,16 @@ const Login = () => {
     try {
       await login(data.email, data.password);
       toast({
-        title: 'Login successful',
-        description: 'Welcome to the admin dashboard',
+        title: 'Inicio de sesión exitoso',
+        description: 'Bienvenido al panel de administración',
       });
       // Redirigir explícitamente al dashboard después del login exitoso
       setLocation('/admin');
     } catch (error) {
       console.error('Login error:', error);
       toast({
-        title: 'Login failed',
-        description: 'Invalid email or password',
+        title: 'Error de inicio de sesión',
+        description: 'Correo electrónico o contraseña inválidos',
         variant: 'destructive',
       });
       setIsLoading(false);
@@ -67,7 +67,7 @@ const Login = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary mx-auto"></div>
-          <p className="mt-4 text-text">Loading...</p>
+          <p className="mt-4 text-text">Cargando...</p>
         </div>
       </div>
     );
@@ -83,8 +83,8 @@ const Login = () => {
       <div className="login-animation w-full max-w-md">
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="bg-primary p-8 text-center">
-            <h2 className="font-clash font-bold text-2xl text-white">Admin Dashboard</h2>
-            <p className="text-white/70 mt-2">Sign in to manage your portfolio</p>
+            <h2 className="font-clash font-bold text-2xl text-white">Panel de Administración</h2>
+            <p className="text-white/70 mt-2">Inicia sesión para gestionar tu portafolio</p>
           </div>
           
           <div className="p-8">
@@ -95,11 +95,11 @@ const Login = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Correo electrónico</FormLabel>
                       <FormControl>
                         <Input 
                           type="email" 
-                          placeholder="your@email.com" 
+                          placeholder="tu@correo.com" 
                           className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                           {...field} 
                         />
@@ -115,8 +115,8 @@ const Login = () => {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center justify-between mb-2">
-                        <FormLabel>Password</FormLabel>
-                        <a href="#" className="text-xs text-secondary hover:text-secondary/80 transition-colors">Forgot password?</a>
+                        <FormLabel>Contraseña</FormLabel>
+                        <a href="#" className="text-xs text-secondary hover:text-secondary/80 transition-colors">¿Olvidaste tu contraseña?</a>
                       </div>
                       <FormControl>
                         <Input 
@@ -147,7 +147,7 @@ const Login = () => {
                         htmlFor="rememberMe"
                         className="text-sm text-text/80 cursor-pointer"
                       >
-                        Remember me
+                        Recordarme
                       </label>
                     </FormItem>
                   )}
@@ -158,7 +158,7 @@ const Login = () => {
                   className="w-full bg-primary text-white rounded-md px-6 py-3 text-base font-medium hover:bg-primary/90 transition-colors"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Signing in...' : 'Sign In'}
+                  {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                 </Button>
               </form>
             </Form>
@@ -166,7 +166,7 @@ const Login = () => {
             <div className="mt-6 text-center">
               <Link href="/" className="text-sm text-text/70 hover:text-secondary transition-colors inline-flex items-center">
                 <i className="ri-arrow-left-line mr-1"></i>
-                Back to website
+                Volver al sitio web
               </Link>
             </div>
           </div>

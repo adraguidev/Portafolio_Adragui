@@ -35,3 +35,13 @@ export const COLORS = {
 };
 
 export const PROFILE_IMAGE_URL = "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800&auto=format&fit=crop";
+
+// Configuración para el sistema
+export interface AppConfig {
+  tinymceApiKey: string;
+}
+
+// Estado inicial para la configuración
+export const initialConfig: AppConfig = {
+  tinymceApiKey: ''
+};

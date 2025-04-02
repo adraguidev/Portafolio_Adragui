@@ -995,6 +995,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ruta para obtener las configuraciones públicas incluyendo las API keys seguras
+  app.get('/api/config', (req, res) => {
+    res.json({
+      tinymceApiKey: process.env.TINYMCE_API_KEY || ''
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

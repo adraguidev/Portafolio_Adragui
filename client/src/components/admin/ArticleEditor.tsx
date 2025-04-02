@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { insertArticleSchema, Article } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useConfig } from '@/hooks/use-config';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -52,6 +53,7 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
+  const { config } = useConfig(); // Obtener la configuración que incluye la API key de TinyMCE
   
   // Fetch article if editing
   const { data: article, isLoading: articleLoading } = useQuery<Article>({
@@ -362,7 +364,7 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
                   <FormControl>
                     <div className="border rounded-md overflow-hidden">
                       <Editor
-                        apiKey="no-api-key"
+                        apiKey={config.tinymceApiKey}
                         value={field.value}
                         onEditorChange={(content) => {
                           field.onChange(content);

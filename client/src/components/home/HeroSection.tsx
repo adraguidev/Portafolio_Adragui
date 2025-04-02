@@ -4,27 +4,27 @@ import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative py-20 md:py-32 overflow-hidden">
+    <section id="home" className="relative py-12 md:py-16 mt-16 overflow-hidden">
       <div className="animated-bg absolute top-0 left-0 w-full h-full bg-gradient-45 from-primary/3 via-secondary/3 to-accent/3 bg-size-400 animate-gradient-slow z-[-1]"></div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
           <motion.div 
             className="order-2 md:order-1"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-medium mb-6">🟣 Disponible para trabajar</span>
-            <h1 className="font-clash font-bold text-5xl md:text-6xl lg:text-7xl text-primary mb-6 leading-tight">
-              Analista de <span className="text-secondary">Operaciones</span> | Full Stack Developer en formación
+            <span className="inline-block bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-medium mb-4">🟣 Disponible para trabajar</span>
+            <h1 className="font-clash font-bold text-4xl md:text-5xl lg:text-6xl text-primary mb-4 leading-tight">
+              Transformando <span className="text-secondary">Datos</span> en <span className="text-secondary">Soluciones</span> Inteligentes
             </h1>
-            <p className="text-lg text-text/80 mb-8 max-w-lg">
-              Soy Adrián Aguirre, profesional con más de 5 años de experiencia en análisis de datos, visualización de indicadores y mejora de procesos operativos.
+            <p className="text-base md:text-lg text-text/80 mb-6 max-w-lg">
+              Transformo datos en decisiones estratégicas a través del análisis, la visualización y la mejora de procesos operativos. Con experiencia en la creación de dashboards en Power BI, automatización de reportes y soporte a la operatividad, hoy combino mi trayectoria analítica con formación en desarrollo full stack para construir soluciones tecnológicas que generan impacto real.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 asChild 
-                size="lg" 
+                size="default" 
                 className="bg-primary text-white hover:bg-primary/90 font-medium"
               >
                 <a href="#work">
@@ -35,7 +35,7 @@ const HeroSection = () => {
               <Button 
                 asChild 
                 variant="outline" 
-                size="lg"
+                size="default"
                 className="border-slate-200 text-primary hover:bg-slate-50 font-medium"
               >
                 <a href="#contact">Contáctame</a>
@@ -49,7 +49,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <div className="relative aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden">
+            <div className="relative aspect-[4/5] md:aspect-[1/1] bg-slate-100 rounded-2xl overflow-hidden">
               <img 
                 src={PROFILE_IMAGE_URL}
                 alt="Adrián Aguirre, analista de operaciones" 

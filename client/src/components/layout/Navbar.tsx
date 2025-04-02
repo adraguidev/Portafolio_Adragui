@@ -27,9 +27,9 @@ const Navbar = () => {
   return (
     <header className={`fixed w-full top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-slate-100 transition-all ${isScrolled ? 'shadow-sm' : ''}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-2">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-clash font-bold text-2xl text-primary">AA.</span>
+            <span className="font-clash font-bold text-xl text-primary">AA.</span>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
@@ -37,7 +37,7 @@ const Navbar = () => {
               <a 
                 key={item.href}
                 href={item.href} 
-                className={`nav-link text-primary font-medium relative after:absolute after:content-[''] after:w-0 after:h-0.5 after:bg-accent after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full ${location === item.href.split('#')[0] ? 'after:w-full' : ''}`}
+                className={`nav-link text-primary text-sm font-medium relative after:absolute after:content-[''] after:w-0 after:h-0.5 after:bg-accent after:bottom-[-3px] after:left-0 after:transition-all after:duration-300 hover:after:w-full ${location === item.href.split('#')[0] ? 'after:w-full' : ''}`}
               >
                 {item.label}
               </a>

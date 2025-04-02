@@ -43,15 +43,15 @@ const ContactSection = () => {
     try {
       await apiRequest('POST', '/api/messages', data);
       toast({
-        title: 'Message sent!',
-        description: 'Thanks for reaching out. I\'ll get back to you soon.',
+        title: '¡Mensaje enviado!',
+        description: 'Gracias por contactarme. Te responderé pronto.',
         variant: 'default',
       });
       form.reset();
     } catch (error) {
       toast({
-        title: 'Failed to send message',
-        description: 'Please try again later.',
+        title: 'Error al enviar el mensaje',
+        description: 'Por favor, inténtalo de nuevo más tarde.',
         variant: 'destructive',
       });
       console.error('Error sending message:', error);
@@ -75,8 +75,8 @@ const ContactSection = () => {
               <div className="p-8 md:p-12 bg-[url('https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop')] bg-cover bg-center relative">
                 <div className="absolute inset-0 bg-primary/90"></div>
                 <div className="relative z-10 h-full flex flex-col">
-                  <h2 className="font-clash font-bold text-3xl md:text-4xl text-white mb-6">Let's Connect</h2>
-                  <p className="text-white/80 mb-8">Have a project in mind or want to discuss opportunities? Drop me a message and I'll get back to you as soon as possible.</p>
+                  <h2 className="font-clash font-bold text-3xl md:text-4xl text-white mb-6">Conectemos</h2>
+                  <p className="text-white/80 mb-8">¿Tienes un proyecto en mente o quieres hablar sobre oportunidades? Envíame un mensaje y te responderé lo antes posible.</p>
                   
                   <div className="space-y-6 mt-auto">
                     <div className="flex items-center text-white/90">
@@ -113,7 +113,7 @@ const ContactSection = () => {
               </div>
               
               <div className="p-8 md:p-12 bg-white">
-                <h3 className="font-clash font-semibold text-2xl text-primary mb-6">Send a Message</h3>
+                <h3 className="font-clash font-semibold text-2xl text-primary mb-6">Enviar un Mensaje</h3>
                 
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -122,10 +122,10 @@ const ContactSection = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Name</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Nombre</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="Your name" 
+                              placeholder="Tu nombre" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -140,11 +140,11 @@ const ContactSection = () => {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Email</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Correo electrónico</FormLabel>
                           <FormControl>
                             <Input 
                               type="email" 
-                              placeholder="Your email address" 
+                              placeholder="Tu correo electrónico" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -159,10 +159,10 @@ const ContactSection = () => {
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Subject</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Asunto</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="What is this regarding?" 
+                              placeholder="¿De qué se trata?" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -177,11 +177,11 @@ const ContactSection = () => {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Message</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Mensaje</FormLabel>
                           <FormControl>
                             <Textarea 
                               rows={5} 
-                              placeholder="Your message" 
+                              placeholder="Tu mensaje" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors resize-none" 
                               {...field} 
                             />
@@ -196,7 +196,7 @@ const ContactSection = () => {
                       className="w-full bg-primary text-white rounded-md px-6 py-3 text-base font-medium hover:bg-primary/90 transition-colors"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Sending...' : 'Send Message'}
+                      {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
                     </Button>
                   </form>
                 </Form>

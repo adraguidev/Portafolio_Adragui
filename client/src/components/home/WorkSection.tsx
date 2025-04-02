@@ -25,7 +25,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
             rel="noopener noreferrer" 
             className="bg-white text-primary rounded-md px-4 py-2 text-sm font-medium"
           >
-            View Project
+            Ver Proyecto
           </a>
         </div>
       </div>
@@ -75,7 +75,7 @@ const WorkSection = () => {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Selected Projects
+            Proyectos Destacados
           </motion.h2>
           <motion.p 
             className="text-text/70 max-w-2xl mx-auto"
@@ -84,7 +84,7 @@ const WorkSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            A collection of my recent work across web applications, e-commerce platforms, and interactive experiences.
+            Una colección de mis trabajos recientes en aplicaciones web, plataformas de comercio electrónico y experiencias interactivas.
           </motion.p>
         </div>
         
@@ -111,7 +111,7 @@ const WorkSection = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            View Full Portfolio
+            Ver Portafolio Completo
             <i className="ri-arrow-right-line ml-2"></i>
           </motion.a>
         </div>

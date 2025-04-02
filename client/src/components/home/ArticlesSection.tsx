@@ -47,9 +47,9 @@ const ArticleCard = ({ article }: { article: Article }) => {
       </Link>
       <div className="p-6">
         <div className="flex items-center text-sm text-text/60 mb-3">
-          <span>{article.publishedAt ? formatDate(article.publishedAt) : 'Draft'}</span>
+          <span>{article.publishedAt ? formatDate(article.publishedAt) : 'Borrador'}</span>
           <span className="mx-2">•</span>
-          <span>{readTime} min read</span>
+          <span>{readTime} min de lectura</span>
         </div>
         <Link href={`/articles/${article.slug}`}>
           <h3 className="font-clash font-semibold text-xl mb-3 group-hover:text-secondary transition-colors">
@@ -58,7 +58,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
         </Link>
         <p className="text-text/70 text-sm mb-4">{article.summary}</p>
         <Link href={`/articles/${article.slug}`} className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors">
-          Read Article
+          Leer Artículo
           <i className="ri-arrow-right-line ml-1"></i>
         </Link>
       </div>
@@ -107,7 +107,7 @@ const ArticlesSection = () => {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Latest Articles
+            Últimos Artículos
           </motion.h2>
           <motion.p 
             className="text-text/70 max-w-2xl mx-auto"
@@ -116,7 +116,7 @@ const ArticlesSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Thoughts, insights and discoveries from my journey in web development.
+            Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web.
           </motion.p>
         </div>
         
@@ -143,7 +143,7 @@ const ArticlesSection = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            View All Articles
+            Ver Todos los Artículos
             <i className="ri-arrow-right-line ml-2"></i>
           </motion.a>
         </div>

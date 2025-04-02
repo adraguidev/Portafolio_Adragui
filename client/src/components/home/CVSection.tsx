@@ -51,7 +51,7 @@ const CVSection = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              My professional journey and expertise in web development and design.
+              Mi trayectoria profesional y experiencia en desarrollo web y diseño.
             </motion.p>
           </div>
           
@@ -61,7 +61,7 @@ const CVSection = () => {
               <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
                 <i className="ri-briefcase-4-line"></i>
               </span>
-              Professional Experience
+              Experiencia Profesional
             </h3>
             
             <motion.div 
@@ -95,7 +95,7 @@ const CVSection = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                       <h4 className="font-clash font-semibold text-xl text-primary">{experience.title}</h4>
                       <span className="bg-slate-100 text-primary/70 px-3 py-1 rounded-full text-sm mt-1 sm:mt-0">
-                        {experience.startDate} - {experience.endDate || 'Present'}
+                        {experience.startDate} - {experience.endDate || 'Actual'}
                       </span>
                     </div>
                     <h5 className="text-secondary font-medium mb-2">{experience.company}</h5>
@@ -112,7 +112,7 @@ const CVSection = () => {
               <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
                 <i className="ri-tools-line"></i>
               </span>
-              Skills & Technologies
+              Habilidades y Tecnologías
             </h3>
             
             <div className="grid md:grid-cols-2 gap-6">
@@ -157,7 +157,7 @@ const CVSection = () => {
               <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
                 <i className="ri-graduation-cap-line"></i>
               </span>
-              Education
+              Educación
             </h3>
             
             <motion.div 
@@ -207,7 +207,7 @@ const CVSection = () => {
             >
               <a href="#" download>
                 <i className="ri-download-line mr-2"></i>
-                Download Full CV
+                Descargar CV Completo
               </a>
             </Button>
           </div>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
@@ -137,10 +136,10 @@ const Dashboard = () => {
                       <div className="flex items-center justify-between mb-1">
                         <h4 className="font-medium text-primary">{message.name}</h4>
                         <span className="text-text/60 text-xs">
-                          {new Date(message.createdAt).toLocaleDateString('en-US', { 
+                          {message.createdAt ? new Date(message.createdAt).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric' 
-                          })}
+                          }) : 'N/A'}
                         </span>
                       </div>
                       <p className="text-sm text-text/70 line-clamp-2">{message.message}</p>
@@ -176,11 +175,11 @@ const Dashboard = () => {
                     <div>
                       <h4 className="font-medium text-primary mb-1">{article.title}</h4>
                       <p className="text-sm text-text/60">
-                        Last edited: {new Date(article.updatedAt).toLocaleDateString('en-US', {
+                        Last edited: {article.updatedAt ? new Date(article.updatedAt).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
                           year: 'numeric'
-                        })}
+                        }) : 'N/A'}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">

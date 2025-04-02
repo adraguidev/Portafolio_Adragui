@@ -6,9 +6,12 @@ import {
   Skill, InsertSkill,
   Article, InsertArticle,
   Message, InsertMessage,
-  SiteInfo, InsertSiteInfo
+  SiteInfo, InsertSiteInfo,
+  users, projects, experiences, education, skills, articles, messages, siteInfo
 } from '@shared/schema';
 import bcrypt from 'bcryptjs';
+import { db } from './db';
+import { eq, desc, asc, and, isNull, isNotNull } from 'drizzle-orm';
 
 export interface IStorage {
   // User management
@@ -688,4 +691,486 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  // User Management
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const [newUser] = await db.insert(users)
+      .values({ ...user, password: hashedPassword })
+      .returning();
+    return newUser;
+  }
+
+  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  // Projects
+  async getProjects(): Promise<Project[]> {
+    return db.select().from(projects).orderBy(asc(projects.order));
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project;
+  }
+
+  async getFeaturedProjects(): Promise<Project[]> {
+    return db.select().from(projects)
+      .where(eq(projects.featured, true))
+      .orderBy(asc(projects.order));
+  }
+
+  async createProject(project: InsertProject): Promise<Project> {
+    const [newProject] = await db.insert(projects).values(project).returning();
+    return newProject;
+  }
+
+  async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
+    const [updatedProject] = await db.update(projects)
+      .set(project)
+      .where(eq(projects.id, id))
+      .returning();
+    return updatedProject;
+  }
+
+  async deleteProject(id: number): Promise<boolean> {
+    const result = await db.delete(projects).where(eq(projects.id, id));
+    return result.count > 0;
+  }
+
+  // Experience
+  async getExperiences(): Promise<Experience[]> {
+    return db.select().from(experiences).orderBy(asc(experiences.order));
+  }
+
+  async getExperience(id: number): Promise<Experience | undefined> {
+    const [experience] = await db.select().from(experiences).where(eq(experiences.id, id));
+    return experience;
+  }
+
+  async createExperience(experience: InsertExperience): Promise<Experience> {
+    const [newExperience] = await db.insert(experiences).values(experience).returning();
+    return newExperience;
+  }
+
+  async updateExperience(id: number, experience: Partial<InsertExperience>): Promise<Experience | undefined> {
+    const [updatedExperience] = await db.update(experiences)
+      .set(experience)
+      .where(eq(experiences.id, id))
+      .returning();
+    return updatedExperience;
+  }
+
+  async deleteExperience(id: number): Promise<boolean> {
+    const result = await db.delete(experiences).where(eq(experiences.id, id));
+    return result.count > 0;
+  }
+
+  // Education
+  async getEducation(): Promise<Education[]> {
+    return db.select().from(education).orderBy(asc(education.order));
+  }
+
+  async getEducationItem(id: number): Promise<Education | undefined> {
+    const [educationItem] = await db.select().from(education).where(eq(education.id, id));
+    return educationItem;
+  }
+
+  async createEducation(educationItem: InsertEducation): Promise<Education> {
+    const [newEducation] = await db.insert(education).values(educationItem).returning();
+    return newEducation;
+  }
+
+  async updateEducation(id: number, educationItem: Partial<InsertEducation>): Promise<Education | undefined> {
+    const [updatedEducation] = await db.update(education)
+      .set(educationItem)
+      .where(eq(education.id, id))
+      .returning();
+    return updatedEducation;
+  }
+
+  async deleteEducation(id: number): Promise<boolean> {
+    const result = await db.delete(education).where(eq(education.id, id));
+    return result.count > 0;
+  }
+
+  // Skills
+  async getSkills(): Promise<Skill[]> {
+    return db.select().from(skills).orderBy(asc(skills.order));
+  }
+
+  async getSkill(id: number): Promise<Skill | undefined> {
+    const [skill] = await db.select().from(skills).where(eq(skills.id, id));
+    return skill;
+  }
+
+  async createSkill(skill: InsertSkill): Promise<Skill> {
+    const [newSkill] = await db.insert(skills).values(skill).returning();
+    return newSkill;
+  }
+
+  async updateSkill(id: number, skill: Partial<InsertSkill>): Promise<Skill | undefined> {
+    const [updatedSkill] = await db.update(skills)
+      .set(skill)
+      .where(eq(skills.id, id))
+      .returning();
+    return updatedSkill;
+  }
+
+  async deleteSkill(id: number): Promise<boolean> {
+    const result = await db.delete(skills).where(eq(skills.id, id));
+    return result.count > 0;
+  }
+
+  // Articles
+  async getArticles(published?: boolean): Promise<Article[]> {
+    if (published === undefined) {
+      return db.select().from(articles).orderBy(desc(articles.createdAt));
+    }
+    return db.select().from(articles)
+      .where(eq(articles.published, published))
+      .orderBy(desc(articles.createdAt));
+  }
+
+  async getArticle(id: number): Promise<Article | undefined> {
+    const [article] = await db.select().from(articles).where(eq(articles.id, id));
+    return article;
+  }
+
+  async getArticleBySlug(slug: string): Promise<Article | undefined> {
+    const [article] = await db.select().from(articles).where(eq(articles.slug, slug));
+    return article;
+  }
+
+  async createArticle(article: InsertArticle): Promise<Article> {
+    const [newArticle] = await db.insert(articles).values(article).returning();
+    return newArticle;
+  }
+
+  async updateArticle(id: number, article: Partial<InsertArticle>): Promise<Article | undefined> {
+    const [updatedArticle] = await db.update(articles)
+      .set(article)
+      .where(eq(articles.id, id))
+      .returning();
+    return updatedArticle;
+  }
+
+  async publishArticle(id: number): Promise<Article | undefined> {
+    const now = new Date();
+    const [publishedArticle] = await db.update(articles)
+      .set({ 
+        published: true,
+        publishedAt: now,
+        updatedAt: now
+      })
+      .where(eq(articles.id, id))
+      .returning();
+    return publishedArticle;
+  }
+
+  async unpublishArticle(id: number): Promise<Article | undefined> {
+    const [unpublishedArticle] = await db.update(articles)
+      .set({
+        published: false,
+        publishedAt: null,
+        updatedAt: new Date()
+      })
+      .where(eq(articles.id, id))
+      .returning();
+    return unpublishedArticle;
+  }
+
+  async deleteArticle(id: number): Promise<boolean> {
+    const result = await db.delete(articles).where(eq(articles.id, id));
+    return result.count > 0;
+  }
+
+  // Messages
+  async getMessages(): Promise<Message[]> {
+    return db.select().from(messages).orderBy(desc(messages.createdAt));
+  }
+
+  async getMessage(id: number): Promise<Message | undefined> {
+    const [message] = await db.select().from(messages).where(eq(messages.id, id));
+    return message;
+  }
+
+  async createMessage(message: InsertMessage): Promise<Message> {
+    const [newMessage] = await db.insert(messages).values(message).returning();
+    return newMessage;
+  }
+
+  async markMessageAsRead(id: number): Promise<Message | undefined> {
+    const [updatedMessage] = await db.update(messages)
+      .set({ read: true })
+      .where(eq(messages.id, id))
+      .returning();
+    return updatedMessage;
+  }
+
+  async deleteMessage(id: number): Promise<boolean> {
+    const result = await db.delete(messages).where(eq(messages.id, id));
+    return result.count > 0;
+  }
+
+  // Site Info
+  async getSiteInfo(): Promise<SiteInfo | undefined> {
+    const [info] = await db.select().from(siteInfo);
+    return info;
+  }
+
+  async updateSiteInfo(info: Partial<InsertSiteInfo>): Promise<SiteInfo | undefined> {
+    // Check if any site info exists
+    const existingSiteInfo = await this.getSiteInfo();
+    
+    if (existingSiteInfo) {
+      const [updatedInfo] = await db.update(siteInfo)
+        .set(info)
+        .where(eq(siteInfo.id, existingSiteInfo.id))
+        .returning();
+      return updatedInfo;
+    } else {
+      const [newInfo] = await db.insert(siteInfo)
+        .values(info)
+        .returning();
+      return newInfo;
+    }
+  }
+}
+
+// Inicialización de la base de datos con un usuario admin
+async function initializeDatabase() {
+  // Comprobar si ya existe un usuario
+  const userCount = await db.select({ count: users.id }).from(users);
+  if (Number(userCount[0].count) === 0) {
+    // Crear usuario admin
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    await db.insert(users).values({
+      username: 'admin',
+      password: hashedPassword,
+      email: 'admin@example.com',
+      name: 'Admin User',
+      role: 'admin'
+    });
+    
+    // Seed de datos de prueba
+    const now = new Date();
+    
+    // Experiencias
+    await db.insert(experiences).values([
+      {
+        title: "Senior Web Developer",
+        company: "TechCorp Solutions",
+        description: "Led development of enterprise SaaS applications. Implemented CI/CD pipelines and mentored junior developers. Reduced load times by 40% through code optimization.",
+        startDate: "2021",
+        endDate: null,
+        isCurrent: true,
+        order: 1
+      },
+      {
+        title: "Web Developer",
+        company: "Digital Creations Agency",
+        description: "Built responsive websites and web applications for diverse clients. Collaborated with design team to implement pixel-perfect UIs. Maintained and optimized existing codebases.",
+        startDate: "2018",
+        endDate: "2021",
+        isCurrent: false,
+        order: 2
+      }
+    ]);
+    
+    // Educación
+    await db.insert(education).values({
+      degree: "BSc Computer Science",
+      institution: "University of Technology",
+      description: "Specialized in web technologies and software engineering. Capstone project focused on building a real-time collaboration platform.",
+      startDate: "2014",
+      endDate: "2018",
+      order: 1
+    });
+    
+    // Habilidades
+    await db.insert(skills).values([
+      {
+        category: "Frontend",
+        items: ["HTML5/CSS3", "JavaScript (ES6+)", "React", "Vue.js", "Tailwind CSS", "TypeScript"],
+        order: 1
+      },
+      {
+        category: "Backend",
+        items: ["Node.js", "Express", "MongoDB", "PostgreSQL", "RESTful APIs", "GraphQL"],
+        order: 2
+      },
+      {
+        category: "Tools & Methods",
+        items: ["Git/GitHub", "Docker", "CI/CD", "Agile/Scrum", "Jest/Testing"],
+        order: 3
+      },
+      {
+        category: "Design",
+        items: ["Figma", "Adobe XD", "UI/UX Principles", "Responsive Design"],
+        order: 4
+      }
+    ]);
+    
+    // Proyectos
+    await db.insert(projects).values([
+      {
+        title: "E-commerce Platform",
+        description: "A modern online store with integrated payment processing and inventory management.",
+        imageUrl: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800&auto=format&fit=crop",
+        projectUrl: "#",
+        technologies: ["React", "Node.js", "MongoDB"],
+        featured: true,
+        order: 1
+      },
+      {
+        title: "SaaS Dashboard",
+        description: "Analytics dashboard for a subscription-based software service with data visualization.",
+        imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+        projectUrl: "#",
+        technologies: ["Vue.js", "Express", "PostgreSQL"],
+        featured: true,
+        order: 2
+      },
+      {
+        title: "Mobile Application",
+        description: "Cross-platform mobile app for event planning with location-based features.",
+        imageUrl: "https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=800&auto=format&fit=crop",
+        projectUrl: "#",
+        technologies: ["React Native", "Firebase", "Google Maps API"],
+        featured: true,
+        order: 3
+      }
+    ]);
+    
+    // Artículos
+    await db.insert(articles).values([
+      {
+        title: "Modern JavaScript Features Every Developer Should Know",
+        slug: "modern-javascript-features",
+        summary: "An overview of the most useful ES6+ features that will improve your code quality and developer experience.",
+        content: "This is the full content of the article about Modern JavaScript Features.",
+        imageUrl: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=800&auto=format&fit=crop",
+        category: "JavaScript",
+        published: true,
+        publishedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+        createdAt: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000), // 12 days ago
+        updatedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000) // 10 days ago
+      },
+      {
+        title: "Mastering CSS Grid Layout for Complex Interfaces",
+        slug: "mastering-css-grid-layout",
+        summary: "Practical techniques for using CSS Grid to create responsive, complex layouts with minimal code.",
+        content: "This is the full content of the article about CSS Grid Layout.",
+        imageUrl: "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?q=80&w=800&auto=format&fit=crop",
+        category: "CSS",
+        published: true,
+        publishedAt: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
+        createdAt: new Date(now.getTime() - 22 * 24 * 60 * 60 * 1000), // 22 days ago
+        updatedAt: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000) // 20 days ago
+      },
+      {
+        title: "React Performance Optimization Techniques",
+        slug: "react-performance-optimization",
+        summary: "Strategies for improving React application performance through memoization, code splitting, and render optimization.",
+        content: "This is the full content of the article about React Performance Optimization.",
+        imageUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop",
+        category: "React",
+        published: true,
+        publishedAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+        createdAt: new Date(now.getTime() - 32 * 24 * 60 * 60 * 1000), // 32 days ago
+        updatedAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) // 30 days ago
+      },
+      {
+        title: "Understanding Web Accessibility",
+        slug: "understanding-web-accessibility",
+        summary: "A comprehensive guide to making your websites accessible to all users.",
+        content: "This is the draft content about Web Accessibility.",
+        imageUrl: "https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=800&auto=format&fit=crop",
+        category: "Accessibility",
+        published: false,
+        publishedAt: null,
+        createdAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+        updatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+      },
+      {
+        title: "The Future of Serverless Architecture",
+        slug: "future-serverless-architecture",
+        summary: "Exploring how serverless is changing the way we build and deploy applications.",
+        content: "This is the draft content about Serverless Architecture.",
+        imageUrl: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop",
+        category: "Backend",
+        published: false,
+        publishedAt: null,
+        createdAt: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
+        updatedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
+      }
+    ]);
+    
+    // Mensajes
+    await db.insert(messages).values([
+      {
+        name: "John Doe",
+        email: "john@example.com",
+        subject: "Project Inquiry",
+        message: "I'm interested in working with you on our new e-commerce project. Would you be available for a call next week?",
+        read: false,
+        createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000) // 2 hours ago
+      },
+      {
+        name: "Sarah Johnson",
+        email: "sarah@example.com",
+        subject: "Consulting Request",
+        message: "Loved your article on React performance. Do you offer consulting services for optimizing existing applications?",
+        read: false,
+        createdAt: new Date(now.getTime() - 24 * 60 * 60 * 1000) // 1 day ago
+      },
+      {
+        name: "Michael Robinson",
+        email: "michael@example.com",
+        subject: "Job Opportunity",
+        message: "We're looking for a developer to join our team. Your portfolio caught our attention. Would you be interested in discussing?",
+        read: false,
+        createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+      }
+    ]);
+    
+    // SiteInfo
+    await db.insert(siteInfo).values({
+      about: "Creating digital experiences that combine beautiful design with powerful functionality.",
+      contactEmail: "hello@alexmorgan.dev",
+      contactPhone: "+1 (555) 123-4567",
+      contactLocation: "San Francisco, CA",
+      socialLinks: {
+        github: "https://github.com",
+        linkedin: "https://linkedin.com",
+        twitter: "https://twitter.com",
+        dribbble: "https://dribbble.com"
+      }
+    });
+  }
+}
+
+// Inicializar y exportar la base de datos
+initializeDatabase()
+  .then(() => console.log('Database initialized with admin user and test data'))
+  .catch(error => console.error('Error initializing database:', error));
+
+// Usar DatabaseStorage en lugar de MemStorage
+export const storage = new DatabaseStorage();

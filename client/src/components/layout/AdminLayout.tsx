@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useRoute, useLocation } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { ADMIN_NAV_ITEMS } from '@/lib/constants';
 import { useAuth } from '@/lib/auth';
 import { Separator } from '@/components/ui/separator';
@@ -26,7 +26,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     enabled: isAuthenticated
   });
 
-  const unreadMessages = messages?.filter((message: any) => !message.read).length || 0;
+  const unreadMessages = messages && Array.isArray(messages) ? messages.filter(message => !message.read).length : 0;
 
   if (isLoading) {
     return (
@@ -101,8 +101,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
           <nav className="p-4">
             <ul className="space-y-1">
               {ADMIN_NAV_ITEMS.map((item) => {
-                const [isActive] = useRoute(item.href);
                 const isMessageItem = item.href === '/admin/messages';
+                // Cambiar a forma manual de determinar si está activo
+                const isActive = location.startsWith(item.href);
                 
                 return (
                   <li key={item.href}>

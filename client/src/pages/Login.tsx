@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth, useAuthRedirect } from '@/lib/auth';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ const Login = () => {
   const { login } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [, setLocation] = useLocation();
   
   // Redirect if already authenticated
   const { isAuthenticated, isLoading: authLoading } = useAuthRedirect('/admin');
@@ -47,6 +48,8 @@ const Login = () => {
         title: 'Login successful',
         description: 'Welcome to the admin dashboard',
       });
+      // Redirigir explícitamente al dashboard después del login exitoso
+      setLocation('/admin');
     } catch (error) {
       console.error('Login error:', error);
       toast({

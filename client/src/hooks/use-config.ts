@@ -8,8 +8,22 @@ import { AppConfig, initialConfig } from '@/lib/constants';
 export function useConfig() {
   const { data: config, isLoading, error } = useQuery<AppConfig>({
     queryKey: ['/api/config'],
-    // No need to define the queryFn, as we're using the default configured in queryClient
+    // Especificamos la función explícitamente en lugar de usar la configuración global
+    queryFn: async ({ queryKey }) => {
+      console.log("Fetching configuration from:", queryKey[0]);
+      const res = await fetch(queryKey[0] as string);
+      
+      if (!res.ok) {
+        throw new Error(`Error fetching config: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      console.log("Config data received:", data);
+      return data as AppConfig;
+    },
     initialData: initialConfig,
+    retry: 1,
+    staleTime: 60000, // 1 minuto
   });
 
   return {

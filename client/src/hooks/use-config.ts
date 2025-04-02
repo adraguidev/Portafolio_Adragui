@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
 import { AppConfig, initialConfig } from '@/lib/constants';
 
 /**
@@ -7,12 +6,9 @@ import { AppConfig, initialConfig } from '@/lib/constants';
  * desde el servidor de manera segura.
  */
 export function useConfig() {
-  const { data: config, isLoading, error } = useQuery({
+  const { data: config, isLoading, error } = useQuery<AppConfig>({
     queryKey: ['/api/config'],
-    queryFn: async () => {
-      const response = await apiRequest('/api/config');
-      return response as AppConfig;
-    },
+    // No need to define the queryFn, as we're using the default configured in queryClient
     initialData: initialConfig,
   });
 

@@ -10,6 +10,7 @@ import CVManagement from "@/pages/admin/CVManagement";
 import ArticleManagement from "@/pages/admin/ArticleManagement";
 import ProjectManagement from "@/pages/admin/ProjectManagement";
 import Messages from "@/pages/admin/Messages";
+import Settings from "@/pages/admin/Settings";
 import ArticleDetail from "@/pages/ArticleDetail";
 import ArticlesPage from "@/pages/ArticlesPage";
 import ProjectsPage from "@/pages/ProjectsPage";
@@ -63,6 +64,7 @@ function Router() {
       <AdminRoute path="/admin/articles" component={ArticleManagement} />
       <AdminRoute path="/admin/projects" component={ProjectManagement} />
       <AdminRoute path="/admin/messages" component={Messages} />
+      <AdminRoute path="/admin/settings" component={Settings} />
       
       {/* Fallback to 404 */}
       <PublicRoute component={NotFound} />

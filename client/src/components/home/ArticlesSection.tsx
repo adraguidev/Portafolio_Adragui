@@ -97,7 +97,7 @@ const ArticlesSection = () => {
   const publishedArticles = articles?.filter(article => article.published).slice(0, 3);
 
   return (
-    <section id="articles" className="py-20">
+    <section id="articles" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <motion.h2 

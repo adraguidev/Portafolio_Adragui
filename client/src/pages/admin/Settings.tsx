@@ -52,8 +52,17 @@ const Settings = () => {
   // Mutación para actualizar la información del sitio
   const updateSiteInfoMutation = useMutation({
     mutationFn: async (updatedInfo: Partial<SiteInfo>) => {
-      const res = await apiRequest('PATCH', '/api/site-info', updatedInfo);
-      return await res.json();
+      try {
+        console.log('Enviando datos:', JSON.stringify(updatedInfo));
+        // Cambiado de PATCH a PUT para coincidir con la ruta del servidor
+        const res = await apiRequest('PUT', '/api/site-info', updatedInfo);
+        const data = await res.json();
+        console.log('Respuesta:', data);
+        return data;
+      } catch (error) {
+        console.error('Error en la mutación:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/site-info'] });

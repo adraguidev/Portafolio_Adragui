@@ -103,3 +103,61 @@
     transform: translateY(0);
   }
 }
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.pulse-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pulse-dot::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #6366F1; /* Color secundario (indigo) */
+  margin-right: 8px;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+}
+
+.available-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.available-badge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+  transform: translateX(-100%);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

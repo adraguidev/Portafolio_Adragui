@@ -14,7 +14,9 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-medium mb-4">🟣 Disponible para trabajar</span>
+            <span className="inline-flex items-center bg-secondary/10 text-secondary px-4 py-2 rounded-full text-sm font-medium mb-4 available-badge">
+              <span className="pulse-dot"></span> Disponible para trabajar
+            </span>
             <h1 className="font-clash font-bold text-4xl md:text-5xl lg:text-6xl text-primary mb-4 leading-tight">
               Transformando <span className="text-secondary">Datos</span> en <span className="text-secondary">Soluciones</span> Inteligentes
             </h1>

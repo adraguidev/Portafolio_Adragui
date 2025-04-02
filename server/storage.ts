@@ -11,7 +11,7 @@ import {
 } from '@shared/schema';
 import bcrypt from 'bcryptjs';
 import { db } from './db';
-import { eq, desc, asc, and, isNull, isNotNull } from 'drizzle-orm';
+import { eq, desc, asc, and, isNull, isNotNull, sql } from 'drizzle-orm';
 
 export interface IStorage {
   // User management
@@ -956,9 +956,10 @@ export class DatabaseStorage implements IStorage {
 
 // Inicialización de la base de datos con un usuario admin
 async function initializeDatabase() {
-  // Comprobar si ya existe un usuario
-  const userCount = await db.select({ count: users.id }).from(users);
-  if (Number(userCount[0].count) === 0) {
+  try {
+    // Comprobar si ya existe un usuario
+    const userCount = await db.select({ count: sql`count(*)::int` }).from(users);
+    if (Number(userCount[0].count) === 0) {
     // Crear usuario admin
     const hashedPassword = await bcrypt.hash('admin123', 10);
     await db.insert(users).values({
@@ -1165,11 +1166,43 @@ async function initializeDatabase() {
       }
     });
   }
+  } catch (error) {
+    console.error('Error in initializeDatabase:', error);
+  }
+}
+
+// Función para crear un usuario admin con credenciales específicas
+async function createAdminUser() {
+  try {
+    // Verificar si el usuario ya existe
+    const existingUser = await db.select().from(users).where(eq(users.email, 'aaguirreb16@gmail.com'));
+    
+    if (existingUser.length === 0) {
+      // Crear usuario admin con las credenciales específicas
+      const hashedPassword = await bcrypt.hash('Ka260314!', 10);
+      await db.insert(users).values({
+        username: 'aaguirreb16',
+        password: hashedPassword,
+        email: 'aaguirreb16@gmail.com',
+        name: 'Admin User',
+        role: 'admin'
+      });
+      console.log('Admin user created successfully with email: aaguirreb16@gmail.com');
+    } else {
+      console.log('Admin user already exists with email: aaguirreb16@gmail.com');
+    }
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+  }
 }
 
 // Inicializar y exportar la base de datos
 initializeDatabase()
-  .then(() => console.log('Database initialized with admin user and test data'))
+  .then(() => {
+    console.log('Database initialized with admin user and test data');
+    // Crear el usuario admin con credenciales específicas
+    return createAdminUser();
+  })
   .catch(error => console.error('Error initializing database:', error));
 
 // Usar DatabaseStorage en lugar de MemStorage

@@ -26,8 +26,17 @@ export const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Intentar obtener el token del localStorage
+        const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
         const res = await fetch('/api/auth/me', {
-          credentials: 'include'
+          credentials: 'include',
+          headers
         });
 
         if (res.ok) {
@@ -61,6 +70,11 @@ export const useAuth = () => {
       const res = await apiRequest('POST', '/api/auth/login', { email, password });
       const data = await res.json();
       
+      // Guardar el token en localStorage para usarlo en futuras peticiones
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      
       setState({
         user: data.user,
         isAuthenticated: true,
@@ -76,6 +90,8 @@ export const useAuth = () => {
   const logout = async (): Promise<void> => {
     try {
       await apiRequest('POST', '/api/auth/logout', {});
+      // Eliminar el token al cerrar sesión
+      localStorage.removeItem('token');
       setState({
         user: null,
         isAuthenticated: false,

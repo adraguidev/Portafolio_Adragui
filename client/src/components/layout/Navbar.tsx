@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
-import SimpleTranslator, { useTranslation } from '@/components/ui/SimpleTranslator';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
-
   
   useEffect(() => {
     const handleScroll = () => {
@@ -47,7 +45,6 @@ const Navbar = () => {
           </nav>
           
           <div className="flex items-center space-x-4">
-            <SimpleTranslator />
             <a href="#contact" className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
               Contáctame
             </a>
@@ -75,9 +72,6 @@ const Navbar = () => {
               {item.label}
             </a>
           ))}
-          <div className="flex justify-center mb-2">
-            <SimpleTranslator />
-          </div>
           <a 
             href="#contact" 
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"

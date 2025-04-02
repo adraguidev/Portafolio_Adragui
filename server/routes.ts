@@ -699,6 +699,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import/Export routes
+  app.get('/api/export', authenticateJWT, async (req, res) => {
+    try {
+      const data = await storage.exportAllData();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ message: 'Error exporting data', error: (error as Error).message });
+    }
+  });
+
+  app.post('/api/import', authenticateJWT, async (req, res) => {
+    try {
+      const importData = req.body;
+      const result = await storage.importAllData(importData);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: 'Error importing data', error: (error as Error).message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

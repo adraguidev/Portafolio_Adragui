@@ -13,6 +13,16 @@ import bcrypt from 'bcryptjs';
 import { db } from './db';
 import { eq, desc, asc, and, isNull, isNotNull, sql } from 'drizzle-orm';
 
+// Define the structure for import/export data
+export interface PortfolioData {
+  projects: Project[];
+  experiences: Experience[];
+  education: Education[];
+  skills: Skill[];
+  articles: Article[];
+  siteInfo?: SiteInfo;
+}
+
 export interface IStorage {
   // User management
   getUser(id: number): Promise<User | undefined>;
@@ -70,6 +80,10 @@ export interface IStorage {
   // Site Info
   getSiteInfo(): Promise<SiteInfo | undefined>;
   updateSiteInfo(info: Partial<InsertSiteInfo>): Promise<SiteInfo | undefined>;
+  
+  // Import/Export
+  exportAllData(): Promise<PortfolioData>;
+  importAllData(data: PortfolioData): Promise<{ success: boolean; message: string }>;
 }
 
 export class MemStorage implements IStorage {
@@ -689,6 +703,88 @@ export class MemStorage implements IStorage {
     
     return this.siteInfo;
   }
+
+  // Import/Export
+  async exportAllData(): Promise<PortfolioData> {
+    return {
+      projects: Array.from(this.projects.values()),
+      experiences: Array.from(this.experiences.values()),
+      education: Array.from(this.education.values()),
+      skills: Array.from(this.skills.values()),
+      articles: Array.from(this.articles.values()),
+      siteInfo: this.siteInfo
+    };
+  }
+
+  async importAllData(data: PortfolioData): Promise<{ success: boolean; message: string }> {
+    try {
+      // Clear existing data
+      this.projects.clear();
+      this.experiences.clear();
+      this.education.clear();
+      this.skills.clear();
+      this.articles.clear();
+
+      // Import projects
+      if (data.projects && Array.isArray(data.projects)) {
+        data.projects.forEach(project => {
+          this.projects.set(project.id, project);
+          if (project.id >= this.projectId) {
+            this.projectId = project.id + 1;
+          }
+        });
+      }
+
+      // Import experiences
+      if (data.experiences && Array.isArray(data.experiences)) {
+        data.experiences.forEach(experience => {
+          this.experiences.set(experience.id, experience);
+          if (experience.id >= this.experienceId) {
+            this.experienceId = experience.id + 1;
+          }
+        });
+      }
+
+      // Import education
+      if (data.education && Array.isArray(data.education)) {
+        data.education.forEach(edu => {
+          this.education.set(edu.id, edu);
+          if (edu.id >= this.educationId) {
+            this.educationId = edu.id + 1;
+          }
+        });
+      }
+
+      // Import skills
+      if (data.skills && Array.isArray(data.skills)) {
+        data.skills.forEach(skill => {
+          this.skills.set(skill.id, skill);
+          if (skill.id >= this.skillId) {
+            this.skillId = skill.id + 1;
+          }
+        });
+      }
+
+      // Import articles
+      if (data.articles && Array.isArray(data.articles)) {
+        data.articles.forEach(article => {
+          this.articles.set(article.id, article);
+          if (article.id >= this.articleId) {
+            this.articleId = article.id + 1;
+          }
+        });
+      }
+
+      // Import site info
+      if (data.siteInfo) {
+        this.siteInfo = data.siteInfo;
+      }
+
+      return { success: true, message: 'Datos importados exitosamente' };
+    } catch (error) {
+      return { success: false, message: `Error al importar datos: ${(error as Error).message}` };
+    }
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -950,6 +1046,75 @@ export class DatabaseStorage implements IStorage {
         .values(info)
         .returning();
       return newInfo;
+    }
+  }
+
+  // Import/Export
+  async exportAllData(): Promise<PortfolioData> {
+    const projectsList = await db.select().from(projects);
+    const experiencesList = await db.select().from(experiences);
+    const educationList = await db.select().from(education);
+    const skillsList = await db.select().from(skills);
+    const articlesList = await db.select().from(articles);
+    const siteInfoData = await this.getSiteInfo();
+
+    return {
+      projects: projectsList,
+      experiences: experiencesList,
+      education: educationList,
+      skills: skillsList,
+      articles: articlesList,
+      siteInfo: siteInfoData
+    };
+  }
+
+  async importAllData(data: PortfolioData): Promise<{ success: boolean; message: string }> {
+    try {
+      // Utilizamos una transacción para asegurar que todas las operaciones se realizan o ninguna
+      return await db.transaction(async (tx) => {
+        // Limpiar datos existentes (excepto usuarios)
+        await tx.delete(projects);
+        await tx.delete(experiences);
+        await tx.delete(education);
+        await tx.delete(skills);
+        await tx.delete(articles);
+        await tx.delete(siteInfo);
+
+        // Importar proyectos
+        if (data.projects && Array.isArray(data.projects) && data.projects.length > 0) {
+          await tx.insert(projects).values(data.projects);
+        }
+
+        // Importar experiencias
+        if (data.experiences && Array.isArray(data.experiences) && data.experiences.length > 0) {
+          await tx.insert(experiences).values(data.experiences);
+        }
+
+        // Importar educación
+        if (data.education && Array.isArray(data.education) && data.education.length > 0) {
+          await tx.insert(education).values(data.education);
+        }
+
+        // Importar habilidades
+        if (data.skills && Array.isArray(data.skills) && data.skills.length > 0) {
+          await tx.insert(skills).values(data.skills);
+        }
+
+        // Importar artículos
+        if (data.articles && Array.isArray(data.articles) && data.articles.length > 0) {
+          await tx.insert(articles).values(data.articles);
+        }
+
+        // Importar información del sitio
+        if (data.siteInfo) {
+          await tx.insert(siteInfo).values(data.siteInfo);
+        }
+
+        return { success: true, message: 'Datos importados exitosamente' };
+      });
+    } catch (error) {
+      console.error('Error al importar datos:', error);
+      return { success: false, message: `Error al importar datos: ${(error as Error).message}` };
     }
   }
 }

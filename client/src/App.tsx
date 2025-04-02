@@ -11,6 +11,9 @@ import ArticleManagement from "@/pages/admin/ArticleManagement";
 import ProjectManagement from "@/pages/admin/ProjectManagement";
 import Messages from "@/pages/admin/Messages";
 import ArticleDetail from "@/pages/ArticleDetail";
+import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
+import TermsOfService from "@/pages/legal/TermsOfService";
+import CookiePolicy from "@/pages/legal/CookiePolicy";
 
 function Router() {
   return (
@@ -19,6 +22,11 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/articles/:slug" component={ArticleDetail} />
+      
+      {/* Legal Routes */}
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/cookie-policy" component={CookiePolicy} />
       
       {/* Admin Routes */}
       <Route path="/admin" component={AdminHome} />

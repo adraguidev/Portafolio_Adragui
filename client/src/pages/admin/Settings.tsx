@@ -47,29 +47,19 @@ const Settings = () => {
   // Consulta para obtener la información del sitio
   const { data: siteInfo, isLoading } = useQuery({
     queryKey: ['/api/site-info'],
-    queryFn: async () => {
-      // Agregamos un tipo para evitar errores
-      const res: any = await apiRequest('/api/site-info');
-      return res as SiteInfo;
-    }
   });
 
   // Mutación para actualizar la información del sitio
   const updateSiteInfoMutation = useMutation({
     mutationFn: async (updatedInfo: Partial<SiteInfo>) => {
-      // Agregamos un tipo para evitar errores
-      const res: any = await apiRequest('/api/site-info', {
-        method: 'PATCH',
-        body: JSON.stringify(updatedInfo)
-      });
-      return res;
+      const res = await apiRequest('PATCH', '/api/site-info', updatedInfo);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/site-info'] });
       toast({
         title: 'Configuración actualizada',
         description: 'La información del sitio ha sido actualizada correctamente',
-        // Cambiar a un tipo válido
         variant: 'default'
       });
     },
@@ -86,9 +76,8 @@ const Settings = () => {
   // Mutación para exportar los datos
   const exportDataMutation = useMutation({
     mutationFn: async () => {
-      // Agregamos un tipo para evitar errores
-      const res: any = await apiRequest('/api/export');
-      return res as PortfolioData;
+      const res = await apiRequest('GET', '/api/export');
+      return await res.json();
     },
     onSuccess: (data) => {
       // Crear y descargar el archivo JSON
@@ -108,7 +97,6 @@ const Settings = () => {
       toast({
         title: 'Exportación completada',
         description: 'Los datos del portafolio han sido exportados correctamente',
-        // Cambiar a un tipo válido
         variant: 'default'
       });
     },
@@ -125,12 +113,8 @@ const Settings = () => {
   // Mutación para importar los datos
   const importDataMutation = useMutation({
     mutationFn: async (importData: PortfolioData) => {
-      // Agregamos un tipo para evitar errores
-      const res: any = await apiRequest('/api/import', {
-        method: 'POST',
-        body: JSON.stringify(importData)
-      });
-      return res;
+      const res = await apiRequest('POST', '/api/import', importData);
+      return await res.json();
     },
     onSuccess: (data) => {
       setIsImporting(false);
@@ -142,7 +126,6 @@ const Settings = () => {
       toast({
         title: 'Importación completada',
         description: 'Los datos del portafolio han sido importados correctamente',
-        // Cambiar a un tipo válido
         variant: 'default'
       });
     },

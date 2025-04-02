@@ -389,7 +389,7 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
                   <FormControl>
                     <div className="border rounded-md overflow-hidden">
                       <Editor
-                        apiKey={config.tinymceApiKey}
+                        apiKey='sgy24c3iupqsw4zbfohornkara6rs1tls4ru2asaibl1xt3f'
                         value={field.value}
                         onEditorChange={(content) => {
                           field.onChange(content);
@@ -398,15 +398,15 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
                           height: 500,
                           menubar: true,
                           plugins: [
-                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
-                            'codesample', 'emoticons', 'hr'
+                            // Plugins básicos
+                            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 
+                            'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'advlist', 'preview',
+                            'fullscreen', 'hr', 'insertdatetime', 'code', 'help'
                           ],
-                          toolbar: 'undo redo | blocks | ' +
-                            'bold italic forecolor backcolor | alignleft aligncenter ' +
-                            'alignright alignjustify | bullist numlist outdent indent | ' +
-                            'removeformat | link image codesample emoticons | help',
+                          toolbar: 'undo redo | blocks fontfamily fontsize | ' +
+                            'bold italic underline strikethrough | link image media table | ' +
+                            'align lineheight | numlist bullist indent outdent | ' +
+                            'emoticons charmap | removeformat | help',
                           content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                           branding: false,
                           promotion: false

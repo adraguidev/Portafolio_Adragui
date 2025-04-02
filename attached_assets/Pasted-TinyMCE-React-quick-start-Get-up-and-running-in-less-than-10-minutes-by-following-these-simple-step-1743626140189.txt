@@ -1,0 +1,72 @@
+TinyMCE React quick start
+Get up and running in less than 10 minutes by following these simple steps:
+
+Read the quick start guide
+Read the TinyMCE React quick start guide for an overview of how to set up TinyMCE on React using the TinyMCE Cloud.
+
+Add the TinyMCE code snippet
+The code snippet below contains your unique API key and the plugins you’re entitled to on your TinyMCE plan.
+
+Copy the snippet into your src/App.js file and modify it based on your needs:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+import React from 'react';
+import { Editor } from '@tinymce/tinymce-react';
+
+export default function App() {
+  return (
+    <Editor
+      apiKey='sgy24c3iupqsw4zbfohornkara6rs1tls4ru2asaibl1xt3f'
+      init={{
+        plugins: [
+          // Core editing features
+          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+          // Your account includes a free trial of TinyMCE premium features
+          // Try the most popular premium features until Apr 16, 2025:
+          'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+        ],
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+          { value: 'First.Name', title: 'First Name' },
+          { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+      }}
+      initialValue="Welcome to TinyMCE!"
+    />
+  );
+}
+
+Copy
+Or setup your own custom TinyMCE installation with your API key:
+
+sgy24c3iupqsw4zbfohornkara6rs1tls4ru2asaibl1xt3f

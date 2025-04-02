@@ -8,9 +8,9 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <span className="font-clash font-bold text-2xl">AM.</span>
+              <span className="font-clash font-bold text-2xl">AA.</span>
             </div>
-            <p className="text-white/70 max-w-md mb-6">Creating digital experiences that combine beautiful design with powerful functionality.</p>
+            <p className="text-white/70 max-w-md mb-6">Creando experiencias digitales que combinan un diseño hermoso con una funcionalidad potente.</p>
             <div className="flex space-x-4">
               <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-accent transition-colors">
                 <i className="ri-github-fill text-xl"></i>
@@ -28,7 +28,7 @@ const Footer = () => {
           </div>
           
           <div>
-            <h4 className="font-clash font-semibold text-lg mb-4">Navigation</h4>
+            <h4 className="font-clash font-semibold text-lg mb-4">Navegación</h4>
             <ul className="space-y-3">
               {NAV_ITEMS.map((item) => (
                 <li key={item.href}>
@@ -43,17 +43,17 @@ const Footer = () => {
           <div>
             <h4 className="font-clash font-semibold text-lg mb-4">Legal</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Cookie Policy</a></li>
-              <li><Link to="/login" className="text-white/70 hover:text-accent transition-colors">Admin Panel</Link></li>
+              <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Política de Privacidad</a></li>
+              <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Términos de Servicio</a></li>
+              <li><a href="#" className="text-white/70 hover:text-accent transition-colors">Política de Cookies</a></li>
+              <li><Link to="/login" className="text-white/70 hover:text-accent transition-colors">Panel de Administración</Link></li>
             </ul>
           </div>
         </div>
         
         <div className="mt-12 pt-8 border-t border-white/10 text-center md:text-left md:flex md:justify-between md:items-center">
-          <p className="text-white/60 text-sm">&copy; {new Date().getFullYear()} Alex Morgan. All rights reserved.</p>
-          <p className="text-white/60 text-sm mt-2 md:mt-0">Made with <span className="text-accent">❤</span> in San Francisco</p>
+          <p className="text-white/60 text-sm">&copy; {new Date().getFullYear()} Adrián Aguirre. Todos los derechos reservados.</p>
+          <p className="text-white/60 text-sm mt-2 md:mt-0">Hecho con <span className="text-accent">❤</span> en San Francisco</p>
         </div>
       </div>
     </footer>

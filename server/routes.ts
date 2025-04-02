@@ -1,4 +1,4 @@
-import type { Express, Request, Response, NextFunction } from "express";
+import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import jwt from 'jsonwebtoken';
@@ -140,6 +140,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads', { recursive: true });
   }
+  
+  // Servir archivos estáticos desde el directorio uploads
+  app.use('/uploads', express.static(path.resolve('uploads')));
   
   // Set up session middleware
   app.use(session({

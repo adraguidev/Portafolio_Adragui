@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 250 84% 67%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --accent: 187 83% 53%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 47.4% 11.2%;
+    
+    --radius: 0.5rem;
+  }
+}
+
+/* Custom CSS for special elements */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: hsl(var(--accent));
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 100%;
+}
+
+.project-card:hover .project-overlay {
+  opacity: 1;
+}
+
+.animated-bg {
+  background: linear-gradient(45deg, hsl(var(--primary) / 0.03), hsl(var(--secondary) / 0.03), hsl(var(--accent) / 0.03));
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.bg-gradient-45 {
+  background: linear-gradient(45deg, var(--from), var(--via), var(--to));
+}
+
+.bg-size-400 {
+  background-size: 400% 400%;
+}
+
+.animate-gradient-slow {
+  animation: gradientBG 15s ease infinite;
+}
+
+.login-animation {
+  animation: fadeSlideUp 0.6s ease-out;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

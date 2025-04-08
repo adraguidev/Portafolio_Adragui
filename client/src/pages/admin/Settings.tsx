@@ -453,7 +453,7 @@ const Settings = () => {
                   </div>
                 </form>
 
-                {/* Formulario para subir la imagen del héroe o usar URL */}
+                {/* Formulario para usar URL de imagen del héroe */}
                 <div className="mt-6 pt-6 border-t border-slate-200">
                   <h3 className="text-lg font-semibold mb-4">
                     Cambiar imagen del héroe
@@ -473,179 +473,93 @@ const Settings = () => {
                     </div>
                   )}
 
-                  <Tabs defaultValue="upload" className="w-full mb-4">
-                    <TabsList className="mb-4">
-                      <TabsTrigger value="upload">Subir imagen</TabsTrigger>
-                      <TabsTrigger value="url">Usar URL</TabsTrigger>
-                    </TabsList>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const formData = new FormData(
+                        e.target as HTMLFormElement
+                      );
+                      const imageUrl = formData.get('imageUrl') as string;
 
-                    <TabsContent value="upload">
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const formData = new FormData(
-                            e.target as HTMLFormElement
-                          );
+                      if (!imageUrl) {
+                        toast({
+                          title: 'Error',
+                          description:
+                            'Por favor, ingresa una URL de imagen válida',
+                          variant: 'destructive',
+                        });
+                        return;
+                      }
 
-                          // Para FormData, no debemos establecer Content-Type, el navegador lo hará automáticamente
-                          fetch('/api/hero-image/upload', {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                              Authorization: `Bearer ${localStorage.getItem(
-                                'token'
-                              )}`,
-                            },
-                          })
-                            .then((response) => {
-                              if (!response.ok) {
-                                throw new Error('Error al subir la imagen');
-                              }
-                              return response.json();
-                            })
-                            .then((data) => {
-                              toast({
-                                title: 'Imagen subida correctamente',
-                                description:
-                                  'La imagen del héroe ha sido actualizada',
-                                variant: 'default',
-                              });
-                              queryClient.invalidateQueries({
-                                queryKey: ['/api/site-info'],
-                              });
-
-                              // Limpiar el input de archivo
-                              const fileInput = document.getElementById(
-                                'heroImage'
-                              ) as HTMLInputElement;
-                              if (fileInput) {
-                                fileInput.value = '';
-                              }
-                            })
-                            .catch((error) => {
-                              toast({
-                                title: 'Error',
-                                description:
-                                  error.message || 'No se pudo subir la imagen',
-                                variant: 'destructive',
-                              });
-                            });
-                        }}
-                        className="space-y-4"
-                      >
-                        <div>
-                          <Label htmlFor="heroImage">Seleccionar imagen</Label>
-                          <Input
-                            id="heroImage"
-                            name="heroImage"
-                            type="file"
-                            accept="image/*"
-                            className="cursor-pointer mt-1"
-                            required
-                          />
-                          <p className="text-xs text-slate-500 mt-1">
-                            Formatos aceptados: JPG, PNG, GIF, WEBP. Tamaño
-                            máximo: 5MB. Se recomienda una imagen de aspecto
-                            1:1.
-                          </p>
-                        </div>
-
-                        <Button type="submit" className="w-full" size="sm">
-                          <FileUp className="mr-2 h-4 w-4" /> Subir imagen
-                        </Button>
-                      </form>
-                    </TabsContent>
-
-                    <TabsContent value="url">
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const formData = new FormData(
-                            e.target as HTMLFormElement
-                          );
-                          const imageUrl = formData.get('imageUrl') as string;
-
-                          if (!imageUrl) {
-                            toast({
-                              title: 'Error',
-                              description:
-                                'Por favor, ingresa una URL de imagen válida',
-                              variant: 'destructive',
-                            });
-                            return;
+                      fetch('/api/hero-image/url', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${localStorage.getItem(
+                            'token'
+                          )}`,
+                        },
+                        body: JSON.stringify({ imageUrl }),
+                      })
+                        .then((response) => {
+                          if (!response.ok) {
+                            throw new Error(
+                              'Error al establecer la URL de la imagen'
+                            );
                           }
+                          return response.json();
+                        })
+                        .then((data) => {
+                          toast({
+                            title: 'URL establecida correctamente',
+                            description:
+                              'La imagen del héroe ha sido actualizada',
+                            variant: 'default',
+                          });
+                          queryClient.invalidateQueries({
+                            queryKey: ['/api/site-info'],
+                          });
 
-                          fetch('/api/hero-image/url', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                              Authorization: `Bearer ${localStorage.getItem(
-                                'token'
-                              )}`,
-                            },
-                            body: JSON.stringify({ imageUrl }),
-                          })
-                            .then((response) => {
-                              if (!response.ok) {
-                                throw new Error(
-                                  'Error al establecer la URL de la imagen'
-                                );
-                              }
-                              return response.json();
-                            })
-                            .then((data) => {
-                              toast({
-                                title: 'URL establecida correctamente',
-                                description:
-                                  'La imagen del héroe ha sido actualizada',
-                                variant: 'default',
-                              });
-                              queryClient.invalidateQueries({
-                                queryKey: ['/api/site-info'],
-                              });
+                          // Limpiar el input de URL
+                          const urlInput = document.getElementById(
+                            'imageUrl'
+                          ) as HTMLInputElement;
+                          if (urlInput) {
+                            urlInput.value = '';
+                          }
+                        })
+                        .catch((error) => {
+                          toast({
+                            title: 'Error',
+                            description:
+                              error.message ||
+                              'No se pudo establecer la URL de la imagen',
+                            variant: 'destructive',
+                          });
+                        });
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <Label htmlFor="imageUrl">URL de la imagen</Label>
+                      <Input
+                        id="imageUrl"
+                        name="imageUrl"
+                        type="url"
+                        placeholder="https://ejemplo.com/imagen.jpg"
+                        className="mt-1"
+                        required
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        Ingresa la URL completa de una imagen. Se recomienda una
+                        imagen de aspecto 1:1.
+                      </p>
+                    </div>
 
-                              // Limpiar el input de URL
-                              const urlInput = document.getElementById(
-                                'imageUrl'
-                              ) as HTMLInputElement;
-                              if (urlInput) {
-                                urlInput.value = '';
-                              }
-                            })
-                            .catch((error) => {
-                              toast({
-                                title: 'Error',
-                                description:
-                                  error.message ||
-                                  'No se pudo establecer la URL de la imagen',
-                                variant: 'destructive',
-                              });
-                            });
-                        }}
-                        className="space-y-4"
-                      >
-                        <div>
-                          <Label htmlFor="imageUrl">URL de la imagen</Label>
-                          <Input
-                            id="imageUrl"
-                            name="imageUrl"
-                            type="url"
-                            placeholder="https://ejemplo.com/imagen.jpg"
-                            className="mt-1"
-                            required
-                          />
-                          <p className="text-xs text-slate-500 mt-1">
-                            Ingresa la URL completa de una imagen. Se recomienda
-                            una imagen de aspecto 1:1.
-                          </p>
-                        </div>
-
-                        <Button type="submit" className="w-full" size="sm">
-                          <FileUp className="mr-2 h-4 w-4" /> Usar URL de imagen
-                        </Button>
-                      </form>
-                    </TabsContent>
-                  </Tabs>
+                    <Button type="submit" className="w-full" size="sm">
+                      <FileUp className="mr-2 h-4 w-4" /> Usar URL de imagen
+                    </Button>
+                  </form>
 
                   {/* Botón para restaurar la imagen por defecto */}
                   <div className="mt-4 pt-4 border-t border-slate-200">

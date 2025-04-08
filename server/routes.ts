@@ -1087,7 +1087,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       }
-      }
 
       // Establecer el heroImageUrl a null para usar la imagen por defecto
       const updatedSiteInfo = await storage.updateSiteInfo({
@@ -1112,12 +1111,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = await storage.exportAllData();
       res.json(data);
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: 'Error exporting data',
-          error: (error as Error).message,
-        });
+      res.status(500).json({
+        message: 'Error exporting data',
+        error: (error as Error).message,
+      });
     }
   });
 
@@ -1127,12 +1124,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await storage.importAllData(importData);
       res.json(result);
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: 'Error importing data',
-          error: (error as Error).message,
-        });
+      res.status(500).json({
+        message: 'Error importing data',
+        error: (error as Error).message,
+      });
     }
   });
 

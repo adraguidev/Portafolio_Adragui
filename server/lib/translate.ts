@@ -2,7 +2,7 @@ import { createClient } from 'redis';
 
 // Configuración de Redis para caché
 const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
+  url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
 });
 
 // Conexión a Redis

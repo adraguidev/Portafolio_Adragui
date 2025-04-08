@@ -1,12 +1,12 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { log } from "./vite/log"; // solo el logger, que es seguro
+import { log } from "./vite/log"; // ✅ seguro de importar en cualquier entorno
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Middleware para loguear peticiones API
+// 🪵 Logging de todas las API
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -36,16 +36,19 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // Solo importa setupVite en desarrollo
+  // 🧩 Import dinámico oculto a esbuild → Heroku feliz 🎉
   if (process.env.NODE_ENV !== "production") {
-    const { setupVite } = await import("./vite/setupVite.js");
+    const modulePath = new URL("./vite/setupVite.js", import.meta.url).pathname;
+    const { setupVite } = await import(modulePath);
     await setupVite(app, server);
   } else {
-    const { serveStatic } = await import("./vite/serveStatic.js");
+    const modulePath = new URL("./vite/serveStatic.js", import.meta.url)
+      .pathname;
+    const { serveStatic } = await import(modulePath);
     serveStatic(app);
   }
 
-  // Middleware de error
+  // ⚠️ Middleware de errores
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     res

@@ -1,4 +1,5 @@
 import { createClient } from 'redis';
+import OpenAI from 'openai';
 
 // Configuración de Redis para caché
 const redisClient = createClient({
@@ -13,10 +14,16 @@ redisClient.connect().catch((err) => {
   );
 });
 
-// Configuración de la API de DeepSeek (compatible con OpenAI)
+// Configuración del cliente OpenAI para DeepSeek
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_API_URL =
-  process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com';
+  process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com/v1';
+
+// Inicializar el cliente OpenAI
+const openai = new OpenAI({
+  baseURL: DEEPSEEK_API_URL,
+  apiKey: DEEPSEEK_API_KEY,
+});
 
 // Validar la configuración al inicio
 if (!DEEPSEEK_API_KEY) {
@@ -84,50 +91,22 @@ export async function translateText(
     );
 
     try {
-      const response = await fetch(DEEPSEEK_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: [
-            {
-              role: 'system',
-              content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
-            },
-            {
-              role: 'user',
-              content: text,
-            },
-          ],
-          temperature: 0.3,
-        }),
+      const completion = await openai.chat.completions.create({
+        model: 'deepseek-chat',
+        messages: [
+          {
+            role: 'system',
+            content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
+          },
+          {
+            role: 'user',
+            content: text,
+          },
+        ],
+        temperature: 0.3,
       });
 
-      if (!response.ok) {
-        const errorBody = await response.text();
-        console.error('[ERROR] Respuesta de la API DeepSeek:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorBody,
-          url: DEEPSEEK_API_URL,
-        });
-        throw new Error(
-          `Error en la API DeepSeek: ${response.status} ${response.statusText}`
-        );
-      }
-    } catch (fetchError) {
-      console.error(
-        '[ERROR] Error al hacer la petición a DeepSeek:',
-        fetchError
-      );
-      throw fetchError;
-    }
-
-    const data = await response.json();
-    const translatedText = data.choices[0].message.content.trim();
+      const translatedText = completion.choices[0].message.content.trim();
 
     // Guardar en caché si Redis está conectado
     if (redisClient.isOpen) {

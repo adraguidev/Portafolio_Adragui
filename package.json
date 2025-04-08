@@ -10,7 +10,7 @@
     "build:server": "esbuild server/index.ts --platform=node --packages=external --external:vite --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "heroku-postbuild": "npm run build"
-  }
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@jridgewell/trace-mapping": "^0.3.25",

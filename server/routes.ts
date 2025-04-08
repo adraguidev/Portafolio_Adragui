@@ -861,7 +861,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'CV file not found' });
       }
 
-      // Eliminar el '/' inicial si existe
+      // Verificar si es una URL externa
+      if (siteInfo.cvFileUrl.startsWith('http')) {
+        // Redireccionar a la URL externa
+        return res.redirect(siteInfo.cvFileUrl);
+      }
+
+      // Eliminar el '/' inicial si existe para archivos locales
       const relativePath = siteInfo.cvFileUrl.startsWith('/')
         ? siteInfo.cvFileUrl.substring(1)
         : siteInfo.cvFileUrl;

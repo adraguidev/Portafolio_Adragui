@@ -11,4 +11,7 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL,
   },
+  introspect: {
+    excludeSchemas: ["pg_catalog", "information_schema", "pg_stat_statements"],
+  },
 });

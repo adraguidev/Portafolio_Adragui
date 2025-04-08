@@ -1,9 +1,15 @@
-const fs = require('fs');
-const { createCanvas, loadImage } = require('canvas');
-const path = require('path');
+import fs from 'fs';
+import { createCanvas, loadImage } from 'canvas';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Obtener el directorio actual en módulos ES
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function generateFavicons() {
   try {
+    console.log('Iniciando generación de favicons con el color actualizado...');
     // Leer el SVG
     const svgPath = path.join(__dirname, 'client/public/favicon.svg');
     const svgContent = fs.readFileSync(svgPath, 'utf8');

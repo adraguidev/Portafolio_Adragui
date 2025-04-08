@@ -61,10 +61,16 @@ export async function translateText(
     // Si no hay caché o no está en caché, traducir usando la API
     if (!DEEPSEEK_API_KEY) {
       console.error(
-        'Error: DEEPSEEK_API_KEY o OPENAI_API_KEY no está configurada'
+        '[ERROR] DEEPSEEK_API_KEY no está configurada en el entorno'
+      );
+      console.log(
+        '[DEBUG] Variables de entorno disponibles:',
+        Object.keys(process.env)
       );
       return text; // Devolver texto original si no hay API key
     }
+
+    console.log('[DEBUG] DEEPSEEK_API_KEY configurada:', !!DEEPSEEK_API_KEY);
 
     console.log(
       `[TRADUCIENDO] Texto: ${text.substring(0, 30)}... a ${targetLang}`
@@ -93,8 +99,14 @@ export async function translateText(
     });
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('[ERROR] Respuesta de la API DeepSeek:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorBody,
+      });
       throw new Error(
-        `Error en la API: ${response.status} ${response.statusText}`
+        `Error en la API DeepSeek: ${response.status} ${response.statusText}`
       );
     }
 

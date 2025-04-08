@@ -12,7 +12,11 @@ export default function ArticleDetail() {
   const [, params] = useRoute('/articles/:slug');
   const slug = params?.slug;
 
-  const { data: article, isLoading, error } = useQuery<Article>({
+  const {
+    data: article,
+    isLoading,
+    error,
+  } = useQuery<Article>({
     queryKey: [`/api/articles/slug/${slug}`],
     enabled: !!slug,
   });
@@ -43,7 +47,7 @@ export default function ArticleDetail() {
             <Skeleton className="h-6 w-full mb-4" />
             <Skeleton className="h-6 w-5/6 mb-4" />
             <Skeleton className="h-6 w-4/6 mb-8" />
-            
+
             {[...Array(8)].map((_, index) => (
               <div key={index} className="mb-6">
                 <Skeleton className="h-4 w-full mb-2" />
@@ -63,8 +67,12 @@ export default function ArticleDetail() {
       <div className="py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-clash font-bold text-3xl text-primary mb-6">Artículo no encontrado</h1>
-            <p className="text-text/70 mb-8">Lo sentimos, no pudimos encontrar el artículo que estás buscando.</p>
+            <h1 className="font-clash font-bold text-3xl text-primary mb-6">
+              Artículo no encontrado
+            </h1>
+            <p className="text-text/70 mb-8">
+              Lo sentimos, no pudimos encontrar el artículo que estás buscando.
+            </p>
             <Link href="/articles">
               <Button variant="secondary">Ver todos los artículos</Button>
             </Link>
@@ -79,17 +87,22 @@ export default function ArticleDetail() {
     return date.toLocaleDateString('es-ES', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   // Estimate reading time based on content length (approx. 200 words per minute)
-  const estimatedReadTime = Math.max(1, Math.ceil(article.content.split(/\s+/).length / 200));
+  const estimatedReadTime = Math.max(
+    1,
+    Math.ceil(article.content.split(/\s+/).length / 200)
+  );
 
   return (
     <>
       <Helmet>
-        <title>{article.title} | {WEBSITE_TITLE}</title>
+        <title>
+          {article.title} | {WEBSITE_TITLE}
+        </title>
         <meta name="description" content={article.summary} />
       </Helmet>
 
@@ -99,17 +112,18 @@ export default function ArticleDetail() {
             <div className="mb-12">
               <div className="mb-4 flex items-center">
                 <Link href="/articles">
-                  <Button variant="ghost" className="inline-flex items-center text-sm text-text/70 hover:text-text transition-colors mr-6 -ml-2">
+                  <Button
+                    variant="ghost"
+                    className="inline-flex items-center text-sm text-text/70 hover:text-text transition-colors mr-6 -ml-2"
+                  >
                     <i className="ri-arrow-left-line mr-1"></i>
                     Volver a Artículos
                   </Button>
                 </Link>
-                <span className="text-sm text-text/50">
-                  {article.category}
-                </span>
+                <span className="text-sm text-text/50">{article.category}</span>
               </div>
-              
-              <motion.h1 
+
+              <motion.h1
                 className="font-clash font-bold text-3xl md:text-4xl lg:text-5xl text-primary mb-6"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -117,61 +131,92 @@ export default function ArticleDetail() {
               >
                 {article.title}
               </motion.h1>
-              
+
               <div className="flex items-center mb-8">
-                <img 
+                <img
                   src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=200&auto=format&fit=crop"
-                  alt="Author" 
+                  alt="Author"
                   className="w-12 h-12 rounded-full object-cover mr-4 border-2 border-white shadow-sm"
                 />
                 <div>
                   <div className="font-medium text-text">Adrián Aguirre</div>
                   <div className="flex items-center text-sm text-text/60">
-                    <span>{article.publishedAt ? formatDate(article.publishedAt) : "Borrador"}</span>
+                    <span>
+                      {article.publishedAt
+                        ? formatDate(article.publishedAt)
+                        : article.published
+                        ? formatDate(article.updatedAt)
+                        : 'Borrador'}
+                    </span>
                     <span className="mx-2">•</span>
                     <span>{estimatedReadTime} min de lectura</span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {article.imageUrl && (
-              <motion.div 
+              <motion.div
                 className="mb-10 rounded-xl overflow-hidden"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <img 
-                  src={article.imageUrl} 
-                  alt={article.title} 
+                <img
+                  src={article.imageUrl}
+                  alt={article.title}
                   className="w-full h-auto aspect-[16/9] object-cover"
                 />
               </motion.div>
             )}
-            
-            <motion.div 
+
+            <motion.div
               className="prose prose-lg max-w-none mb-16"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
-            
+
             <div className="border-t border-slate-200 pt-10">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="mb-6 sm:mb-0">
-                  <h4 className="font-clash font-semibold text-xl text-primary mb-2">¿Te gustó este artículo?</h4>
-                  <p className="text-text/70">Compártelo en tus redes sociales</p>
+                  <h4 className="font-clash font-semibold text-xl text-primary mb-2">
+                    ¿Te gustó este artículo?
+                  </h4>
+                  <p className="text-text/70">
+                    Compártelo en tus redes sociales
+                  </p>
                 </div>
                 <div className="flex space-x-4">
-                  <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-text/70 hover:bg-primary hover:text-white transition-colors">
+                  <a
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                      window.location.href
+                    )}&text=${encodeURIComponent(article.title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-text/70 hover:bg-primary hover:text-white transition-colors"
+                  >
                     <i className="ri-twitter-fill"></i>
                   </a>
-                  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-text/70 hover:bg-primary hover:text-white transition-colors">
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                      window.location.href
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-text/70 hover:bg-primary hover:text-white transition-colors"
+                  >
                     <i className="ri-linkedin-fill"></i>
                   </a>
-                  <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-text/70 hover:bg-primary hover:text-white transition-colors">
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                      window.location.href
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-text/70 hover:bg-primary hover:text-white transition-colors"
+                  >
                     <i className="ri-facebook-fill"></i>
                   </a>
                 </div>

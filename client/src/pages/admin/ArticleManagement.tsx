@@ -233,6 +233,8 @@ const ArticleManagement = () => {
                       Published:{' '}
                       {article.publishedAt
                         ? formatDate(article.publishedAt)
+                        : article.published
+                        ? formatDate(article.updatedAt) // Si está publicado pero no tiene fecha de publicación, usar fecha de actualización
                         : 'N/A'}
                     </CardDescription>
                   </CardHeader>

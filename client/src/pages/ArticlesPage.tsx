@@ -11,16 +11,19 @@ const formatDate = (dateString: Date) => {
   return date.toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 };
 
 const ArticleCard = ({ article }: { article: Article }) => {
   // Estimate reading time based on content length (approx. 200 words per minute)
-  const estimatedReadTime = Math.max(1, Math.ceil(article.content.split(/\s+/).length / 200));
-  
+  const estimatedReadTime = Math.max(
+    1,
+    Math.ceil(article.content.split(/\s+/).length / 200)
+  );
+
   return (
-    <motion.article 
+    <motion.article
       className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-md"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -28,9 +31,12 @@ const ArticleCard = ({ article }: { article: Article }) => {
       viewport={{ once: true }}
     >
       <div className="aspect-[16/10] relative overflow-hidden">
-        <img 
-          src={article.imageUrl || "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1000&auto=format&fit=crop"} 
-          alt={article.title} 
+        <img
+          src={
+            article.imageUrl ||
+            'https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1000&auto=format&fit=crop'
+          }
+          alt={article.title}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
         />
         <div className="absolute top-4 left-4">
@@ -41,9 +47,17 @@ const ArticleCard = ({ article }: { article: Article }) => {
       </div>
       <div className="p-6">
         <div className="flex items-center mb-3">
-          <span className="text-text/60 text-sm">{article.publishedAt ? formatDate(article.publishedAt) : "Borrador"}</span>
+          <span className="text-text/60 text-sm">
+            {article.publishedAt
+              ? formatDate(article.publishedAt)
+              : article.published
+              ? formatDate(article.updatedAt)
+              : 'Borrador'}
+          </span>
           <span className="mx-2 text-text/30">•</span>
-          <span className="text-text/60 text-sm">{estimatedReadTime} min de lectura</span>
+          <span className="text-text/60 text-sm">
+            {estimatedReadTime} min de lectura
+          </span>
         </div>
         <h3 className="font-clash font-semibold text-xl text-primary mb-2 line-clamp-2 h-[56px]">
           {article.title}
@@ -51,7 +65,10 @@ const ArticleCard = ({ article }: { article: Article }) => {
         <p className="text-text/70 text-sm mb-4 line-clamp-3 h-[60px]">
           {article.summary}
         </p>
-        <Link href={`/articles/${article.slug}`} className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors">
+        <Link
+          href={`/articles/${article.slug}`}
+          className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors"
+        >
           Leer Artículo
           <i className="ri-arrow-right-line ml-1"></i>
         </Link>
@@ -90,7 +107,7 @@ export default function ArticlesPage() {
   });
 
   // Filter only published articles
-  const publishedArticles = articles?.filter(article => article.published);
+  const publishedArticles = articles?.filter((article) => article.published);
 
   return (
     <>
@@ -102,7 +119,7 @@ export default function ArticlesPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="mb-16 text-center">
-              <motion.h1 
+              <motion.h1
                 className="font-clash font-bold text-4xl md:text-5xl lg:text-6xl text-primary mb-6"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -110,16 +127,17 @@ export default function ArticlesPage() {
               >
                 Artículos
               </motion.h1>
-              <motion.p 
+              <motion.p
                 className="text-text/70 max-w-2xl mx-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web y diseño.
+                Pensamientos, ideas y descubrimientos de mi trayectoria en el
+                desarrollo web y diseño.
               </motion.p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {isLoading ? (
                 <>
@@ -132,7 +150,9 @@ export default function ArticlesPage() {
                 </>
               ) : !publishedArticles?.length ? (
                 <div className="col-span-3 text-center py-10">
-                  <p className="text-text/70">No hay artículos publicados actualmente.</p>
+                  <p className="text-text/70">
+                    No hay artículos publicados actualmente.
+                  </p>
                 </div>
               ) : (
                 publishedArticles.map((article) => (

@@ -9,7 +9,7 @@ const formatDate = (dateString: Date) => {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 };
 
@@ -24,7 +24,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
   const readTime = calculateReadTime(article.content);
 
   return (
-    <motion.article 
+    <motion.article
       className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-md group"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -33,9 +33,9 @@ const ArticleCard = ({ article }: { article: Article }) => {
     >
       <Link href={`/articles/${article.slug}`} className="block">
         <div className="aspect-[16/10] relative overflow-hidden">
-          <img 
+          <img
             src={article.imageUrl || ''}
-            alt={article.title} 
+            alt={article.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute top-4 left-4">
@@ -47,7 +47,13 @@ const ArticleCard = ({ article }: { article: Article }) => {
       </Link>
       <div className="p-6">
         <div className="flex items-center text-sm text-text/60 mb-3">
-          <span>{article.publishedAt ? formatDate(article.publishedAt) : 'Borrador'}</span>
+          <span>
+            {article.publishedAt
+              ? formatDate(article.publishedAt)
+              : article.published
+              ? formatDate(article.updatedAt)
+              : 'Borrador'}
+          </span>
           <span className="mx-2">•</span>
           <span>{readTime} min de lectura</span>
         </div>
@@ -57,7 +63,10 @@ const ArticleCard = ({ article }: { article: Article }) => {
           </h3>
         </Link>
         <p className="text-text/70 text-sm mb-4">{article.summary}</p>
-        <Link href={`/articles/${article.slug}`} className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors">
+        <Link
+          href={`/articles/${article.slug}`}
+          className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors"
+        >
           Leer Artículo
           <i className="ri-arrow-right-line ml-1"></i>
         </Link>
@@ -94,13 +103,15 @@ const ArticlesSection = () => {
   });
 
   // Filter only published articles and limit to 3
-  const publishedArticles = articles?.filter(article => article.published).slice(0, 3);
+  const publishedArticles = articles
+    ?.filter((article) => article.published)
+    .slice(0, 3);
 
   return (
     <section id="articles" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <motion.h2 
+          <motion.h2
             className="font-clash font-bold text-4xl md:text-5xl text-primary mb-4"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -109,17 +120,18 @@ const ArticlesSection = () => {
           >
             Últimos Artículos
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-text/70 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web.
+            Pensamientos, ideas y descubrimientos de mi trayectoria en el
+            desarrollo web.
           </motion.p>
         </div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {isLoading ? (
             <>
@@ -133,10 +145,10 @@ const ArticlesSection = () => {
             ))
           )}
         </div>
-        
+
         <div className="mt-12 text-center">
           <Link href="/articles">
-            <motion.div 
+            <motion.div
               className="inline-flex items-center border-b-2 border-secondary/70 text-secondary font-medium hover:border-secondary transition-colors cursor-pointer"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}

@@ -38,16 +38,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// Aplicar middleware de traducción automática a todas las rutas GET de la API
+app.use((req, res, next) => {
+  if (req.method === 'GET' && req.path.startsWith('/api')) {
+    log(`[TRANSLATE] Procesando solicitud de traducción para: ${req.path}`);
+    return autoTranslateMiddleware(req, res, next);
+  }
+  next();
+});
+
 (async () => {
   const server = await registerRoutes(app);
-
-  // Aplicar middleware de traducción automática a todas las rutas GET de la API
-  app.use((req, res, next) => {
-    if (req.method === 'GET' && req.path.startsWith('/api')) {
-      return autoTranslateMiddleware(req, res, next);
-    }
-    next();
-  });
 
   // 🧩 Import dinámico oculto a esbuild → Heroku feliz 🎉
   if (process.env.NODE_ENV !== 'production') {

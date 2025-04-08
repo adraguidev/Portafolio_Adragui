@@ -5,7 +5,7 @@ import CVEditor from '@/components/admin/CVEditor';
 const CVManagement = () => {
   // Set page title
   useEffect(() => {
-    document.title = 'CV Management | Portfolio Admin';
+    document.title = 'Panel de Control';
   }, []);
 
   return (

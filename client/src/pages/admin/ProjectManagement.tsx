@@ -7,10 +7,26 @@ import { Project } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const ProjectManagement = () => {
   const [isCreateRoute] = useRoute('/admin/projects/new');
@@ -22,7 +38,7 @@ const ProjectManagement = () => {
 
   // Set page title
   useEffect(() => {
-    document.title = 'Project Management | Portfolio Admin';
+    document.title = 'Panel de Control';
   }, []);
 
   // Get projects
@@ -57,8 +73,13 @@ const ProjectManagement = () => {
       <AdminLayout>
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="font-clash font-bold text-3xl text-primary">Create New Project</h1>
-            <Button variant="outline" onClick={() => setLocation('/admin/projects')}>
+            <h1 className="font-clash font-bold text-3xl text-primary">
+              Create New Project
+            </h1>
+            <Button
+              variant="outline"
+              onClick={() => setLocation('/admin/projects')}
+            >
               <i className="ri-arrow-left-line mr-2"></i>
               Back to Projects
             </Button>
@@ -72,13 +93,18 @@ const ProjectManagement = () => {
   // If we're on the edit route, show the editor with the project id
   if (isEditRoute && params.id) {
     const projectId = parseInt(params.id);
-    
+
     return (
       <AdminLayout>
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="font-clash font-bold text-3xl text-primary">Edit Project</h1>
-            <Button variant="outline" onClick={() => setLocation('/admin/projects')}>
+            <h1 className="font-clash font-bold text-3xl text-primary">
+              Edit Project
+            </h1>
+            <Button
+              variant="outline"
+              onClick={() => setLocation('/admin/projects')}
+            >
               <i className="ri-arrow-left-line mr-2"></i>
               Back to Projects
             </Button>
@@ -94,7 +120,9 @@ const ProjectManagement = () => {
     <AdminLayout>
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="font-clash font-bold text-3xl text-primary">Project Management</h1>
+          <h1 className="font-clash font-bold text-3xl text-primary">
+            Project Management
+          </h1>
           <Button onClick={() => setLocation('/admin/projects/new')}>
             <i className="ri-add-line mr-2"></i>
             Add New Project
@@ -135,9 +163,9 @@ const ProjectManagement = () => {
             <Card key={project.id} className="flex flex-col h-full">
               <div className="aspect-[16/9] relative overflow-hidden">
                 {project.imageUrl ? (
-                  <img 
-                    src={project.imageUrl} 
-                    alt={project.title} 
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -160,24 +188,30 @@ const ProjectManagement = () => {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies?.map((tech, index) => (
-                    <Badge key={index} variant="outline" className="bg-slate-100">
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="bg-slate-100"
+                    >
                       {tech}
                     </Badge>
                   ))}
                 </div>
               </CardContent>
               <CardFooter className="p-4 pt-0 flex justify-end space-x-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() => setLocation(`/admin/projects/edit/${project.id}`)}
+                  onClick={() =>
+                    setLocation(`/admin/projects/edit/${project.id}`)
+                  }
                 >
                   <i className="ri-edit-line mr-1"></i>
                   Edit
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="text-destructive hover:bg-destructive/10"
                   onClick={() => setProjectToDelete(project.id)}
                 >
@@ -192,8 +226,8 @@ const ProjectManagement = () => {
         <Card>
           <CardContent className="p-8 text-center">
             <p className="text-muted-foreground">No projects yet.</p>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="mt-4"
               onClick={() => setLocation('/admin/projects/new')}
             >
@@ -204,18 +238,24 @@ const ProjectManagement = () => {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={projectToDelete !== null} onOpenChange={(open) => !open && setProjectToDelete(null)}>
+      <AlertDialog
+        open={projectToDelete !== null}
+        onOpenChange={(open) => !open && setProjectToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the project.
+              This action cannot be undone. This will permanently delete the
+              project.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => projectToDelete && deleteProjectMutation.mutate(projectToDelete)}
+              onClick={() =>
+                projectToDelete && deleteProjectMutation.mutate(projectToDelete)
+              }
               disabled={deleteProjectMutation.isPending}
             >
               {deleteProjectMutation.isPending ? 'Deleting...' : 'Delete'}

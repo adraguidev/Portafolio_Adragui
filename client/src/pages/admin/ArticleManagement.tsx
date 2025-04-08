@@ -7,11 +7,28 @@ import { Article } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const ArticleManagement = () => {
   const [isCreateRoute] = useRoute('/admin/articles/new');
@@ -24,7 +41,7 @@ const ArticleManagement = () => {
 
   // Set page title
   useEffect(() => {
-    document.title = 'Article Management | Portfolio Admin';
+    document.title = 'Panel de Control';
   }, []);
 
   // Get articles
@@ -34,7 +51,8 @@ const ArticleManagement = () => {
 
   // Mutations
   const publishArticleMutation = useMutation({
-    mutationFn: (id: number) => apiRequest('POST', `/api/articles/${id}/publish`, {}),
+    mutationFn: (id: number) =>
+      apiRequest('POST', `/api/articles/${id}/publish`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/articles'] });
       toast({
@@ -53,7 +71,8 @@ const ArticleManagement = () => {
   });
 
   const unpublishArticleMutation = useMutation({
-    mutationFn: (id: number) => apiRequest('POST', `/api/articles/${id}/unpublish`, {}),
+    mutationFn: (id: number) =>
+      apiRequest('POST', `/api/articles/${id}/unpublish`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/articles'] });
       toast({
@@ -92,8 +111,9 @@ const ArticleManagement = () => {
   });
 
   // Filter articles by published status
-  const publishedArticles = articles?.filter(article => article.published) || [];
-  const draftArticles = articles?.filter(article => !article.published) || [];
+  const publishedArticles =
+    articles?.filter((article) => article.published) || [];
+  const draftArticles = articles?.filter((article) => !article.published) || [];
 
   // Format date
   const formatDate = (date: Date) => {
@@ -110,8 +130,13 @@ const ArticleManagement = () => {
       <AdminLayout>
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="font-clash font-bold text-3xl text-primary">Create New Article</h1>
-            <Button variant="outline" onClick={() => setLocation('/admin/articles')}>
+            <h1 className="font-clash font-bold text-3xl text-primary">
+              Create New Article
+            </h1>
+            <Button
+              variant="outline"
+              onClick={() => setLocation('/admin/articles')}
+            >
               <i className="ri-arrow-left-line mr-2"></i>
               Back to Articles
             </Button>
@@ -125,13 +150,18 @@ const ArticleManagement = () => {
   // If we're on the edit route, show the editor with the article id
   if (isEditRoute && params.id) {
     const articleId = parseInt(params.id);
-    
+
     return (
       <AdminLayout>
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="font-clash font-bold text-3xl text-primary">Edit Article</h1>
-            <Button variant="outline" onClick={() => setLocation('/admin/articles')}>
+            <h1 className="font-clash font-bold text-3xl text-primary">
+              Edit Article
+            </h1>
+            <Button
+              variant="outline"
+              onClick={() => setLocation('/admin/articles')}
+            >
               <i className="ri-arrow-left-line mr-2"></i>
               Back to Articles
             </Button>
@@ -147,7 +177,9 @@ const ArticleManagement = () => {
     <AdminLayout>
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="font-clash font-bold text-3xl text-primary">Article Management</h1>
+          <h1 className="font-clash font-bold text-3xl text-primary">
+            Article Management
+          </h1>
           <Button onClick={() => setLocation('/admin/articles/new')}>
             <i className="ri-add-line mr-2"></i>
             Create New Article
@@ -158,8 +190,12 @@ const ArticleManagement = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6">
-          <TabsTrigger value="published">Published ({publishedArticles.length})</TabsTrigger>
-          <TabsTrigger value="drafts">Drafts ({draftArticles.length})</TabsTrigger>
+          <TabsTrigger value="published">
+            Published ({publishedArticles.length})
+          </TabsTrigger>
+          <TabsTrigger value="drafts">
+            Drafts ({draftArticles.length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="published">
@@ -194,7 +230,10 @@ const ArticleManagement = () => {
                       </Badge>
                     </div>
                     <CardDescription>
-                      Published: {article.publishedAt ? formatDate(article.publishedAt) : 'N/A'}
+                      Published:{' '}
+                      {article.publishedAt
+                        ? formatDate(article.publishedAt)
+                        : 'N/A'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-4">
@@ -203,26 +242,30 @@ const ArticleManagement = () => {
                     </p>
                   </CardContent>
                   <CardFooter className="p-4 pt-0 flex justify-end space-x-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
-                      onClick={() => unpublishArticleMutation.mutate(article.id)}
+                      onClick={() =>
+                        unpublishArticleMutation.mutate(article.id)
+                      }
                       disabled={unpublishArticleMutation.isPending}
                     >
                       <i className="ri-eye-off-line mr-1"></i>
                       Unpublish
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
-                      onClick={() => setLocation(`/admin/articles/edit/${article.id}`)}
+                      onClick={() =>
+                        setLocation(`/admin/articles/edit/${article.id}`)
+                      }
                     >
                       <i className="ri-edit-line mr-1"></i>
                       Edit
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="text-destructive hover:bg-destructive/10"
                       onClick={() => setArticleToDelete(article.id)}
                     >
@@ -236,9 +279,11 @@ const ArticleManagement = () => {
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">No published articles yet.</p>
-                <Button 
-                  variant="outline" 
+                <p className="text-muted-foreground">
+                  No published articles yet.
+                </p>
+                <Button
+                  variant="outline"
                   className="mt-4"
                   onClick={() => setLocation('/admin/articles/new')}
                 >
@@ -290,8 +335,8 @@ const ArticleManagement = () => {
                     </p>
                   </CardContent>
                   <CardFooter className="p-4 pt-0 flex justify-end space-x-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => publishArticleMutation.mutate(article.id)}
                       disabled={publishArticleMutation.isPending}
@@ -299,17 +344,19 @@ const ArticleManagement = () => {
                       <i className="ri-eye-line mr-1"></i>
                       Publish
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
-                      onClick={() => setLocation(`/admin/articles/edit/${article.id}`)}
+                      onClick={() =>
+                        setLocation(`/admin/articles/edit/${article.id}`)
+                      }
                     >
                       <i className="ri-edit-line mr-1"></i>
                       Edit
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="text-destructive hover:bg-destructive/10"
                       onClick={() => setArticleToDelete(article.id)}
                     >
@@ -324,8 +371,8 @@ const ArticleManagement = () => {
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground">No draft articles.</p>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="mt-4"
                   onClick={() => setLocation('/admin/articles/new')}
                 >
@@ -338,18 +385,24 @@ const ArticleManagement = () => {
       </Tabs>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={articleToDelete !== null} onOpenChange={(open) => !open && setArticleToDelete(null)}>
+      <AlertDialog
+        open={articleToDelete !== null}
+        onOpenChange={(open) => !open && setArticleToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the article.
+              This action cannot be undone. This will permanently delete the
+              article.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => articleToDelete && deleteArticleMutation.mutate(articleToDelete)}
+              onClick={() =>
+                articleToDelete && deleteArticleMutation.mutate(articleToDelete)
+              }
               disabled={deleteArticleMutation.isPending}
             >
               {deleteArticleMutation.isPending ? 'Deleting...' : 'Delete'}

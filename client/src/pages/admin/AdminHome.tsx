@@ -5,7 +5,7 @@ import Dashboard from '@/components/admin/Dashboard';
 const AdminHome = () => {
   // Set page title
   useEffect(() => {
-    document.title = 'Admin Dashboard | Portfolio';
+    document.title = 'Panel de Control';
   }, []);
 
   return (

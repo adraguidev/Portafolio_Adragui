@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
@@ -63,6 +63,11 @@ const Settings = () => {
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+
+  // Set page title
+  useEffect(() => {
+    document.title = 'Panel de Control';
+  }, []);
 
   // Consulta para obtener la información del sitio
   const { data: siteInfo, isLoading } = useQuery<SiteInfo>({

@@ -1,7 +1,4 @@
 import { createClient } from 'redis';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Configuración de Redis para caché
 const redisClient = createClient({
@@ -17,8 +14,7 @@ redisClient.connect().catch((err) => {
 });
 
 // Configuración de la API de DeepSeek (compatible con OpenAI)
-const DEEPSEEK_API_KEY =
-  process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY;
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_API_URL =
   process.env.DEEPSEEK_API_URL ||
   'https://api.deepseek.com/v1/chat/completions';
@@ -61,13 +57,9 @@ export async function translateText(
     // Si no hay caché o no está en caché, traducir usando la API
     if (!DEEPSEEK_API_KEY) {
       console.error(
-        '[ERROR] DEEPSEEK_API_KEY no está configurada en el entorno'
+        '[ERROR] DEEPSEEK_API_KEY no está configurada en las variables de entorno de Heroku'
       );
-      console.log(
-        '[DEBUG] Variables de entorno disponibles:',
-        Object.keys(process.env)
-      );
-      return text; // Devolver texto original si no hay API key
+      throw new Error('DEEPSEEK_API_KEY no está configurada');
     }
 
     console.log('[DEBUG] DEEPSEEK_API_KEY configurada:', !!DEEPSEEK_API_KEY);

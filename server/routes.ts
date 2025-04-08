@@ -904,7 +904,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         // Si ya existía un archivo, eliminarlo (limpieza)
-        if (siteInfo.cvFileUrl) {
+        if (siteInfo.cvFileUrl && !siteInfo.cvFileUrl.startsWith('http')) {
           const oldFilePath = siteInfo.cvFileUrl.startsWith('/')
             ? siteInfo.cvFileUrl.substring(1)
             : siteInfo.cvFileUrl;
@@ -941,6 +941,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   );
+
+  // Ruta para establecer una URL para el CV
+  app.post('/api/cv/url', authenticateJWT, async (req, res) => {
+    try {
+      const { cvUrl } = req.body;
+
+      if (!cvUrl) {
+        return res.status(400).json({ message: 'No CV URL provided' });
+      }
+
+      // Validar que la URL sea válida
+      try {
+        new URL(cvUrl);
+      } catch (e) {
+        return res.status(400).json({ message: 'Invalid URL format' });
+      }
+
+      // Actualizar la información del sitio con la URL del CV
+      const siteInfo = await storage.getSiteInfo();
+
+      if (!siteInfo) {
+        return res.status(500).json({ message: 'Site info not found' });
+      }
+
+      // Si ya existía un archivo local, eliminarlo (limpieza)
+      if (siteInfo.cvFileUrl && !siteInfo.cvFileUrl.startsWith('http')) {
+        const oldFilePath = siteInfo.cvFileUrl.startsWith('/')
+          ? siteInfo.cvFileUrl.substring(1)
+          : siteInfo.cvFileUrl;
+
+        if (fs.existsSync(oldFilePath)) {
+          try {
+            fs.unlinkSync(oldFilePath);
+            console.log(`Previous CV file deleted: ${oldFilePath}`);
+          } catch (err) {
+            console.error('Error deleting previous CV file:', err);
+          }
+        }
+      }
+
+      // Actualizar la URL del CV
+      const updatedSiteInfo = await storage.updateSiteInfo({
+        cvFileUrl: cvUrl,
+      });
+
+      console.log(`CV URL set successfully: ${cvUrl}`);
+
+      res.status(200).json({
+        message: 'CV URL set successfully',
+        cvFileUrl: cvUrl,
+      });
+    } catch (error) {
+      console.error('Error setting CV URL:', error);
+      res.status(500).json({ message: 'Failed to set CV URL' });
+    }
+  });
+
+  // Ruta para restaurar el CV por defecto (eliminar)
+  app.post('/api/cv/reset', authenticateJWT, async (req, res) => {
+    try {
+      // Obtener la información actual del sitio
+      const siteInfo = await storage.getSiteInfo();
+
+      if (!siteInfo) {
+        return res.status(500).json({ message: 'Site info not found' });
+      }
+
+      // Si hay un CV personalizado, borrarlo (solo si es local)
+      if (siteInfo.cvFileUrl && !siteInfo.cvFileUrl.startsWith('http')) {
+        const oldFilePath = siteInfo.cvFileUrl.startsWith('/')
+          ? siteInfo.cvFileUrl.substring(1)
+          : siteInfo.cvFileUrl;
+
+        if (fs.existsSync(oldFilePath)) {
+          try {
+            fs.unlinkSync(oldFilePath);
+            console.log(`CV file deleted: ${oldFilePath}`);
+          } catch (err) {
+            console.error('Error deleting CV file:', err);
+          }
+        }
+      }
+
+      // Establecer el cvFileUrl a null para indicar que no hay CV
+      const updatedSiteInfo = await storage.updateSiteInfo({
+        cvFileUrl: null,
+      });
+
+      console.log('CV reset to default (removed)');
+
+      res.status(200).json({
+        message: 'CV reset successfully',
+        siteInfo: updatedSiteInfo,
+      });
+    } catch (error) {
+      console.error('Error resetting CV:', error);
+      res.status(500).json({ message: 'Failed to reset CV' });
+    }
+  });
 
   // Ruta para subir la imagen del hero
   app.post(

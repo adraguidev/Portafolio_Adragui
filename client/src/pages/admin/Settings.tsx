@@ -620,83 +620,242 @@ const Settings = () => {
                   </div>
                 </div>
 
-                {/* Formulario para subir el CV como un formulario separado */}
+                {/* Formulario para cambiar el CV */}
                 <div className="mt-6 pt-6 border-t border-slate-200">
-                  <h3 className="text-lg font-semibold mb-4">Subir nuevo CV</h3>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const formData = new FormData(
-                        e.target as HTMLFormElement
-                      );
+                  <h3 className="text-lg font-semibold mb-4">Cambiar CV</h3>
 
-                      // Para FormData, no debemos establecer Content-Type, el navegador lo hará automáticamente
-                      fetch('/api/cv/upload', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                          Authorization: `Bearer ${localStorage.getItem(
-                            'token'
-                          )}`,
-                        },
-                      })
-                        .then((response) => {
-                          if (!response.ok) {
-                            throw new Error('Error al subir el archivo');
-                          }
-                          return response.json();
-                        })
-                        .then((data) => {
-                          toast({
-                            title: 'CV subido correctamente',
-                            description: 'El archivo CV ha sido actualizado',
-                            variant: 'default',
-                          });
-                          queryClient.invalidateQueries({
-                            queryKey: ['/api/site-info'],
-                          });
-                          queryClient.invalidateQueries({
-                            queryKey: ['/api/cv'],
-                          });
+                  {/* Tabs para elegir entre subir archivo o usar URL */}
+                  <Tabs defaultValue="url" className="w-full">
+                    <TabsList className="mb-4">
+                      <TabsTrigger value="url">Usar URL</TabsTrigger>
+                      <TabsTrigger value="upload">Subir archivo</TabsTrigger>
+                    </TabsList>
 
-                          // Limpiar el input de archivo
-                          const fileInput = document.getElementById(
-                            'cvFile'
-                          ) as HTMLInputElement;
-                          if (fileInput) {
-                            fileInput.value = '';
+                    {/* Tab para usar URL */}
+                    <TabsContent value="url">
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const formData = new FormData(
+                            e.target as HTMLFormElement
+                          );
+                          const cvUrl = formData.get('cvUrl') as string;
+
+                          if (!cvUrl) {
+                            toast({
+                              title: 'Error',
+                              description: 'Por favor, ingresa una URL válida',
+                              variant: 'destructive',
+                            });
+                            return;
                           }
-                        })
-                        .catch((error) => {
-                          toast({
-                            title: 'Error',
-                            description:
-                              error.message || 'No se pudo subir el archivo CV',
-                            variant: 'destructive',
-                          });
-                        });
-                    }}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <Label htmlFor="cvFile">Seleccionar archivo CV</Label>
-                      <Input
-                        id="cvFile"
-                        name="cvFile"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        className="cursor-pointer mt-1"
-                        required
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        Formatos aceptados: PDF, DOC, DOCX. Tamaño máximo: 5MB
-                      </p>
+
+                          fetch('/api/cv/url', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              Authorization: `Bearer ${localStorage.getItem(
+                                'token'
+                              )}`,
+                            },
+                            body: JSON.stringify({ cvUrl }),
+                          })
+                            .then((response) => {
+                              if (!response.ok) {
+                                throw new Error(
+                                  'Error al establecer la URL del CV'
+                                );
+                              }
+                              return response.json();
+                            })
+                            .then((data) => {
+                              toast({
+                                title: 'URL establecida correctamente',
+                                description:
+                                  'La URL del CV ha sido actualizada',
+                                variant: 'default',
+                              });
+                              queryClient.invalidateQueries({
+                                queryKey: ['/api/site-info'],
+                              });
+                              queryClient.invalidateQueries({
+                                queryKey: ['/api/cv'],
+                              });
+
+                              // Limpiar el input de URL
+                              const urlInput = document.getElementById(
+                                'cvUrl'
+                              ) as HTMLInputElement;
+                              if (urlInput) {
+                                urlInput.value = '';
+                              }
+                            })
+                            .catch((error) => {
+                              toast({
+                                title: 'Error',
+                                description:
+                                  error.message ||
+                                  'No se pudo establecer la URL del CV',
+                                variant: 'destructive',
+                              });
+                            });
+                        }}
+                        className="space-y-4"
+                      >
+                        <div>
+                          <Label htmlFor="cvUrl">URL del CV</Label>
+                          <Input
+                            id="cvUrl"
+                            name="cvUrl"
+                            type="url"
+                            placeholder="https://ejemplo.com/mi-cv.pdf"
+                            className="mt-1"
+                            required
+                          />
+                          <p className="text-xs text-slate-500 mt-1">
+                            Ingresa la URL completa de tu CV. Se recomienda un
+                            archivo PDF.
+                          </p>
+                        </div>
+
+                        <Button type="submit" className="w-full" size="sm">
+                          Establecer URL del CV
+                        </Button>
+                      </form>
+                    </TabsContent>
+
+                    {/* Tab para subir archivo */}
+                    <TabsContent value="upload">
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const formData = new FormData(
+                            e.target as HTMLFormElement
+                          );
+
+                          // Para FormData, no debemos establecer Content-Type, el navegador lo hará automáticamente
+                          fetch('/api/cv/upload', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                              Authorization: `Bearer ${localStorage.getItem(
+                                'token'
+                              )}`,
+                            },
+                          })
+                            .then((response) => {
+                              if (!response.ok) {
+                                throw new Error('Error al subir el archivo');
+                              }
+                              return response.json();
+                            })
+                            .then((data) => {
+                              toast({
+                                title: 'CV subido correctamente',
+                                description:
+                                  'El archivo CV ha sido actualizado',
+                                variant: 'default',
+                              });
+                              queryClient.invalidateQueries({
+                                queryKey: ['/api/site-info'],
+                              });
+                              queryClient.invalidateQueries({
+                                queryKey: ['/api/cv'],
+                              });
+
+                              // Limpiar el input de archivo
+                              const fileInput = document.getElementById(
+                                'cvFile'
+                              ) as HTMLInputElement;
+                              if (fileInput) {
+                                fileInput.value = '';
+                              }
+                            })
+                            .catch((error) => {
+                              toast({
+                                title: 'Error',
+                                description:
+                                  error.message ||
+                                  'No se pudo subir el archivo CV',
+                                variant: 'destructive',
+                              });
+                            });
+                        }}
+                        className="space-y-4"
+                      >
+                        <div>
+                          <Label htmlFor="cvFile">Seleccionar archivo CV</Label>
+                          <Input
+                            id="cvFile"
+                            name="cvFile"
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            className="cursor-pointer mt-1"
+                            required
+                          />
+                          <p className="text-xs text-slate-500 mt-1">
+                            Formatos aceptados: PDF, DOC, DOCX. Tamaño máximo:
+                            5MB
+                          </p>
+                        </div>
+
+                        <Button type="submit" className="w-full" size="sm">
+                          <FileUp className="mr-2 h-4 w-4" /> Subir CV
+                        </Button>
+                      </form>
+                    </TabsContent>
+                  </Tabs>
+
+                  {/* Botón para eliminar el CV actual */}
+                  {siteInfo?.cvFileUrl && (
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-red-500 hover:text-red-600"
+                        onClick={() => {
+                          fetch('/api/cv/reset', {
+                            method: 'POST',
+                            headers: {
+                              Authorization: `Bearer ${localStorage.getItem(
+                                'token'
+                              )}`,
+                            },
+                          })
+                            .then((response) => {
+                              if (!response.ok) {
+                                throw new Error('Error al eliminar el CV');
+                              }
+                              return response.json();
+                            })
+                            .then((data) => {
+                              toast({
+                                title: 'CV eliminado',
+                                description:
+                                  'El CV ha sido eliminado correctamente',
+                                variant: 'default',
+                              });
+                              queryClient.invalidateQueries({
+                                queryKey: ['/api/site-info'],
+                              });
+                              queryClient.invalidateQueries({
+                                queryKey: ['/api/cv'],
+                              });
+                            })
+                            .catch((error) => {
+                              toast({
+                                title: 'Error',
+                                description:
+                                  error.message || 'No se pudo eliminar el CV',
+                                variant: 'destructive',
+                              });
+                            });
+                        }}
+                      >
+                        Eliminar CV actual
+                      </Button>
                     </div>
-
-                    <Button type="submit" className="w-full" size="sm">
-                      <FileUp className="mr-2 h-4 w-4" /> Subir CV
-                    </Button>
-                  </form>
+                  )}
                 </div>
               </CardContent>
               <CardFooter>

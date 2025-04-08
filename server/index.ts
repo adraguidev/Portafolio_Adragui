@@ -11,14 +11,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Aplicar middleware de traducción automática a todas las rutas GET de la API
-app.use((req, res, next) => {
-  if (req.method === 'GET' && req.path.startsWith('/api')) {
-    return autoTranslateMiddleware(req, res, next);
-  }
-  next();
-});
-
 // 🪵 Logging de todas las API
 app.use((req, res, next) => {
   const start = Date.now();
@@ -48,6 +40,14 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Aplicar middleware de traducción automática a todas las rutas GET de la API
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && req.path.startsWith('/api')) {
+      return autoTranslateMiddleware(req, res, next);
+    }
+    next();
+  });
 
   // 🧩 Import dinámico oculto a esbuild → Heroku feliz 🎉
   if (process.env.NODE_ENV !== 'production') {

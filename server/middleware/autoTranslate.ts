@@ -103,17 +103,27 @@ async function translateData(
  * @param res Response de Express
  * @param next Función next de Express
  */
+// Lista de idiomas soportados
+const SUPPORTED_LANGUAGES = ['en', 'fr', 'de', 'it', 'pt', 'es'];
+
 export function autoTranslateMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   // Obtener el idioma solicitado de la consulta
-  const targetLang = req.query.lang as string;
+  const targetLang = (req.query.lang as string)?.toLowerCase();
   const originalLang = 'es'; // Idioma original (por ahora fijo en español)
 
-  // Si no hay idioma solicitado o es el mismo que el original, continuar sin modificar
-  if (!targetLang || targetLang === originalLang) {
+  // Validar que el idioma solicitado sea válido
+  if (!targetLang || !SUPPORTED_LANGUAGES.includes(targetLang)) {
+    console.log(`[TRANSLATE] Idioma no válido o no soportado: ${targetLang}`);
+    return next();
+  }
+
+  // Si el idioma es el mismo que el original, continuar sin modificar
+  if (targetLang === originalLang) {
+    console.log('[TRANSLATE] Idioma solicitado es el mismo que el original');
     return next();
   }
 

@@ -16,8 +16,19 @@ redisClient.connect().catch((err) => {
 // Configuración de la API de DeepSeek (compatible con OpenAI)
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_API_URL =
-  process.env.DEEPSEEK_API_URL ||
-  'https://api.deepseek.com/v1/chat/completions';
+  process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com';
+
+// Validar la configuración al inicio
+if (!DEEPSEEK_API_KEY) {
+  console.error(
+    '[ERROR CRÍTICO] DEEPSEEK_API_KEY no está configurada en las variables de entorno'
+  );
+}
+if (!DEEPSEEK_API_URL) {
+  console.error(
+    '[ERROR CRÍTICO] DEEPSEEK_API_URL no está configurada en las variables de entorno'
+  );
+}
 
 /**
  * Traduce un texto al idioma especificado usando la API de DeepSeek
@@ -56,50 +67,63 @@ export async function translateText(
 
     // Si no hay caché o no está en caché, traducir usando la API
     if (!DEEPSEEK_API_KEY) {
-      console.error(
-        '[ERROR] DEEPSEEK_API_KEY no está configurada en las variables de entorno de Heroku'
-      );
-      throw new Error('DEEPSEEK_API_KEY no está configurada');
+      const error = new Error('DEEPSEEK_API_KEY no está configurada');
+      console.error('[ERROR] No se puede traducir:', error);
+      throw error;
     }
 
+    console.log('[DEBUG] Iniciando traducción con DeepSeek API');
+    console.log('[DEBUG] Texto a traducir:', text.substring(0, 100));
+    console.log('[DEBUG] Idioma destino:', targetLang);
+
     console.log('[DEBUG] DEEPSEEK_API_KEY configurada:', !!DEEPSEEK_API_KEY);
+    console.log('[DEBUG] DEEPSEEK_API_URL:', DEEPSEEK_API_URL);
 
     console.log(
       `[TRADUCIENDO] Texto: ${text.substring(0, 30)}... a ${targetLang}`
     );
 
-    const response = await fetch(DEEPSEEK_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          {
-            role: 'system',
-            content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
-          },
-          {
-            role: 'user',
-            content: text,
-          },
-        ],
-        temperature: 0.3,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('[ERROR] Respuesta de la API DeepSeek:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorBody,
+    try {
+      const response = await fetch(DEEPSEEK_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            {
+              role: 'system',
+              content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
+            },
+            {
+              role: 'user',
+              content: text,
+            },
+          ],
+          temperature: 0.3,
+        }),
       });
-      throw new Error(
-        `Error en la API DeepSeek: ${response.status} ${response.statusText}`
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        console.error('[ERROR] Respuesta de la API DeepSeek:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorBody,
+          url: DEEPSEEK_API_URL,
+        });
+        throw new Error(
+          `Error en la API DeepSeek: ${response.status} ${response.statusText}`
+        );
+      }
+    } catch (fetchError) {
+      console.error(
+        '[ERROR] Error al hacer la petición a DeepSeek:',
+        fetchError
       );
+      throw fetchError;
     }
 
     const data = await response.json();

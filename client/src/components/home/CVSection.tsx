@@ -4,6 +4,7 @@ import { Experience, Education, Skill } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 interface CVData {
   experiences: Experience[];
@@ -12,7 +13,19 @@ interface CVData {
   cvFileUrl: string | null;
 }
 
+// Hook para mantener la posición de scroll
+const useScrollRestoration = () => {
+  useEffect(() => {
+    const scrollPosition = window.scrollY;
+
+    return () => {
+      window.scrollTo(0, scrollPosition);
+    };
+  }, []);
+};
+
 const CVSection = () => {
+  useScrollRestoration();
   const { t, i18n } = useTranslation();
   const { data: cvData, isLoading, isError } = useQuery<CVData>({
     queryKey: ['/api/cv', i18n.language],

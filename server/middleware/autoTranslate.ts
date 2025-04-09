@@ -125,16 +125,24 @@ export function autoTranslateMiddleware(
   res: Response,
   next: NextFunction
 ) {
+  // Rutas a excluir del proceso de traducción
+  const excludedRoutes = [
+    '/api/translations/status',
+    '/api/translations/cache-status',
+    '/api/translations/preload',
+    '/api/translations/clear-cache'
+  ];
+  
+  // Si la ruta está en la lista de excluidas, no aplicar traducción
+  if (excludedRoutes.includes(req.path)) {
+    return next();
+  }
+
   // Obtener el idioma solicitado de la consulta o del header Accept-Language
   const queryLang = req.query.lang as string;
   const acceptLang = req.headers['accept-language']?.split(',')[0]?.split('-')[0];
   const targetLang = queryLang || acceptLang || 'es';
   const originalLang = 'es'; // Idioma original (por ahora fijo en español)
-
-  // Si la ruta es /api/translations/status, no aplicar traducción
-  if (req.path === '/api/translations/status') {
-    return next();
-  }
 
   console.log(
     `[TRANSLATE] Solicitud de traducción recibida - Path: ${req.path}, Lang: ${targetLang}`

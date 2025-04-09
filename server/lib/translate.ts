@@ -93,79 +93,117 @@ async function processBatch(langPair: string) {
   const batch = queue.splice(0, MAX_BATCH_SIZE);
   const [originalLang, targetLang] = langPair.split(':');
 
+  console.log(`[Translate] Procesando lote de ${batch.length} traducciones de ${originalLang} a ${targetLang}`);
+
   try {
     // Verificar primero la caché para todos los textos del lote
     if (redisConnected && redisClient.isOpen) {
-      const cachePromises = batch.map(async (request) => {
-        const cacheKey = `translate:${request.targetLang}:${request.text}`;
-        const cachedTranslation = await redisClient.get(cacheKey);
-        if (cachedTranslation) {
-          request.resolve(cachedTranslation);
-          return true; // Indica que se encontró en caché
-        }
-        return false; // No se encontró en caché
-      });
-
-      const cacheResults = await Promise.all(cachePromises);
-      // Filtrar solo las solicitudes que no se encontraron en caché
-      const uncachedRequests = batch.filter((_, index) => !cacheResults[index]);
-      
-      // Si todas las solicitudes se encontraron en caché, terminar
-      if (uncachedRequests.length === 0) {
-        return;
-      }
-      
-      // Continuar solo con las solicitudes no cacheadas
-      const texts = uncachedRequests.map(req => req.text);
-      
-      // Si hay textos para traducir
-      if (texts.length > 0) {
-        // Preparar mensaje de sistema para traducción por lotes
-        const systemContent = `Eres un traductor profesional. Traduce los siguientes textos de ${originalLang} a ${targetLang}. 
-Mantén el formato original y devuelve SOLO las traducciones separadas por ###, en el mismo orden en que se presentan, sin numeración ni comentarios adicionales.`;
-
-        // Unir textos con separador para la petición
-        const userContent = texts.join('\n###\n');
-        
-        // Realizar una única llamada a la API para todo el lote
-        const completion = await openai.chat.completions.create({
-          model: 'deepseek-chat',
-          messages: [
-            { role: 'system', content: systemContent },
-            { role: 'user', content: userContent }
-          ],
-          temperature: 0.3,
+      try {
+        const cachePromises = batch.map(async (request) => {
+          const cacheKey = `translate:${request.targetLang}:${request.text}`;
+          const cachedTranslation = await redisClient.get(cacheKey);
+          if (cachedTranslation) {
+            console.log(`[Redis] Lote: Traducción encontrada en caché para: "${request.text.substring(0, 30)}..."`);
+            request.resolve(cachedTranslation);
+            return true; // Indica que se encontró en caché
+          }
+          return false; // No se encontró en caché
         });
 
-        // Dividir la respuesta en traducciones individuales
-        const translatedContent = completion.choices[0]?.message.content?.trim() || '';
-        const translatedTexts = translatedContent.split('###').map(t => t.trim());
+        const cacheResults = await Promise.all(cachePromises);
+        // Filtrar solo las solicitudes que no se encontraron en caché
+        const uncachedRequests = batch.filter((_, index) => !cacheResults[index]);
         
-        // Asegurar que tenemos el mismo número de traducciones que textos originales
-        if (translatedTexts.length >= texts.length) {
-          // Guardar en caché y resolver promesas
-          for (let i = 0; i < uncachedRequests.length; i++) {
-            const request = uncachedRequests[i];
-            const translatedText = translatedTexts[i];
-            
-            // Guardar en caché
-            if (redisConnected && redisClient.isOpen) {
-              const cacheKey = `translate:${request.targetLang}:${request.text}`;
-              await redisClient.set(cacheKey, translatedText, {
-                EX: 60 * 60 * 24 * 30, // 30 días
-              });
+        // Si todas las solicitudes se encontraron en caché, terminar
+        if (uncachedRequests.length === 0) {
+          console.log(`[Translate] Todas las traducciones del lote (${batch.length}) se encontraron en caché`);
+          return;
+        }
+        
+        // Continuar solo con las solicitudes no cacheadas
+        const texts = uncachedRequests.map(req => req.text);
+        
+        console.log(`[Translate] Traduciendo ${texts.length} textos no encontrados en caché`);
+        
+        // Si hay textos para traducir
+        if (texts.length > 0) {
+          // Preparar mensaje de sistema para traducción por lotes
+          const systemContent = `Eres un traductor profesional. Traduce los siguientes textos de ${originalLang} a ${targetLang}. 
+Mantén el formato original y devuelve SOLO las traducciones separadas por ###, en el mismo orden en que se presentan, sin numeración ni comentarios adicionales.`;
+
+          // Unir textos con separador para la petición
+          const userContent = texts.join('\n###\n');
+          
+          console.log(`[DeepSeek] Solicitando traducción de ${texts.length} textos de ${originalLang} a ${targetLang}`);
+          
+          // Realizar una única llamada a la API para todo el lote
+          const completion = await openai.chat.completions.create({
+            model: 'deepseek-chat',
+            messages: [
+              { role: 'system', content: systemContent },
+              { role: 'user', content: userContent }
+            ],
+            temperature: 0.3,
+          });
+
+          // Dividir la respuesta en traducciones individuales
+          const translatedContent = completion.choices[0]?.message.content?.trim() || '';
+          const translatedTexts = translatedContent.split('###').map(t => t.trim());
+          
+          console.log(`[DeepSeek] Recibidas ${translatedTexts.length} traducciones (esperadas: ${texts.length})`);
+          
+          // Asegurar que tenemos el mismo número de traducciones que textos originales
+          if (translatedTexts.length >= texts.length) {
+            // Guardar en caché y resolver promesas
+            for (let i = 0; i < uncachedRequests.length; i++) {
+              const request = uncachedRequests[i];
+              const translatedText = translatedTexts[i];
+              
+              try {
+                // Guardar en caché
+                if (redisConnected && redisClient.isOpen) {
+                  const cacheKey = `translate:${request.targetLang}:${request.text}`;
+                  await redisClient.set(cacheKey, translatedText, {
+                    EX: 60 * 60 * 24 * 30, // 30 días
+                  });
+                  console.log(`[Redis] Guardada traducción en caché: "${request.text.substring(0, 30)}..." => "${translatedText.substring(0, 30)}..."`);
+                }
+                
+                // Resolver la promesa
+                request.resolve(translatedText);
+              } catch (cacheError) {
+                console.error(`[Redis] Error guardando en caché: "${request.text.substring(0, 30)}..."`, cacheError);
+                // Resolver la promesa aunque falle la caché
+                request.resolve(translatedText);
+              }
             }
-            
-            // Resolver la promesa
-            request.resolve(translatedText);
+          } else {
+            // Si no hay suficientes traducciones, rechazar todas las promesas
+            const errorMsg = `Error en la traducción por lotes: recibidas ${translatedTexts.length} traducciones para ${texts.length} textos`;
+            console.error(`[DeepSeek] ${errorMsg}`);
+            throw new Error(errorMsg);
           }
-        } else {
-          // Si no hay suficientes traducciones, rechazar todas las promesas
-          throw new Error(`Error en la traducción por lotes: recibidas ${translatedTexts.length} traducciones para ${texts.length} textos`);
+        }
+      } catch (redisError) {
+        console.error('[Redis] Error general al procesar el lote:', redisError);
+        
+        // Si hay error con Redis, intentar el método alternativo
+        for (const request of batch) {
+          try {
+            const result = await translateSingle(
+              request.text,
+              request.targetLang,
+              request.originalLang
+            );
+            request.resolve(result);
+          } catch (error) {
+            request.reject(error);
+          }
         }
       }
     } else {
       // Si no hay Redis, traducir uno a uno
+      console.log('[Translate] Redis no disponible, traduciendo uno a uno');
       for (const request of batch) {
         try {
           const result = await translateSingle(
@@ -180,7 +218,7 @@ Mantén el formato original y devuelve SOLO las traducciones separadas por ###, 
       }
     }
   } catch (error) {
-    console.error(`Error procesando lote de traducciones ${langPair}:`, error);
+    console.error(`[Translate] Error procesando lote de traducciones ${langPair}:`, error);
     // En caso de error, rechazar todas las promesas en el lote
     for (const request of batch) {
       request.reject(error);
@@ -188,8 +226,11 @@ Mantén el formato original y devuelve SOLO las traducciones separadas por ###, 
   }
   
   // Si quedan elementos en la cola, procesar el siguiente lote
-  if (translationQueue[langPair].length > 0) {
+  if (translationQueue[langPair] && translationQueue[langPair].length > 0) {
+    console.log(`[Translate] Quedan ${translationQueue[langPair].length} traducciones en cola para ${langPair}`);
     processBatch(langPair);
+  } else {
+    console.log(`[Translate] Cola de traducciones vacía para ${langPair}`);
   }
 }
 
@@ -249,19 +290,26 @@ export async function translateText(
   // Generar clave para caché
   const cacheKey = `translate:${targetLang}:${text}`;
 
+  // Log para depuración
+  console.log(`[Translate] Solicitando traducción: "${text.substring(0, 30)}..." a ${targetLang} (desde ${originalLang})`);
+
   try {
     // Intentar obtener de caché si Redis está conectado
     if (redisConnected && redisClient.isOpen) {
       try {
         const cachedTranslation = await redisClient.get(cacheKey);
         if (cachedTranslation) {
-          console.log(`[Redis] Traducción encontrada en caché para: ${text.substring(0, 30)}...`);
+          console.log(`[Redis] ✅ Traducción encontrada en caché para: "${text.substring(0, 30)}..."`);
           return cachedTranslation;
+        } else {
+          console.log(`[Redis] ❌ No se encontró traducción en caché para: "${text.substring(0, 30)}..."`);
         }
       } catch (cacheError) {
         console.error('[Redis] Error al acceder a la caché:', cacheError);
         // Continuar con la traducción si hay error en la caché
       }
+    } else {
+      console.warn('[Redis] ⚠️ Redis no conectado, no se puede usar caché');
     }
 
     // Si no hay caché o no está en caché, intentar traducción por lotes
@@ -278,8 +326,14 @@ export async function translateText(
         text,
         targetLang,
         originalLang,
-        resolve,
-        reject
+        resolve: (translatedText: string) => {
+          console.log(`[Translate] ✅ Texto traducido (${text.length} chars): "${text.substring(0, 30)}..." => "${translatedText.substring(0, 30)}..."`);
+          resolve(translatedText);
+        },
+        reject: (error: any) => {
+          console.error(`[Translate] ❌ Error traduciendo: "${text.substring(0, 30)}..."`, error);
+          reject(error);
+        }
       });
       
       // Configurar temporizador para procesar el lote

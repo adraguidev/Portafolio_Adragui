@@ -1526,6 +1526,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Obtener todas las claves de traducciones
       const keys = await redisClient.keys('translate:*');
       const totalKeys = keys.length;
+
+      // Agrupar por idioma
+      const languageStats: Record<string, number> = {};
+      for (const key of keys) {
+        // El formato de la clave es translate:idioma:texto
+        const parts = key.split(':');
+        if (parts.length >= 2) {
+          const lang = parts[1];
+          languageStats[lang] = (languageStats[lang] || 0) + 1;
+        }
+      }
       
       // Obtener algunos ejemplos de traducciones
       const sampleKeys = keys.slice(0, 5);
@@ -1533,16 +1544,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sampleKeys.map(key => redisClient.get(key))
       );
       
+      // Verificar el estado de la memoria de Redis
+      const memoryInfo = await redisClient.info('memory');
+      
       // Cerrar conexión
       await redisClient.disconnect();
       
       res.json({ 
         success: true,
         totalTranslations: totalKeys,
+        byLanguage: languageStats,
+        memoryInfo,
         sampleTranslations: sampleKeys.map((key, index) => ({
           key,
           translation: sampleTranslations[index]
         })),
+        supportedLanguages: SUPPORTED_LANGUAGES,
         redisConnected: true
       });
     } catch (error) {
@@ -1550,6 +1567,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         message: 'Error al verificar la caché de traducciones',
+        error: String(error),
         redisConnected: false
       });
     }

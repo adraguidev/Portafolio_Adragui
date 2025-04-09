@@ -5,6 +5,8 @@
  * @param language - Código del idioma (ej: 'es', 'en', etc.)
  */
 export const syncDeepseekWithI18n = (language: string) => {
+  console.log(`[Deepseek] Iniciando sincronización de idioma a: ${language}`);
+  
   // Guardar el idioma seleccionado en localStorage para que esté disponible
   // para todas las APIs incluyendo las de deepseek
   localStorage.setItem('selectedLanguage', language);
@@ -26,16 +28,45 @@ export const syncDeepseekWithI18n = (language: string) => {
     // Guardamos el idioma antes de recargar
     sessionStorage.setItem('currentLang', language);
     
-    // Pequeño timeout para asegurar que los cambios se guardan antes de recargar
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+    // Asegurarnos de que el parámetro lang se mantiene en la URL al recargar
+    if (!window.location.href.includes(`lang=${language}`)) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', language);
+      window.location.href = url.toString();
+    } else {
+      // Pequeño timeout para asegurar que los cambios se guardan antes de recargar
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
     
     return; // Terminamos aquí porque la página se va a recargar
   }
   
   // Solo llegamos aquí si no se va a recargar la página (primera carga)
-  // Intentamos invalidar queries por si acaso
+  // o si estamos volviendo a español (idioma original)
+  
+  // Si es la primera carga, asegurarnos de que el parámetro lang está en todas las peticiones
+  if (!prevLang) {
+    // Interceptar peticiones fetch para agregar el parámetro lang
+    const originalFetch = window.fetch;
+    window.fetch = function(input: RequestInfo | URL, init?: RequestInit) {
+      // Convertir input a URL si es un string
+      if (typeof input === 'string') {
+        const url = new URL(input, window.location.origin);
+        // Solo agregar el parámetro lang a peticiones a nuestra API
+        if (url.pathname.startsWith('/api/') && !url.pathname.includes('/translations/')) {
+          url.searchParams.set('lang', language);
+          input = url.toString();
+        }
+      }
+      return originalFetch(input, init);
+    };
+    
+    console.log('[Deepseek] Interceptadas peticiones fetch para incluir parámetro lang');
+  }
+  
+  // Intentamos invalidar queries para forzar refrescar con el nuevo idioma
   try {
     // Acceder a queryClient como propiedad global en window
     const queryClientAny = (window as any).queryClient;

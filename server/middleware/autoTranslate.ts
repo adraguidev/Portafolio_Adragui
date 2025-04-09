@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { translateText } from '../lib/translate';
+import { translateText, translateLargeText } from '../lib/translate';
 
 // Lista de campos que no deben ser traducidos
 const UNTRANSLATABLE_FIELDS = [
@@ -53,6 +53,10 @@ async function translateData(
 ): Promise<any> {
   // Caso base: si es un string, traducirlo
   if (typeof data === 'string') {
+    // Usar traducción optimizada para textos largos
+    if (data.length > 1000) {
+      return await translateLargeText(data, targetLang, originalLang);
+    }
     return await translateText(data, targetLang, originalLang);
   }
 

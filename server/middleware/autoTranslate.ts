@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { translateText } from '../lib/translate';
 
-// Lista de campos que no deben ser traducidos
+// Lista de idiomas soportados
+const SUPPORTED_LANGUAGES = ['en', 'fr', 'de', 'it', 'pt', 'es'];
+
+// Lista de campos que no deben ser traducidos (simplificar la lista)
 const UNTRANSLATABLE_FIELDS = [
   'id',
   'slug',
@@ -22,21 +25,6 @@ const UNTRANSLATABLE_FIELDS = [
   'experienceId',
   'educationId',
   'skillId',
-  'alt',
-  'title',
-  'description',
-  'keywords',
-  'og:image',
-  'twitter:image',
-  'favicon',
-  'icon',
-  'logo',
-  'thumbnail',
-  'cover',
-  'background',
-  'avatar',
-  'profile',
-  'banner',
 ];
 
 /**
@@ -68,10 +56,16 @@ async function translateData(
 ): Promise<any> {
   // Caso base: si es un string, traducirlo
   if (typeof data === 'string') {
-    // Verificar si el texto parece ser HTML o JSON
-    if (data.trim().startsWith('<') || data.trim().startsWith('{') || data.trim().startsWith('[')) {
-      return data; // No traducir HTML o JSON
+    // No traducir strings vacíos o muy cortos
+    if (!data || data.trim().length < 2) {
+      return data;
     }
+    
+    // No traducir URLs o paths de archivos
+    if (data.startsWith('http') || /\.(jpg|jpeg|png|gif|svg|webp|pdf|doc|docx|xls|xlsx)$/i.test(data)) {
+      return data;
+    }
+    
     return await translateText(data, targetLang, originalLang);
   }
 
@@ -115,13 +109,7 @@ async function translateData(
 
 /**
  * Middleware para traducir automáticamente las respuestas JSON
- * @param req Request de Express
- * @param res Response de Express
- * @param next Función next de Express
  */
-// Lista de idiomas soportados
-const SUPPORTED_LANGUAGES = ['en', 'fr', 'de', 'it', 'pt', 'es'];
-
 export function autoTranslateMiddleware(
   req: Request,
   res: Response,
@@ -166,6 +154,17 @@ export function autoTranslateMiddleware(
 
   // Sobrescribir res.json para interceptar la respuesta
   res.json = function (body: any) {
+    // Si el cuerpo está vacío o no es un objeto, continuar sin modificar
+    if (!body || typeof body !== 'object') {
+      return originalJson(body);
+    }
+
+    // Imprimir una muestra del contenido para depuración
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[TRANSLATE DEBUG] Muestra de datos a traducir:', 
+        JSON.stringify(body).substring(0, 200) + '...');
+    }
+
     translateData(body, targetLang, originalLang)
       .then(translatedBody => {
         // Asegurarse de que las rutas de las imágenes sean absolutas
@@ -187,15 +186,21 @@ export function autoTranslateMiddleware(
           processImagePaths(translatedBody);
         }
 
+        // Imprimir una muestra del contenido traducido para depuración
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[TRANSLATE DEBUG] Muestra de datos traducidos:', 
+            JSON.stringify(translatedBody).substring(0, 200) + '...');
+        }
+
         // Restaurar el método original y enviar la respuesta traducida
         res.json = originalJson;
-        return res.json(translatedBody);
+        return originalJson(translatedBody);
       })
       .catch(error => {
         console.log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
         // En caso de error, restaurar el método original y enviar la respuesta sin traducir
         res.json = originalJson;
-        return res.json(body);
+        return originalJson(body);
       });
 
     return res;

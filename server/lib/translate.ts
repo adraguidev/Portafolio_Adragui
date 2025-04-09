@@ -66,24 +66,36 @@ export async function translateText(
   originalLang: string = 'es'
 ): Promise<string> {
   // Si el idioma destino es el mismo que el original, devolver el texto sin cambios
-  if (targetLang === originalLang || !targetLang) {
+  if (targetLang === originalLang || !targetLang || !text) {
+    return text;
+  }
+
+  // No traducir textos muy cortos
+  if (text.trim().length < 2) {
     return text;
   }
 
   // Generar clave para caché
-  const cacheKey = `translate:${targetLang}:${text}`;
+  const cacheKey = `translate:${targetLang}:${originalLang}:${text.substring(0, 100)}`;
 
   try {
+    // Intentar reconectar a Redis si no está conectado
+    if (!redisConnected && !redisClient.isOpen) {
+      await connectRedis();
+    }
+
     // Intentar obtener de caché si Redis está conectado
-    if (redisConnected) {
+    if (redisConnected && redisClient.isOpen) {
       try {
         const cachedTranslation = await redisClient.get(cacheKey);
         if (cachedTranslation) {
-          console.log(`[CACHE HIT] Traducción encontrada en caché para: ${text.substring(0, 30)}...`);
+          console.log(`[CACHE HIT] Traducción encontrada en caché: ${targetLang}`);
           return cachedTranslation;
+        } else {
+          console.log(`[CACHE MISS] Traducción no encontrada en caché: ${targetLang}`);
         }
       } catch (redisError) {
-        console.error('Error al acceder a Redis:', redisError);
+        console.error('[REDIS ERROR] Error al acceder a Redis:', redisError);
         // Continuar con la traducción si hay error en Redis
       }
     }
@@ -93,41 +105,42 @@ export async function translateText(
       throw new Error('DEEPSEEK_API_KEY no está configurada');
     }
 
-    console.log(`[TRADUCIENDO] Texto: ${text.substring(0, 30)}... a ${targetLang}`);
+    console.log(`[TRADUCIENDO] Texto de ${originalLang} a ${targetLang}`);
 
     const completion = await openai.chat.completions.create({
       model: 'deepseek-chat',
       messages: [
         {
           role: 'system',
-          content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
+          content: `You are a professional translator. Translate the following text from ${originalLang} to ${targetLang}. Maintain the format and ONLY return the translated text without any explanations or additional comments.`,
         },
         {
           role: 'user',
           content: text,
         },
       ],
-      temperature: 0.3,
+      temperature: 0.2,
+      max_tokens: 1500, 
     });
 
     const translatedText = completion.choices[0]?.message?.content?.trim() || text;
 
     // Guardar en caché si Redis está conectado
-    if (redisConnected) {
+    if (redisConnected && redisClient.isOpen) {
       try {
         await redisClient.set(cacheKey, translatedText, {
           EX: 60 * 60 * 24 * 30, // 30 días
         });
-        console.log(`[CACHE SAVE] Traducción guardada en caché para: ${text.substring(0, 30)}...`);
+        console.log(`[CACHE SAVE] Traducción guardada en caché para: ${targetLang}`);
       } catch (redisError) {
-        console.error('Error al guardar en Redis:', redisError);
+        console.error('[REDIS ERROR] Error al guardar en Redis:', redisError);
         // Continuar sin caché si hay error
       }
     }
 
     return translatedText;
   } catch (error) {
-    console.error('Error en la traducción:', error);
+    console.error('[TRANSLATE ERROR] Error en la traducción:', error);
     return text; // Devolver texto original en caso de error
   }
 }

@@ -20,9 +20,6 @@ export default defineConfig(async () => {
     build: {
       outDir: path.resolve(import.meta.dirname, "dist/public"),
       emptyOutDir: true,
-      rollupOptions: {
-        external: ['react-router-dom']
-      }
     },
     resolve: {
       alias: {

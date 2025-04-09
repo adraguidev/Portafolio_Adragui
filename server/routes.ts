@@ -1513,6 +1513,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }, 100); // Pequeño retraso para asegurar que la respuesta al cliente se envíe primero
   });
 
+  // Ruta para verificar el estado de la caché de traducciones
+  app.get('/api/translations/cache-status', authenticateJWT, async (req, res) => {
+    try {
+      // Conexión a Redis
+      const redisClient = createClient({
+        url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
+      });
+      
+      await redisClient.connect();
+      
+      // Obtener todas las claves de traducciones
+      const keys = await redisClient.keys('translate:*');
+      const totalKeys = keys.length;
+      
+      // Obtener algunos ejemplos de traducciones
+      const sampleKeys = keys.slice(0, 5);
+      const sampleTranslations = await Promise.all(
+        sampleKeys.map(key => redisClient.get(key))
+      );
+      
+      // Cerrar conexión
+      await redisClient.disconnect();
+      
+      res.json({ 
+        success: true,
+        totalTranslations: totalKeys,
+        sampleTranslations: sampleKeys.map((key, index) => ({
+          key,
+          translation: sampleTranslations[index]
+        })),
+        redisConnected: true
+      });
+    } catch (error) {
+      console.error('Error al verificar la caché de traducciones:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error al verificar la caché de traducciones',
+        redisConnected: false
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

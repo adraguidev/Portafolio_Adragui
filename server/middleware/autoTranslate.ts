@@ -125,21 +125,20 @@ export function autoTranslateMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  // Obtener el idioma solicitado de la consulta
-  const targetLang = (req.query.lang as string)?.toLowerCase();
+  // Obtener el idioma solicitado de la consulta o del header Accept-Language
+  const queryLang = req.query.lang as string;
+  const acceptLang = req.headers['accept-language']?.split(',')[0]?.split('-')[0];
+  const targetLang = queryLang || acceptLang || 'es';
   const originalLang = 'es'; // Idioma original (por ahora fijo en español)
+
+  // Si la ruta es /api/translations/status, no aplicar traducción
+  if (req.path === '/api/translations/status') {
+    return next();
+  }
 
   console.log(
     `[TRANSLATE] Solicitud de traducción recibida - Path: ${req.path}, Lang: ${targetLang}`
   );
-
-  // Si no hay parámetro de idioma, no traducir
-  if (!req.query.lang) {
-    console.log(
-      '[TRANSLATE] ℹ️ No se solicitó traducción (sin parámetro lang)'
-    );
-    return next();
-  }
 
   // Validar que el idioma solicitado sea válido
   if (!SUPPORTED_LANGUAGES.includes(targetLang)) {

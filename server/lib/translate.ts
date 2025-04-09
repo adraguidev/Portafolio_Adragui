@@ -241,6 +241,11 @@ export async function translateText(
     return text;
   }
 
+  // Verificar si es un string vacío o muy corto
+  if (text.trim().length <= 1) {
+    return text;
+  }
+
   // Generar clave para caché
   const cacheKey = `translate:${targetLang}:${text}`;
 

@@ -108,22 +108,31 @@ export async function translateText(
 
       const translatedText = completion.choices[0].message.content.trim();
 
-    // Guardar en caché si Redis está conectado
-    if (redisClient.isOpen) {
-      await redisClient.set(cacheKey, translatedText, {
-        EX: 60 * 60 * 24 * 30, // 30 días
-      });
-      console.log(
-        `[CACHE SAVE] Traducción guardada en caché para: ${text.substring(
-          0,
-          30
-        )}...`
-      );
-    }
+      // Guardar en caché si Redis está conectado
+      if (redisClient.isOpen) {
+        await redisClient.set(cacheKey, translatedText, {
+          EX: 60 * 60 * 24 * 30, // 30 días
+        });
+        console.log(
+          `[CACHE SAVE] Traducción guardada en caché para: ${text.substring(
+            0,
+            30
+          )}...`
+        );
+      }
 
-    return translatedText;
+      return translatedText;
+    } catch (error) {
+      console.error('Error al traducir texto:', error);
+      throw error;
+    }
   } catch (error) {
-    console.error('Error al traducir texto:', error);
+    console.error('Error en la traducción:', error);
     return text; // Devolver texto original en caso de error
+  } finally {
+    // Asegurar que cualquier recurso se libere adecuadamente
+    if (!redisClient.isOpen) {
+      console.log('[DEBUG] Redis no está conectado, no es necesario cerrar');
+    }
   }
 }

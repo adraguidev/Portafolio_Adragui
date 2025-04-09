@@ -51,7 +51,9 @@ const Navbar = () => {
     fr: 'Français',
     de: 'Deutsch',
     it: 'Italiano',
-    pt: 'Português'
+    pt: 'Português',
+    ja: '日本語',
+    zh: '中文'
   };
 
   return (

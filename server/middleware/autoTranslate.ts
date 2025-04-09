@@ -104,7 +104,7 @@ async function translateData(
  * @param next Función next de Express
  */
 // Lista de idiomas soportados
-const SUPPORTED_LANGUAGES = ['en', 'fr', 'de', 'it', 'pt', 'es'];
+const SUPPORTED_LANGUAGES = ['en', 'fr', 'de', 'it', 'pt', 'es', 'ja', 'zh'];
 
 export function autoTranslateMiddleware(
   req: Request,

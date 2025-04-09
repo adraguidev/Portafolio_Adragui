@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'wouter';
 import { queryClient } from '../lib/queryClient';
 
 // Lista de idiomas soportados
@@ -12,16 +12,17 @@ export const SUPPORTED_LANGUAGES = [
   'pt',
   'es',
 ] as const;
-type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
+
+export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
 
 export function useLanguage() {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [location] = useLocation();
 
   // Cambiar el idioma y actualizar la URL
   const changeLanguage = (newLang: SupportedLanguage) => {
-    const searchParams = new URLSearchParams(location.search);
+    const searchParams = new URLSearchParams(window.location.search);
 
     if (newLang === 'es') {
       // Si el idioma es español (por defecto), eliminar el parámetro lang
@@ -32,7 +33,7 @@ export function useLanguage() {
 
     // Actualizar la URL
     const newSearch = searchParams.toString();
-    const newPath = `${location.pathname}${newSearch ? `?${newSearch}` : ''}`;
+    const newPath = `${location}${newSearch ? `?${newSearch}` : ''}`;
     navigate(newPath, { replace: true });
 
     // Cambiar el idioma en i18next
@@ -44,7 +45,7 @@ export function useLanguage() {
 
   // Sincronizar el idioma con el parámetro de URL al cargar y cuando cambie la URL
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(window.location.search);
     const langParam = params.get('lang') as SupportedLanguage | null;
 
     // Si no hay parámetro lang o es español, usar español
@@ -54,7 +55,7 @@ export function useLanguage() {
     if (i18n.language !== newLang) {
       i18n.changeLanguage(newLang);
     }
-  }, [location.search, i18n]);
+  }, [location, i18n]);
 
   return {
     currentLanguage: i18n.language as SupportedLanguage,

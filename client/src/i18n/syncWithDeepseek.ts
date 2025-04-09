@@ -15,54 +15,36 @@ export const syncDeepseekWithI18n = (language: string) => {
   currentUrl.searchParams.set('lang', language);
   window.history.replaceState({}, '', currentUrl.toString());
   
-  // Si ya tenemos un idioma previo y acabamos de cambiarlo, actualizamos selectivamente
+  // Si ya tenemos un idioma previo y acabamos de cambiarlo, recargamos
   const prevLang = sessionStorage.getItem('currentLang');
   if (prevLang && prevLang !== language) {
-    console.log(`[Deepseek] Cambio de idioma detectado: ${prevLang} → ${language}`);
+    // Recargar la página para forzar todas las traducciones
+    // Es la forma más fiable de asegurar que tanto i18next como deepseek
+    // traducen todo el contenido correctamente
+    console.log(`[Deepseek] Recargando página para aplicar idioma: ${language}`);
     
-    // Guardamos el idioma actual antes de continuar
+    // Guardamos el idioma antes de recargar
     sessionStorage.setItem('currentLang', language);
     
-    // Invalidar queries para refrescar los datos con el nuevo idioma
-    try {
-      // Acceder a queryClient como propiedad global en window
-      const queryClientAny = (window as any).queryClient;
-      if (queryClientAny && typeof queryClientAny.invalidateQueries === 'function') {
-        queryClientAny.invalidateQueries();
-        console.log('[Deepseek] Invalidadas queries para refrescar datos');
-        
-        // Disparar un evento personalizado para que los componentes puedan reaccionar
-        document.dispatchEvent(new CustomEvent('deepseekLanguageChanged', { 
-          detail: { prevLanguage: prevLang, newLanguage: language }
-        }));
-        
-        return; // Terminamos aquí para evitar la recarga completa
-      }
-    } catch (error) {
-      console.error('[Deepseek] Error al invalidar queries:', error);
-    }
-    
-    // Solo recargamos la página si falló la invalidación de queries
-    console.log(`[Deepseek] Recargando página para aplicar idioma: ${language}`);
+    // Pequeño timeout para asegurar que los cambios se guardan antes de recargar
     setTimeout(() => {
       window.location.reload();
     }, 100);
     
-    return;
+    return; // Terminamos aquí porque la página se va a recargar
   }
   
-  // Si es la primera carga (sin cambio de idioma)
-  if (!prevLang) {
-    // Intentamos invalidar queries por si acaso
-    try {
-      const queryClientAny = (window as any).queryClient;
-      if (queryClientAny && typeof queryClientAny.invalidateQueries === 'function') {
-        queryClientAny.invalidateQueries();
-        console.log('[Deepseek] Invalidadas queries para carga inicial');
-      }
-    } catch (error) {
-      console.error('[Deepseek] Error al invalidar queries en carga inicial:', error);
+  // Solo llegamos aquí si no se va a recargar la página (primera carga)
+  // Intentamos invalidar queries por si acaso
+  try {
+    // Acceder a queryClient como propiedad global en window
+    const queryClientAny = (window as any).queryClient;
+    if (queryClientAny && typeof queryClientAny.invalidateQueries === 'function') {
+      queryClientAny.invalidateQueries();
+      console.log('[Deepseek] Invalidadas queries para refrescar datos');
     }
+  } catch (error) {
+    console.error('[Deepseek] Error al invalidar queries:', error);
   }
   
   // Actualizar idioma actual en sessionStorage

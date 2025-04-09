@@ -60,7 +60,8 @@
   "projects": {
     "title": "Proyectos Destacados",
     "description": "Una colección de mis trabajos recientes en aplicaciones web, plataformas de comercio electrónico y experiencias interactivas.",
-    "viewAll": "Ver Portafolio Completo"
+    "viewAll": "Ver Portafolio Completo",
+    "viewProject": "Ver Proyecto"
   },
   "contact": {
     "title": "Contacto",

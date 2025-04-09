@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { SOCIAL_LINKS } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 const formSchema = insertMessageSchema.extend({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -23,6 +24,7 @@ const formSchema = insertMessageSchema.extend({
 const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const { data: siteInfo } = useQuery<{
     id: number;
@@ -87,8 +89,8 @@ const ContactSection = () => {
               <div className="p-8 md:p-12 bg-[url('https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop')] bg-cover bg-center relative">
                 <div className="absolute inset-0 bg-primary/90"></div>
                 <div className="relative z-10 h-full flex flex-col">
-                  <h2 className="font-clash font-bold text-3xl md:text-4xl text-white mb-6">Conectemos</h2>
-                  <p className="text-white/80 mb-8">¿Tienes un proyecto en mente o quieres hablar sobre oportunidades? Envíame un mensaje y te responderé lo antes posible.</p>
+                  <h2 className="font-clash font-bold text-3xl md:text-4xl text-white mb-6">{t('contact.letsConnect')}</h2>
+                  <p className="text-white/80 mb-8">{t('contact.letsConnectDescription')}</p>
                   
                   <div className="space-y-6 mt-auto">
                     <div className="flex items-center text-white/90">
@@ -133,7 +135,7 @@ const ContactSection = () => {
               </div>
               
               <div className="p-8 md:p-12 bg-white">
-                <h3 className="font-clash font-semibold text-2xl text-primary mb-6">Enviar un Mensaje</h3>
+                <h3 className="font-clash font-semibold text-2xl text-primary mb-6">{t('contact.sendMessage')}</h3>
                 
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -142,10 +144,10 @@ const ContactSection = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Nombre</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">{t('contact.name')}</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="Tu nombre" 
+                              placeholder={t('common.yourName')}
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -160,11 +162,11 @@ const ContactSection = () => {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Correo electrónico</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">{t('contact.email')}</FormLabel>
                           <FormControl>
                             <Input 
                               type="email" 
-                              placeholder="Tu correo electrónico" 
+                              placeholder={t('common.yourEmail')}
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -179,10 +181,10 @@ const ContactSection = () => {
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Asunto</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">{t('common.subject')}</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="¿De qué se trata?" 
+                              placeholder={t('common.whatIsItAbout')}
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -197,11 +199,11 @@ const ContactSection = () => {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Mensaje</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">{t('contact.message')}</FormLabel>
                           <FormControl>
                             <Textarea 
                               rows={5} 
-                              placeholder="Tu mensaje" 
+                              placeholder={t('common.yourMessage')}
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors resize-none" 
                               {...field} 
                             />
@@ -216,7 +218,7 @@ const ContactSection = () => {
                       className="w-full bg-primary text-white rounded-md px-6 py-3 text-base font-medium hover:bg-primary/90 transition-colors"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
+                      {isSubmitting ? t('common.sending') : t('common.sendMessage')}
                     </Button>
                   </form>
                 </Form>

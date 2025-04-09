@@ -3,8 +3,11 @@ import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { Project } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 const ProjectCard = ({ project }: { project: Project }) => {
+  const { t } = useTranslation();
+  
   return (
     <motion.div 
       className="project-card group relative bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-md"
@@ -26,7 +29,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
             rel="noopener noreferrer" 
             className="bg-white text-primary rounded-md px-4 py-2 text-sm font-medium"
           >
-            Ver Proyecto
+            {t('projects.viewProject')}
           </a>
         </div>
       </div>
@@ -61,6 +64,7 @@ const ProjectSkeleton = () => (
 );
 
 const WorkSection = () => {
+  const { t } = useTranslation();
   const { data: projects, isLoading } = useQuery<Project[]>({
     queryKey: ['/api/projects/featured'],
   });
@@ -76,7 +80,7 @@ const WorkSection = () => {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Proyectos Destacados
+            {t('projects.title')}
           </motion.h2>
           <motion.p 
             className="text-text/70 max-w-2xl mx-auto"
@@ -85,7 +89,7 @@ const WorkSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Una colección de mis trabajos recientes en aplicaciones web, plataformas de comercio electrónico y experiencias interactivas.
+            {t('projects.description')}
           </motion.p>
         </div>
         
@@ -112,7 +116,7 @@ const WorkSection = () => {
               transition={{ duration: 0.5, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              Ver Portafolio Completo
+              {t('projects.viewAll')}
               <i className="ri-arrow-right-line ml-2"></i>
             </motion.div>
           </Link>

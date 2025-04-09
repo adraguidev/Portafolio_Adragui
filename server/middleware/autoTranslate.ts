@@ -80,11 +80,36 @@ function shouldTranslateField(fieldName: string): boolean {
 }
 
 /**
+ * Función para verificar si un texto es una URL o ruta de archivo
+ * @param text Texto a verificar
+ * @returns true si el texto es una URL o ruta de archivo
+ */
+function isUrlOrFilePath(text: string): boolean {
+  // Patrones para detectar URLs y rutas de archivo
+  const urlPatterns = [
+    /^https?:\/\//i, // URLs HTTP/HTTPS
+    /^\/[^/]/, // Rutas absolutas que comienzan con /
+    /^\.\.?\//, // Rutas relativas que comienzan con ./ o ../
+    /^[a-zA-Z]:\\/, // Rutas de Windows
+    /^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|gif|svg|webp|ico|pdf|doc|docx|xls|xlsx)$/i, // Nombres de archivo con extensiones comunes
+    /^data:image\/[^;]+;base64,/, // Imágenes en base64
+    /^blob:/, // URLs de blob
+  ];
+
+  return urlPatterns.some(pattern => pattern.test(text));
+}
+
+/**
  * Función para verificar si un texto contiene un formato de fecha o número que no debe traducirse
  * @param text Texto a verificar
  * @returns true si el texto contiene un formato que no debe traducirse
  */
 function containsUntranslatableFormat(text: string): boolean {
+  // Verificar si es una URL o ruta de archivo
+  if (isUrlOrFilePath(text)) {
+    return true;
+  }
+
   // Verificar si el texto parece una fecha o contiene patrones de fecha
   const datePatterns = [
     /\d{1,4}[-/\.]\d{1,2}[-/\.]\d{1,4}/,  // Formato fecha como 2021-01-01, 01/01/2021

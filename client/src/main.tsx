@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
@@ -28,13 +29,22 @@ const loadFonts = () => {
 };
 
 // Set page title
-document.title = 'Alex Morgan | Web Developer Portfolio';
+document.title = 'Adrián Aguirre | Portafolio Profesional';
 
 // Load fonts
 loadFonts();
 
+// Componente de carga mientras se inicializa i18n
+const Loader = () => (
+  <div className="flex items-center justify-center h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  </div>
+);
+
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <Suspense fallback={<Loader />}>
+      <App />
+    </Suspense>
   </React.StrictMode>
 );

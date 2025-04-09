@@ -63,6 +63,11 @@ const Settings = () => {
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+  const [preloadProgress, setPreloadProgress] = useState<{
+    total: number;
+    completed: number;
+    errors: number;
+  } | null>(null);
 
   // Set page title
   useEffect(() => {
@@ -1070,39 +1075,119 @@ const Settings = () => {
                 <CardFooter className="flex flex-col">
                   <Button
                     onClick={() => {
+                      setPreloadProgress({ total: 0, completed: 0, errors: 0 });
+                      
                       toast({
                         title: 'Precargando traducciones',
-                        description: 'El proceso ha comenzado y puede tardar varios minutos. Se notificará cuando se complete.',
+                        description: 'El proceso ha comenzado y puede tardar varios minutos. Puedes seguir el progreso en esta página.',
                         variant: 'default',
                         duration: 10000,
                       });
                       
+                      // Crear un intervalo para verificar el progreso
+                      const progressCheckerId = setInterval(async () => {
+                        try {
+                          const res = await apiRequest('GET', '/api/translations/status');
+                          const status = await res.json();
+                          
+                          if (status && status.inProgress) {
+                            setPreloadProgress({
+                              total: status.totalTexts || 0,
+                              completed: status.completedTexts || 0,
+                              errors: status.errorCount || 0
+                            });
+                          }
+                        } catch (e) {
+                          // Silenciar errores de la verificación de estado
+                          console.log('Error al verificar estado:', e);
+                        }
+                      }, 3000);
+                      
                       apiRequest('POST', '/api/translations/preload')
                         .then((res) => res.json())
                         .then((data) => {
-                          toast({
-                            title: 'Traducciones precargadas',
-                            description: `Se han precargado ${data.count || 0} traducciones correctamente`,
-                            variant: 'default',
-                          });
+                          // Detener el intervalo
+                          clearInterval(progressCheckerId);
+                          
+                          // Actualizar el estado final
+                          setPreloadProgress(null);
+                          
+                          if (data.errors > 0) {
+                            toast({
+                              title: 'Traducciones precargadas con advertencias',
+                              description: `Se han precargado ${data.count || 0} traducciones con ${data.errors || 0} errores. Los errores no afectan al funcionamiento.`,
+                              variant: 'default',
+                              duration: 8000,
+                            });
+                          } else {
+                            toast({
+                              title: 'Traducciones precargadas',
+                              description: `Se han precargado ${data.count || 0} traducciones correctamente`,
+                              variant: 'default',
+                            });
+                          }
                         })
                         .catch((error) => {
+                          // Detener el intervalo
+                          clearInterval(progressCheckerId);
+                          
+                          // Restablecer el estado de progreso
+                          setPreloadProgress(null);
+                          
                           toast({
-                            title: 'Error',
-                            description: 'No se pudieron precargar las traducciones',
+                            title: 'Error al precargar traducciones',
+                            description: error.message || 'Intenta reducir el número de traducciones o intentarlo más tarde.',
                             variant: 'destructive',
+                            duration: 8000,
                           });
                           console.error('Error preloading translations:', error);
                         });
                     }}
                     variant="outline"
                     className="w-full mb-2"
+                    disabled={!!preloadProgress}
                   >
-                    <RefreshCw className="mr-2 h-4 w-4" /> Precargar todas las traducciones
+                    {preloadProgress ? (
+                      <>
+                        <div className="animate-spin mr-2">
+                          <RefreshCw className="h-4 w-4" />
+                        </div>
+                        Precargando... {preloadProgress.completed > 0 && preloadProgress.total > 0 && 
+                          `(${Math.round((preloadProgress.completed / preloadProgress.total) * 100)}%)`
+                        }
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4" /> Precargar todas las traducciones
+                      </>
+                    )}
                   </Button>
-                  <div className="w-full text-xs text-slate-500 text-center mt-2">
-                    Español → {['Inglés', 'Francés', 'Alemán', 'Italiano', 'Portugués', 'Japonés', 'Chino'].join(' • ')}
-                  </div>
+                  
+                  {preloadProgress && (
+                    <div className="w-full mt-3">
+                      <div className="w-full bg-slate-100 rounded-full h-2.5">
+                        <div 
+                          className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out" 
+                          style={{ 
+                            width: `${preloadProgress.total > 0 ? Math.round((preloadProgress.completed / preloadProgress.total) * 100) : 0}%` 
+                          }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between mt-1 text-xs text-slate-500">
+                        <span>{preloadProgress.completed} completadas</span>
+                        {preloadProgress.errors > 0 && (
+                          <span className="text-amber-500">{preloadProgress.errors} errores</span>
+                        )}
+                        <span>Total: {preloadProgress.total}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {!preloadProgress && (
+                    <div className="w-full text-xs text-slate-500 text-center mt-2">
+                      Español → {['Inglés', 'Francés', 'Alemán', 'Italiano', 'Portugués', 'Japonés', 'Chino'].join(' • ')}
+                    </div>
+                  )}
                 </CardFooter>
               </Card>
             </div>

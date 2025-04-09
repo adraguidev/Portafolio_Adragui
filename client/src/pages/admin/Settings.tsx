@@ -28,7 +28,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
-import { FileUp, CheckCircle, AlertCircle, Database, RefreshCw } from 'lucide-react';
+import { FileUp, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Definir tipos necesarios aquí hasta que podamos importarlos correctamente
 interface SocialLinks {
@@ -63,28 +63,6 @@ const Settings = () => {
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
-
-  // Agregar nuevos estados para mejor manejo del proceso
-  const [preloadProgress, setPreloadProgress] = useState<{
-    inProgress: boolean;
-    totalTexts: number;
-    completedTexts: number;
-    errorCount: number;
-    currentLanguage: string;
-    currentBatch: number;
-    totalBatches: number;
-    progressPercentage: number;
-    elapsedTime: number;
-  } | null>(null);
-
-  const [statusCheckInterval, setStatusCheckInterval] = useState<NodeJS.Timeout | null>(null);
-
-  // Función para formatear tiempo en formato mm:ss
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
 
   // Set page title
   useEffect(() => {
@@ -260,15 +238,6 @@ const Settings = () => {
     reader.readAsText(selectedFile);
   };
 
-  // Limpiar el intervalo al desmontar el componente
-  useEffect(() => {
-    return () => {
-      if (statusCheckInterval) {
-        clearInterval(statusCheckInterval);
-      }
-    };
-  }, [statusCheckInterval]);
-
   if (isLoading) {
     return (
       <AdminLayout>
@@ -299,7 +268,6 @@ const Settings = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="general">Información General</TabsTrigger>
             <TabsTrigger value="import-export">Importar/Exportar</TabsTrigger>
-            <TabsTrigger value="translations">Traducciones</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
@@ -1004,255 +972,6 @@ const Settings = () => {
                 </CardFooter>
               </Card>
             </div>
-          </TabsContent>
-
-          <TabsContent value="translations">
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* Gestión de caché de traducciones */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Gestión de caché</CardTitle>
-                  <CardDescription>
-                    Limpiar la caché de traducciones almacenada en Redis
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 mb-4">
-                    Esta operación eliminará todas las traducciones almacenadas en caché.
-                    Útil cuando hay problemas con traducciones desactualizadas o incorrectas.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        className="w-full"
-                      >
-                        <Database className="mr-2 h-4 w-4" /> Limpiar caché de traducciones
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Esta acción eliminará toda la caché de traducciones de Redis Cloud.
-                          Las traducciones se regenerarán a medida que los usuarios accedan al sitio,
-                          lo que puede ralentizar temporalmente el rendimiento.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => {
-                          toast({
-                            title: 'Limpiando caché',
-                            description: 'Esto puede tomar unos segundos...',
-                            variant: 'default',
-                          });
-                          
-                          apiRequest('POST', '/api/translations/clear-cache')
-                            .then((res) => res.json())
-                            .then((data) => {
-                              toast({
-                                title: 'Caché limpiada',
-                                description: `Se han eliminado ${data.keysDeleted || 0} entradas de la caché de traducciones`,
-                                variant: 'default',
-                              });
-                            })
-                            .catch((error) => {
-                              toast({
-                                title: 'Error',
-                                description: 'No se pudo limpiar la caché de traducciones',
-                                variant: 'destructive',
-                              });
-                              console.error('Error clearing translation cache:', error);
-                            });
-                        }}>
-                          Confirmar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </CardFooter>
-              </Card>
-
-              {/* Precargar traducciones */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Precargar traducciones</CardTitle>
-                  <CardDescription>
-                    Generar y almacenar en caché traducciones para el contenido estático
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 mb-4">
-                    Esta operación traducirá todo el contenido estático a todos los idiomas soportados
-                    y almacenará los resultados en caché. Las traducciones se procesarán en lotes
-                    para mayor eficiencia.
-                  </p>
-                  <div className="flex items-center p-2 mb-4 bg-amber-50 border border-amber-200 rounded-md text-amber-700">
-                    <i className="ri-information-line mr-2 text-amber-500"></i>
-                    <p className="text-xs">
-                      Este proceso puede tardar varios minutos. Las traducciones se harán mediante procesamiento
-                      por lotes para maximizar la eficiencia y reducir el tiempo total.
-                    </p>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex flex-col">
-                  <Button
-                    onClick={() => {
-                      toast({
-                        title: 'Precargando traducciones',
-                        description: 'El proceso ha comenzado y puede tardar varios minutos. Puedes seguir el progreso en esta página.',
-                        variant: 'default',
-                        duration: 10000,
-                      });
-                      
-                      // Inicio del proceso en el servidor
-                      apiRequest('POST', '/api/translations/preload')
-                        .then((res) => res.json())
-                        .then((data) => {
-                          // Inicializar monitor de progreso
-                          if (statusCheckInterval) {
-                            clearInterval(statusCheckInterval);
-                          }
-                          
-                          // Configurar intervalo para verificar el estado cada 2 segundos
-                          const intervalId = setInterval(async () => {
-                            try {
-                              const res = await fetch('/api/translations/status');
-                              const status = await res.json();
-                              
-                              // Actualizar el estado de progreso
-                              setPreloadProgress(status);
-                              
-                              // Si el proceso ha terminado, detener el intervalo
-                              if (!status.inProgress) {
-                                if (statusCheckInterval) {
-                                  clearInterval(statusCheckInterval);
-                                  setStatusCheckInterval(null);
-                                }
-                                
-                                // Mostrar toast con resultado final
-                                toast({
-                                  title: 'Traducciones completadas',
-                                  description: `Se han traducido ${status.completedTexts} textos con ${status.errorCount} errores en ${formatTime(status.elapsedTime)}`,
-                                  variant: 'default',
-                                  duration: 5000,
-                                });
-                              }
-                            } catch (error) {
-                              console.error('Error al verificar estado:', error);
-                            }
-                          }, 2000);
-                          
-                          setStatusCheckInterval(intervalId);
-                        })
-                        .catch((error) => {
-                          toast({
-                            title: 'Error al iniciar proceso',
-                            description: error.message || 'Intenta reducir el número de traducciones o intentarlo más tarde.',
-                            variant: 'destructive',
-                            duration: 8000,
-                          });
-                          console.error('Error starting translation preload:', error);
-                        });
-                    }}
-                    variant="outline"
-                    className="w-full mb-2"
-                    disabled={preloadProgress?.inProgress}
-                  >
-                    {preloadProgress?.inProgress ? (
-                      <>
-                        <div className="animate-spin mr-2">
-                          <RefreshCw className="h-4 w-4" />
-                        </div>
-                        Precargando... ({preloadProgress.progressPercentage}%)
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="mr-2 h-4 w-4" /> Precargar todas las traducciones
-                      </>
-                    )}
-                  </Button>
-                  
-                  {preloadProgress?.inProgress && (
-                    <div className="w-full mt-3">
-                      <div className="w-full bg-slate-100 rounded-full h-2.5 mb-1">
-                        <div 
-                          className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out" 
-                          style={{ width: `${preloadProgress.progressPercentage}%` }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between mt-1 text-xs text-slate-500">
-                        <span>{preloadProgress.completedTexts}/{preloadProgress.totalTexts} textos</span>
-                        <span>Idioma: {preloadProgress.currentLanguage}</span>
-                        <span>Lote: {preloadProgress.currentBatch}/{preloadProgress.totalBatches}</span>
-                      </div>
-                      <div className="flex justify-between mt-1 text-xs text-slate-500">
-                        <span>Tiempo: {formatTime(preloadProgress.elapsedTime)}</span>
-                        {preloadProgress.errorCount > 0 && (
-                          <span className="text-amber-500">{preloadProgress.errorCount} errores</span>
-                        )}
-                        <span>{preloadProgress.progressPercentage}% completado</span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {!preloadProgress?.inProgress && (
-                    <div className="w-full text-xs text-slate-500 text-center mt-2">
-                      Español → {['Inglés', 'Francés', 'Alemán', 'Italiano', 'Portugués', 'Japonés', 'Chino'].join(' • ')}
-                    </div>
-                  )}
-                </CardFooter>
-              </Card>
-            </div>
-            
-            {/* Información sobre el sistema de traducción */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Información del sistema de traducción</CardTitle>
-                <CardDescription>
-                  Detalles sobre cómo funciona el sistema de traducciones
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-md font-medium mb-2">Optimización de traducciones</h3>
-                    <p className="text-sm text-slate-600">
-                      El sistema utiliza un procesamiento por lotes (batching) que agrupa múltiples 
-                      solicitudes de traducción en una sola llamada a la API, reduciendo 
-                      significativamente el tiempo de procesamiento y los costos.
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-md font-medium mb-2">Caché en Redis</h3>
-                    <p className="text-sm text-slate-600">
-                      Todas las traducciones se almacenan en Redis Cloud durante 30 días, lo que 
-                      permite una carga más rápida del sitio y reduce las llamadas a la API.
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-md font-medium mb-2">Idiomas soportados</h3>
-                    <p className="text-sm text-slate-600">
-                      El sistema soporta actualmente traducciones entre español y: inglés, francés, alemán, 
-                      italiano, portugués, japonés y chino. El español es el idioma base de todas las traducciones.
-                    </p>
-                  </div>
-                  
-                  <div className="p-2 bg-slate-50 border border-slate-200 rounded-md">
-                    <p className="text-xs text-slate-600">
-                      <strong>Nota:</strong> La precarga de traducciones puede generar costos por el uso de la API de DeepSeek. 
-                      Se recomienda hacerlo solo cuando sea necesario, como después de actualizar contenido estático 
-                      o añadir nuevos idiomas al sistema.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>

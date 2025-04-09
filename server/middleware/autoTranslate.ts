@@ -51,17 +51,8 @@ async function translateData(
   targetLang: string,
   originalLang: string = 'es'
 ): Promise<any> {
-  // Si el idioma destino es el mismo que el original, devolver los datos sin cambios
-  if (targetLang === originalLang || !targetLang) {
-    return data;
-  }
-
   // Caso base: si es un string, traducirlo
   if (typeof data === 'string') {
-    // Verificar si es un string vacío o muy corto
-    if (data.trim().length <= 1) {
-      return data;
-    }
     return await translateText(data, targetLang, originalLang);
   }
 
@@ -80,11 +71,6 @@ async function translateData(
 
     for (const [key, value] of Object.entries(data)) {
       if (shouldTranslateField(key) && typeof value === 'string') {
-        // Verificar si es un string vacío o muy corto
-        if (value.trim().length <= 1) {
-          translatedObject[key] = value;
-          continue;
-        }
         // Traducir strings en campos traducibles
         translatedObject[key] = await translateText(
           value,
@@ -125,28 +111,21 @@ export function autoTranslateMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  // Rutas a excluir del proceso de traducción
-  const excludedRoutes = [
-    '/api/translations/status',
-    '/api/translations/cache-status',
-    '/api/translations/preload',
-    '/api/translations/clear-cache'
-  ];
-  
-  // Si la ruta está en la lista de excluidas, no aplicar traducción
-  if (excludedRoutes.includes(req.path)) {
-    return next();
-  }
-
-  // Obtener el idioma solicitado de la consulta o del header Accept-Language
-  const queryLang = req.query.lang as string;
-  const acceptLang = req.headers['accept-language']?.split(',')[0]?.split('-')[0];
-  const targetLang = queryLang || acceptLang || 'es';
+  // Obtener el idioma solicitado de la consulta
+  const targetLang = (req.query.lang as string)?.toLowerCase();
   const originalLang = 'es'; // Idioma original (por ahora fijo en español)
 
   console.log(
     `[TRANSLATE] Solicitud de traducción recibida - Path: ${req.path}, Lang: ${targetLang}`
   );
+
+  // Si no hay parámetro de idioma, no traducir
+  if (!req.query.lang) {
+    console.log(
+      '[TRANSLATE] ℹ️ No se solicitó traducción (sin parámetro lang)'
+    );
+    return next();
+  }
 
   // Validar que el idioma solicitado sea válido
   if (!SUPPORTED_LANGUAGES.includes(targetLang)) {

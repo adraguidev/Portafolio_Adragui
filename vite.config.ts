@@ -20,6 +20,9 @@ export default defineConfig(async () => {
     build: {
       outDir: path.resolve(import.meta.dirname, "dist/public"),
       emptyOutDir: true,
+      rollupOptions: {
+        external: ['react', 'react-dom', 'wouter', 'react-i18next', 'i18next'],
+      },
     },
     resolve: {
       alias: {
@@ -29,5 +32,8 @@ export default defineConfig(async () => {
       },
     },
     plugins,
+    server: {
+      port: 3000,
+    },
   };
 });

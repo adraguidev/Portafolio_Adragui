@@ -56,10 +56,11 @@ export const getQueryFn: <T>(options: {
     const url = new URL(queryKey[0] as string, window.location.origin);
     if (!url.searchParams.has('lang')) {
       const userLang = navigator.language.split('-')[0];
-      // Solo agregar el parámetro si es un idioma soportado
-      if (['en', 'fr', 'de', 'it', 'pt'].includes(userLang)) {
-        url.searchParams.append('lang', userLang);
-      }
+      // Definir idiomas soportados
+      const supportedLangs = ['en', 'fr', 'de', 'it', 'pt'];
+      // Usar el idioma del usuario si está soportado, o 'en' como fallback
+      const lang = supportedLangs.includes(userLang) ? userLang : 'en';
+      url.searchParams.append('lang', lang);
     }
 
     const res = await fetch(url.toString(), {

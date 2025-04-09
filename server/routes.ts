@@ -159,7 +159,11 @@ let preloadStatus = {
   completedTexts: 0,
   errorCount: 0,
   startTime: null as Date | null,
-  endTime: null as Date | null
+  endTime: null as Date | null,
+  currentLanguage: '',
+  currentBatch: 0,
+  totalBatches: 0,
+  progressPercentage: 0
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -1294,177 +1298,219 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Ruta para obtener el estado actual de la precarga de traducciones
-  app.get('/api/translations/status', authenticateJWT, (req, res) => {
+  // Nota: Esta ruta es pública (sin autenticación) para permitir que la interfaz de usuario actualice el progreso
+  app.get('/api/translations/status', (req, res) => {
+    // Configurar encabezados para permitir el acceso desde cualquier origen (importante para la interfaz de usuario)
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    
+    // Calcular el tiempo transcurrido si el proceso está en marcha
+    const elapsedTime = preloadStatus.startTime 
+      ? Math.round((preloadStatus.endTime || new Date()).getTime() - preloadStatus.startTime.getTime()) / 1000
+      : 0;
+    
+    // Calcular el porcentaje general de progreso
+    let progressPercentage = 0;
+    if (preloadStatus.totalTexts > 0) {
+      progressPercentage = Math.min(
+        Math.round((preloadStatus.completedTexts / preloadStatus.totalTexts) * 100), 
+        100
+      );
+    }
+    
     res.json({
       ...preloadStatus,
-      elapsedTime: preloadStatus.startTime 
-        ? Math.round((preloadStatus.endTime || new Date()).getTime() - preloadStatus.startTime.getTime()) / 1000
-        : 0
+      elapsedTime,
+      progressPercentage
     });
   });
 
   app.post('/api/translations/preload', authenticateJWT, async (req, res) => {
-    try {
-      // Actualizar el estado global
-      preloadStatus = {
-        inProgress: true,
-        totalTexts: 0,
-        completedTexts: 0,
-        errorCount: 0,
-        startTime: new Date(),
-        endTime: null
-      };
-      
-      // Cargamos todos los archivos de traducciones
-      const esTranslations = require('../client/src/i18n/locales/es.json');
-      let translationCount = 0;
-      let errorCount = 0;
-      
-      // Conexión a Redis
-      const redisClient = createClient({
-        url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
-      });
-      
-      await redisClient.connect();
-      
-      // Para cada idioma soportado que no sea español (idioma original)
-      const targetLanguages = SUPPORTED_LANGUAGES.filter(lang => lang !== 'es');
-      
-      // Función para recopilar todos los textos a traducir
-      const collectTexts = (obj: any): string[] => {
-        let texts: string[] = [];
-        
-        for (const key in obj) {
-          if (typeof obj[key] === 'string') {
-            // Solo incluir textos que tengan al menos 2 caracteres para evitar problemas
-            if (obj[key].length > 1) {
-              texts.push(obj[key]);
-            }
-          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-            // Si es un objeto, procesarlo recursivamente
-            texts = texts.concat(collectTexts(obj[key]));
-          }
-        }
-        
-        return texts;
-      };
-      
-      // Recopilar todos los textos a traducir
-      let textsToTranslate = collectTexts(esTranslations);
-      
-      // Eliminar duplicados para reducir el número de traducciones
-      textsToTranslate = Array.from(new Set(textsToTranslate));
-      
-      // Actualizar el contador total
-      preloadStatus.totalTexts = textsToTranslate.length * targetLanguages.length;
-      
-      console.log(`[Preload] Recopilados ${textsToTranslate.length} textos únicos para traducir a ${targetLanguages.length} idiomas (total: ${preloadStatus.totalTexts})`);
-      
-      // Reducir el tamaño del lote para procesamiento más confiable
-      const batchSize = 20; // Reducido para mayor estabilidad
-      
-      // Para cada idioma destino, traducir todos los textos
-      for (const targetLang of targetLanguages) {
-        console.log(`[Preload] Iniciando traducción a ${targetLang}...`);
-        
-        // Divide los textos en lotes más pequeños
-        const textBatches = [];
-        
-        for (let i = 0; i < textsToTranslate.length; i += batchSize) {
-          textBatches.push(textsToTranslate.slice(i, i + batchSize));
-        }
-        
-        // Procesar cada lote secuencialmente
-        for (let i = 0; i < textBatches.length; i++) {
-          const batch = textBatches[i];
-          const batchStart = i * batchSize + 1;
-          const batchEnd = Math.min((i + 1) * batchSize, textsToTranslate.length);
-          
-          console.log(`[Preload] Procesando lote ${i+1}/${textBatches.length} (textos ${batchStart}-${batchEnd}) para ${targetLang}`);
-          
-          try {
-            // Procesar el lote completo con manejo de errores por texto
-            const results = await Promise.allSettled(
-              batch.map(async (text) => {
-                try {
-                  // Verificar si ya existe en caché
-                  const cacheKey = `translate:${targetLang}:${text}`;
-                  const existingTranslation = await redisClient.get(cacheKey);
-                  
-                  if (!existingTranslation) {
-                    // El sistema de procesamiento por lotes en translateText se encargará 
-                    // de agrupar estas solicitudes automáticamente
-                    await translateText(text, targetLang, 'es');
-                    translationCount++;
-                    preloadStatus.completedTexts++;
-                    return { success: true, text };
-                  } else {
-                    // También contar las traducciones que ya estaban en caché
-                    preloadStatus.completedTexts++;
-                  }
-                  return { success: true, text, cached: true };
-                } catch (err: any) {
-                  errorCount++;
-                  preloadStatus.errorCount++;
-                  console.error(`Error traduciendo "${text.substring(0, 30)}..." a ${targetLang}: ${err?.message || String(err)}`);
-                  return { success: false, text, error: err?.message || String(err) };
-                }
-              })
-            );
-            
-            // Contar resultados para reportes
-            const successful = results.filter(r => r.status === 'fulfilled' && (r.value as any).success).length;
-            const failed = results.filter(r => r.status === 'rejected' || !(r.value as any).success).length;
-            const cached = results.filter(r => r.status === 'fulfilled' && (r.value as any).cached).length;
-            
-            console.log(`[Preload] Lote ${i+1}/${textBatches.length} para ${targetLang}: ${successful} éxitos (${cached} en caché), ${failed} fallos`);
-            
-            // Pausa más larga entre lotes para evitar límites de API
-            if (i < textBatches.length - 1) {
-              console.log(`[Preload] Esperando 3 segundos antes del siguiente lote...`);
-              await new Promise(resolve => setTimeout(resolve, 3000));
-            }
-          } catch (batchError) {
-            console.error(`[Preload] Error procesando lote ${i+1}/${textBatches.length} para ${targetLang}:`, batchError);
-            errorCount += batch.length; // Contar todo el lote como fallido
-          }
-        }
-        
-        // Pausa entre idiomas para dar "respiro" a la API
-        if (targetLanguages.indexOf(targetLang) < targetLanguages.length - 1) {
-          console.log(`[Preload] Completada traducción a ${targetLang}. Esperando 5 segundos antes del siguiente idioma...`);
-          await new Promise(resolve => setTimeout(resolve, 5000));
-        }
-      }
-      
-      // Cerrar conexión
-      await redisClient.disconnect();
-      
-      // Actualizar el estado de finalización
-      preloadStatus.inProgress = false;
-      preloadStatus.endTime = new Date();
-      
-      const successMessage = `Proceso completado. Se han traducido ${translationCount} textos con ${errorCount} errores.`;
-      console.log(`[Preload] ${successMessage}`);
-      
-      res.json({ 
-        success: true, 
-        message: 'Traducciones precargadas correctamente',
-        count: translationCount,
-        errors: errorCount
-      });
-    } catch (error: any) {
-      // Actualizar el estado en caso de error general
-      preloadStatus.inProgress = false;
-      preloadStatus.endTime = new Date();
-      
-      console.error('Error al precargar traducciones:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: `Error al precargar traducciones: ${error?.message || 'Error desconocido'}`,
-        error: error?.message || String(error)
+    // Verificar si ya hay un proceso de precarga en marcha
+    if (preloadStatus.inProgress) {
+      return res.status(409).json({
+        success: false,
+        message: 'Ya hay un proceso de precarga en marcha. Por favor, espere a que termine.'
       });
     }
+    
+    // Enviar respuesta inmediata para no bloquear al cliente
+    res.json({
+      success: true,
+      message: 'Proceso de precarga iniciado. Monitoree el progreso a través de /api/translations/status',
+      status: preloadStatus
+    });
+    
+    // Iniciar el proceso de precarga en segundo plano
+    setTimeout(async () => {
+      try {
+        // Actualizar el estado global
+        preloadStatus = {
+          inProgress: true,
+          totalTexts: 0,
+          completedTexts: 0,
+          errorCount: 0,
+          startTime: new Date(),
+          endTime: null,
+          currentLanguage: '',
+          currentBatch: 0,
+          totalBatches: 0,
+          progressPercentage: 0
+        };
+        
+        // Cargamos todos los archivos de traducciones
+        const esTranslations = require('../client/src/i18n/locales/es.json');
+        let translationCount = 0;
+        let errorCount = 0;
+        
+        // Conexión a Redis
+        const redisClient = createClient({
+          url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
+        });
+        
+        await redisClient.connect();
+        
+        // Para cada idioma soportado que no sea español (idioma original)
+        const targetLanguages = SUPPORTED_LANGUAGES.filter(lang => lang !== 'es');
+        
+        // Función para recopilar todos los textos a traducir
+        const collectTexts = (obj: any): string[] => {
+          let texts: string[] = [];
+          
+          for (const key in obj) {
+            if (typeof obj[key] === 'string') {
+              // Solo incluir textos que tengan al menos 2 caracteres para evitar problemas
+              if (obj[key].length > 1) {
+                texts.push(obj[key]);
+              }
+            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+              // Si es un objeto, procesarlo recursivamente
+              texts = texts.concat(collectTexts(obj[key]));
+            }
+          }
+          
+          return texts;
+        };
+        
+        // Recopilar todos los textos a traducir
+        let textsToTranslate = collectTexts(esTranslations);
+        
+        // Eliminar duplicados para reducir el número de traducciones
+        textsToTranslate = Array.from(new Set(textsToTranslate));
+        
+        // Actualizar el contador total
+        preloadStatus.totalTexts = textsToTranslate.length * targetLanguages.length;
+        
+        console.log(`[Preload] Recopilados ${textsToTranslate.length} textos únicos para traducir a ${targetLanguages.length} idiomas (total: ${preloadStatus.totalTexts})`);
+        
+        // Reducir el tamaño del lote para procesamiento más confiable
+        const batchSize = 10; // Reducido para mayor estabilidad
+        
+        // Para cada idioma destino, traducir todos los textos
+        for (let langIndex = 0; langIndex < targetLanguages.length; langIndex++) {
+          const targetLang = targetLanguages[langIndex];
+          preloadStatus.currentLanguage = targetLang;
+          
+          console.log(`[Preload] Iniciando traducción a ${targetLang}...`);
+          
+          // Divide los textos en lotes más pequeños
+          const textBatches = [];
+          
+          for (let i = 0; i < textsToTranslate.length; i += batchSize) {
+            textBatches.push(textsToTranslate.slice(i, i + batchSize));
+          }
+          
+          preloadStatus.totalBatches = textBatches.length;
+          
+          // Procesar cada lote secuencialmente
+          for (let i = 0; i < textBatches.length; i++) {
+            preloadStatus.currentBatch = i + 1;
+            
+            const batch = textBatches[i];
+            const batchStart = i * batchSize + 1;
+            const batchEnd = Math.min((i + 1) * batchSize, textsToTranslate.length);
+            
+            console.log(`[Preload] Procesando lote ${i+1}/${textBatches.length} (textos ${batchStart}-${batchEnd}) para ${targetLang}`);
+            
+            try {
+              // Procesar el lote completo con manejo de errores por texto
+              const results = await Promise.allSettled(
+                batch.map(async (text) => {
+                  try {
+                    // Verificar si ya existe en caché
+                    const cacheKey = `translate:${targetLang}:${text}`;
+                    const existingTranslation = await redisClient.get(cacheKey);
+                    
+                    if (!existingTranslation) {
+                      // El sistema de procesamiento por lotes en translateText se encargará 
+                      // de agrupar estas solicitudes automáticamente
+                      await translateText(text, targetLang, 'es');
+                      translationCount++;
+                      preloadStatus.completedTexts++;
+                      return { success: true, text };
+                    } else {
+                      // También contar las traducciones que ya estaban en caché
+                      preloadStatus.completedTexts++;
+                      return { success: true, text, cached: true };
+                    }
+                  } catch (err: any) {
+                    errorCount++;
+                    preloadStatus.errorCount++;
+                    console.error(`Error traduciendo "${text.substring(0, 30)}..." a ${targetLang}: ${err?.message || String(err)}`);
+                    return { success: false, text, error: err?.message || String(err) };
+                  }
+                })
+              );
+              
+              // Calcular porcentaje de progreso actual
+              preloadStatus.progressPercentage = Math.round((preloadStatus.completedTexts / preloadStatus.totalTexts) * 100);
+              
+              // Contar resultados para reportes
+              const successful = results.filter(r => r.status === 'fulfilled' && (r.value as any).success).length;
+              const failed = results.filter(r => r.status === 'rejected' || !(r.value as any).success).length;
+              const cached = results.filter(r => r.status === 'fulfilled' && (r.value as any).cached).length;
+              
+              console.log(`[Preload] Lote ${i+1}/${textBatches.length} para ${targetLang}: ${successful} éxitos (${cached} en caché), ${failed} fallos`);
+              
+              // Pausa más larga entre lotes para evitar límites de API
+              if (i < textBatches.length - 1) {
+                console.log(`[Preload] Esperando 3 segundos antes del siguiente lote...`);
+                await new Promise(resolve => setTimeout(resolve, 3000));
+              }
+            } catch (batchError) {
+              console.error(`[Preload] Error procesando lote ${i+1}/${textBatches.length} para ${targetLang}:`, batchError);
+              errorCount += batch.length; // Contar todo el lote como fallido
+              preloadStatus.errorCount += batch.length;
+            }
+          }
+          
+          // Pausa entre idiomas para dar "respiro" a la API
+          if (langIndex < targetLanguages.length - 1) {
+            console.log(`[Preload] Completada traducción a ${targetLang}. Esperando 5 segundos antes del siguiente idioma...`);
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
+        }
+        
+        // Cerrar conexión
+        await redisClient.disconnect();
+        
+        // Actualizar el estado de finalización
+        preloadStatus.inProgress = false;
+        preloadStatus.endTime = new Date();
+        preloadStatus.progressPercentage = 100;
+        
+        const successMessage = `Proceso completado. Se han traducido ${translationCount} textos con ${errorCount} errores.`;
+        console.log(`[Preload] ${successMessage}`);
+        
+      } catch (error: any) {
+        // Actualizar el estado en caso de error general
+        preloadStatus.inProgress = false;
+        preloadStatus.endTime = new Date();
+        
+        console.error('Error al precargar traducciones:', error);
+      }
+    }, 100); // Pequeño retraso para asegurar que la respuesta al cliente se envíe primero
   });
 
   const httpServer = createServer(app);

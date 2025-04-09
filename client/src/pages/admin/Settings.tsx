@@ -63,11 +63,28 @@ const Settings = () => {
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+
+  // Agregar nuevos estados para mejor manejo del proceso
   const [preloadProgress, setPreloadProgress] = useState<{
-    total: number;
-    completed: number;
-    errors: number;
+    inProgress: boolean;
+    totalTexts: number;
+    completedTexts: number;
+    errorCount: number;
+    currentLanguage: string;
+    currentBatch: number;
+    totalBatches: number;
+    progressPercentage: number;
+    elapsedTime: number;
   } | null>(null);
+
+  const [statusCheckInterval, setStatusCheckInterval] = useState<NodeJS.Timeout | null>(null);
+
+  // Función para formatear tiempo en formato mm:ss
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
 
   // Set page title
   useEffect(() => {
@@ -1075,8 +1092,6 @@ const Settings = () => {
                 <CardFooter className="flex flex-col">
                   <Button
                     onClick={() => {
-                      setPreloadProgress({ total: 0, completed: 0, errors: 0 });
-                      
                       toast({
                         title: 'Precargando traducciones',
                         description: 'El proceso ha comenzado y puede tardar varios minutos. Puedes seguir el progreso en esta página.',
@@ -1084,77 +1099,66 @@ const Settings = () => {
                         duration: 10000,
                       });
                       
-                      // Crear un intervalo para verificar el progreso
-                      const progressCheckerId = setInterval(async () => {
-                        try {
-                          const res = await apiRequest('GET', '/api/translations/status');
-                          const status = await res.json();
-                          
-                          if (status && status.inProgress) {
-                            setPreloadProgress({
-                              total: status.totalTexts || 0,
-                              completed: status.completedTexts || 0,
-                              errors: status.errorCount || 0
-                            });
-                          }
-                        } catch (e) {
-                          // Silenciar errores de la verificación de estado
-                          console.log('Error al verificar estado:', e);
-                        }
-                      }, 3000);
-                      
+                      // Inicio del proceso en el servidor
                       apiRequest('POST', '/api/translations/preload')
                         .then((res) => res.json())
                         .then((data) => {
-                          // Detener el intervalo
-                          clearInterval(progressCheckerId);
-                          
-                          // Actualizar el estado final
-                          setPreloadProgress(null);
-                          
-                          if (data.errors > 0) {
-                            toast({
-                              title: 'Traducciones precargadas con advertencias',
-                              description: `Se han precargado ${data.count || 0} traducciones con ${data.errors || 0} errores. Los errores no afectan al funcionamiento.`,
-                              variant: 'default',
-                              duration: 8000,
-                            });
-                          } else {
-                            toast({
-                              title: 'Traducciones precargadas',
-                              description: `Se han precargado ${data.count || 0} traducciones correctamente`,
-                              variant: 'default',
-                            });
+                          // Inicializar monitor de progreso
+                          if (statusCheckInterval) {
+                            clearInterval(statusCheckInterval);
                           }
+                          
+                          // Configurar intervalo para verificar el estado cada 2 segundos
+                          const intervalId = setInterval(async () => {
+                            try {
+                              const res = await fetch('/api/translations/status');
+                              const status = await res.json();
+                              
+                              // Actualizar el estado de progreso
+                              setPreloadProgress(status);
+                              
+                              // Si el proceso ha terminado, detener el intervalo
+                              if (!status.inProgress) {
+                                if (statusCheckInterval) {
+                                  clearInterval(statusCheckInterval);
+                                  setStatusCheckInterval(null);
+                                }
+                                
+                                // Mostrar toast con resultado final
+                                toast({
+                                  title: 'Traducciones completadas',
+                                  description: `Se han traducido ${status.completedTexts} textos con ${status.errorCount} errores en ${formatTime(status.elapsedTime)}`,
+                                  variant: 'default',
+                                  duration: 5000,
+                                });
+                              }
+                            } catch (error) {
+                              console.error('Error al verificar estado:', error);
+                            }
+                          }, 2000);
+                          
+                          setStatusCheckInterval(intervalId);
                         })
                         .catch((error) => {
-                          // Detener el intervalo
-                          clearInterval(progressCheckerId);
-                          
-                          // Restablecer el estado de progreso
-                          setPreloadProgress(null);
-                          
                           toast({
-                            title: 'Error al precargar traducciones',
+                            title: 'Error al iniciar proceso',
                             description: error.message || 'Intenta reducir el número de traducciones o intentarlo más tarde.',
                             variant: 'destructive',
                             duration: 8000,
                           });
-                          console.error('Error preloading translations:', error);
+                          console.error('Error starting translation preload:', error);
                         });
                     }}
                     variant="outline"
                     className="w-full mb-2"
-                    disabled={!!preloadProgress}
+                    disabled={preloadProgress?.inProgress}
                   >
-                    {preloadProgress ? (
+                    {preloadProgress?.inProgress ? (
                       <>
                         <div className="animate-spin mr-2">
                           <RefreshCw className="h-4 w-4" />
                         </div>
-                        Precargando... {preloadProgress.completed > 0 && preloadProgress.total > 0 && 
-                          `(${Math.round((preloadProgress.completed / preloadProgress.total) * 100)}%)`
-                        }
+                        Precargando... ({preloadProgress.progressPercentage}%)
                       </>
                     ) : (
                       <>
@@ -1163,27 +1167,30 @@ const Settings = () => {
                     )}
                   </Button>
                   
-                  {preloadProgress && (
+                  {preloadProgress?.inProgress && (
                     <div className="w-full mt-3">
-                      <div className="w-full bg-slate-100 rounded-full h-2.5">
+                      <div className="w-full bg-slate-100 rounded-full h-2.5 mb-1">
                         <div 
                           className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out" 
-                          style={{ 
-                            width: `${preloadProgress.total > 0 ? Math.round((preloadProgress.completed / preloadProgress.total) * 100) : 0}%` 
-                          }}
+                          style={{ width: `${preloadProgress.progressPercentage}%` }}
                         ></div>
                       </div>
                       <div className="flex justify-between mt-1 text-xs text-slate-500">
-                        <span>{preloadProgress.completed} completadas</span>
-                        {preloadProgress.errors > 0 && (
-                          <span className="text-amber-500">{preloadProgress.errors} errores</span>
+                        <span>{preloadProgress.completedTexts}/{preloadProgress.totalTexts} textos</span>
+                        <span>Idioma: {preloadProgress.currentLanguage}</span>
+                        <span>Lote: {preloadProgress.currentBatch}/{preloadProgress.totalBatches}</span>
+                      </div>
+                      <div className="flex justify-between mt-1 text-xs text-slate-500">
+                        <span>Tiempo: {formatTime(preloadProgress.elapsedTime)}</span>
+                        {preloadProgress.errorCount > 0 && (
+                          <span className="text-amber-500">{preloadProgress.errorCount} errores</span>
                         )}
-                        <span>Total: {preloadProgress.total}</span>
+                        <span>{preloadProgress.progressPercentage}% completado</span>
                       </div>
                     </div>
                   )}
                   
-                  {!preloadProgress && (
+                  {!preloadProgress?.inProgress && (
                     <div className="w-full text-xs text-slate-500 text-center mt-2">
                       Español → {['Inglés', 'Francés', 'Alemán', 'Italiano', 'Portugués', 'Japonés', 'Chino'].join(' • ')}
                     </div>
@@ -1243,5 +1250,14 @@ const Settings = () => {
     </AdminLayout>
   );
 };
+
+// Limpiar el intervalo al desmontar el componente
+useEffect(() => {
+  return () => {
+    if (statusCheckInterval) {
+      clearInterval(statusCheckInterval);
+    }
+  };
+}, [statusCheckInterval]);
 
 export default Settings;

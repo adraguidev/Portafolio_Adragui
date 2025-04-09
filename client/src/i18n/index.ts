@@ -29,13 +29,11 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['querystring'],
+      order: ['querystring', 'navigator'],
       lookupQuerystring: 'lang',
-      caches: [],
+      caches: ['cookie'],
     },
-    lng: 'es', // Forzar español como idioma inicial
     load: 'languageOnly',
-    defaultLanguage: 'es',
   });
 
 export default i18n;

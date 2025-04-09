@@ -22,6 +22,21 @@ const UNTRANSLATABLE_FIELDS = [
   'experienceId',
   'educationId',
   'skillId',
+  'alt',
+  'title',
+  'description',
+  'keywords',
+  'og:image',
+  'twitter:image',
+  'favicon',
+  'icon',
+  'logo',
+  'thumbnail',
+  'cover',
+  'background',
+  'avatar',
+  'profile',
+  'banner',
 ];
 
 /**
@@ -149,25 +164,42 @@ export function autoTranslateMiddleware(
   const originalJson = res.json;
 
   // Sobrescribir res.json para interceptar la respuesta
-  res.json = async function (body: any) {
-    try {
-      // Traducir el cuerpo de la respuesta
-      const translatedBody = await translateData(
-        body,
-        targetLang,
-        originalLang
-      );
+  res.json = function (body: any) {
+    const originalJson = res.json;
+    
+    translateData(body, targetLang, originalLang)
+      .then(translatedBody => {
+        // Asegurarse de que las rutas de las imágenes sean absolutas
+        if (translatedBody && typeof translatedBody === 'object') {
+          const processImagePaths = (obj: any) => {
+            for (const key in obj) {
+              if (typeof obj[key] === 'string' && 
+                  (key.toLowerCase().includes('image') || 
+                   key.toLowerCase().includes('src') || 
+                   key.toLowerCase().includes('url')) &&
+                  !obj[key].startsWith('http') && 
+                  !obj[key].startsWith('/')) {
+                obj[key] = `/${obj[key]}`;
+              } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                processImagePaths(obj[key]);
+              }
+            }
+          };
+          processImagePaths(translatedBody);
+        }
 
-      // Restaurar el método original y enviar la respuesta traducida
-      res.json = originalJson;
-      return res.json(translatedBody);
-    } catch (error) {
-      console.log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
+        // Restaurar el método original y enviar la respuesta traducida
+        res.json = originalJson;
+        res.json(translatedBody);
+      })
+      .catch(error => {
+        console.log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
+        // En caso de error, restaurar el método original y enviar la respuesta sin traducir
+        res.json = originalJson;
+        res.json(body);
+      });
 
-      // En caso de error, restaurar el método original y enviar la respuesta sin traducir
-      res.json = originalJson;
-      return res.json(body);
-    }
+    return res;
   };
 
   next();

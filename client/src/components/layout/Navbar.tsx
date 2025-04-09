@@ -3,12 +3,21 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/hooks/useLanguage';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Globe } from 'lucide-react';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
   const { t } = useTranslation();
+  const { currentLanguage, changeLanguage, supportedLanguages } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +33,15 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const languageNames = {
+    en: 'English',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    it: 'Italiano',
+    pt: 'Português',
   };
 
   return (
@@ -55,6 +73,25 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-primary">
+                  <Globe className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {supportedLanguages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang}
+                    onClick={() => changeLanguage(lang)}
+                    className={currentLanguage === lang ? 'bg-accent/10' : ''}
+                  >
+                    {languageNames[lang]}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <a
               href="#contact"
               className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -82,7 +119,7 @@ const Navbar = () => {
           isMobileMenuOpen ? 'block' : 'hidden'
         }`}
       >
-        <div className="px-4 py-3 space-y-4">
+        <div className="px-4 py-2 space-y-2">
           {NAV_ITEMS.map((item) => (
             <a
               key={item.href}
@@ -93,6 +130,24 @@ const Navbar = () => {
               {t(item.translationKey || item.label)}
             </a>
           ))}
+          <div className="py-2">
+            {supportedLanguages.map((lang) => (
+              <button
+                key={lang}
+                onClick={() => {
+                  changeLanguage(lang);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`block w-full text-left py-2 px-4 rounded-md ${
+                  currentLanguage === lang
+                    ? 'bg-accent/10 text-primary'
+                    : 'text-primary/80'
+                }`}
+              >
+                {languageNames[lang]}
+              </button>
+            ))}
+          </div>
           <a
             href="#contact"
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"

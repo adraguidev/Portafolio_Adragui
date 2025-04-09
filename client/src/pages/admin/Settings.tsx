@@ -260,6 +260,15 @@ const Settings = () => {
     reader.readAsText(selectedFile);
   };
 
+  // Limpiar el intervalo al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (statusCheckInterval) {
+        clearInterval(statusCheckInterval);
+      }
+    };
+  }, [statusCheckInterval]);
+
   if (isLoading) {
     return (
       <AdminLayout>
@@ -1250,14 +1259,5 @@ const Settings = () => {
     </AdminLayout>
   );
 };
-
-// Limpiar el intervalo al desmontar el componente
-useEffect(() => {
-  return () => {
-    if (statusCheckInterval) {
-      clearInterval(statusCheckInterval);
-    }
-  };
-}, [statusCheckInterval]);
 
 export default Settings;

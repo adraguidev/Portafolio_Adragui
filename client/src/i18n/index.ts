@@ -28,6 +28,14 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    detection: {
+      order: ['querystring'],
+      lookupQuerystring: 'lang',
+      caches: [],
+    },
+    lng: 'es', // Forzar español como idioma inicial
+    load: 'languageOnly',
+    defaultLanguage: 'es',
   });
 
 export default i18n;

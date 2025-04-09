@@ -4,6 +4,12 @@ import OpenAI from 'openai';
 // Configuración de Redis para caché
 const redisClient = createClient({
   url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
+  socket: {
+    reconnectStrategy: (retries) => {
+      console.log(`[Redis] Intentando reconectar (intento ${retries})...`);
+      return Math.min(retries * 100, 3000);
+    }
+  }
 });
 
 // Conexión a Redis
@@ -13,15 +19,30 @@ redisClient
   .connect()
   .then(() => {
     redisConnected = true;
-    console.log('Conexión exitosa a Redis');
+    console.log('[Redis] Conexión exitosa a Redis');
   })
   .catch((err) => {
-    console.error('Error conectando a Redis:', err);
+    console.error('[Redis] Error conectando a Redis:', err);
     console.warn(
-      'Continuando sin caché Redis. Las traducciones no serán cacheadas.'
+      '[Redis] Continuando sin caché Redis. Las traducciones no serán cacheadas.'
     );
     redisConnected = false;
   });
+
+// Agregar listeners para eventos de Redis
+redisClient.on('error', (err) => {
+  console.error('[Redis] Error en la conexión:', err);
+  redisConnected = false;
+});
+
+redisClient.on('connect', () => {
+  console.log('[Redis] Conectado a Redis');
+  redisConnected = true;
+});
+
+redisClient.on('reconnecting', () => {
+  console.log('[Redis] Reconectando a Redis...');
+});
 
 // Configuración del cliente OpenAI para DeepSeek
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
@@ -226,9 +247,15 @@ export async function translateText(
   try {
     // Intentar obtener de caché si Redis está conectado
     if (redisConnected && redisClient.isOpen) {
-      const cachedTranslation = await redisClient.get(cacheKey);
-      if (cachedTranslation) {
-        return cachedTranslation;
+      try {
+        const cachedTranslation = await redisClient.get(cacheKey);
+        if (cachedTranslation) {
+          console.log(`[Redis] Traducción encontrada en caché para: ${text.substring(0, 30)}...`);
+          return cachedTranslation;
+        }
+      } catch (cacheError) {
+        console.error('[Redis] Error al acceder a la caché:', cacheError);
+        // Continuar con la traducción si hay error en la caché
       }
     }
 
@@ -266,7 +293,7 @@ export async function translateText(
       }, BATCH_DELAY);
     });
   } catch (error) {
-    console.error('Error en la traducción:', error);
+    console.error('[Translate] Error en la traducción:', error);
     return text; // Devolver texto original en caso de error
   }
 }

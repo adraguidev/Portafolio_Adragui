@@ -51,8 +51,17 @@ async function translateData(
   targetLang: string,
   originalLang: string = 'es'
 ): Promise<any> {
+  // Si el idioma destino es el mismo que el original, devolver los datos sin cambios
+  if (targetLang === originalLang || !targetLang) {
+    return data;
+  }
+
   // Caso base: si es un string, traducirlo
   if (typeof data === 'string') {
+    // Verificar si es un string vacío o muy corto
+    if (data.trim().length <= 1) {
+      return data;
+    }
     return await translateText(data, targetLang, originalLang);
   }
 
@@ -71,6 +80,11 @@ async function translateData(
 
     for (const [key, value] of Object.entries(data)) {
       if (shouldTranslateField(key) && typeof value === 'string') {
+        // Verificar si es un string vacío o muy corto
+        if (value.trim().length <= 1) {
+          translatedObject[key] = value;
+          continue;
+        }
         // Traducir strings en campos traducibles
         translatedObject[key] = await translateText(
           value,

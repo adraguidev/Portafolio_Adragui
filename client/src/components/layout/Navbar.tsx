@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
+import { useTranslation } from 'react-i18next';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,7 +59,7 @@ const Navbar = () => {
               href="#contact"
               className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
             >
-              Contáctame
+              {t('nav.contact')}
             </a>
             <button
               onClick={toggleMobileMenu}
@@ -96,7 +98,7 @@ const Navbar = () => {
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Contáctame
+            {t('nav.contact')}
           </a>
         </div>
       </div>

@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { SOCIAL_LINKS } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 const formSchema = insertMessageSchema.extend({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -24,7 +23,6 @@ const formSchema = insertMessageSchema.extend({
 const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { t } = useTranslation();
   
   const { data: siteInfo } = useQuery<{
     id: number;
@@ -134,60 +132,8 @@ const ContactSection = () => {
                 </div>
               </div>
               
-              <div className="p-8 md:p-12 bg-slate-900 text-white">
-                <h3 className="font-clash font-semibold text-2xl text-white mb-6">{t('contact.getInTouch')}</h3>
-                <p className="text-white/80 mb-8">
-                  {t('contact.getInTouchDescription')}
-                </p>
-                
-                <div className="space-y-6">
-                  {siteInfo?.contactLocation && (
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-white/10 rounded-full p-3 mt-1">
-                        <i className="ri-map-pin-2-line text-accent text-xl"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-white mb-1">{t('contact.addressLabel')}</h4>
-                        <p className="text-white/80">{siteInfo.contactLocation}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {siteInfo?.contactEmail && (
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-white/10 rounded-full p-3 mt-1">
-                        <i className="ri-mail-line text-accent text-xl"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-white mb-1">{t('contact.emailLabel')}</h4>
-                        <a href={`mailto:${siteInfo.contactEmail}`} className="text-white/80 hover:text-accent transition-colors">{siteInfo.contactEmail}</a>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {siteInfo?.contactPhone && (
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-white/10 rounded-full p-3 mt-1">
-                        <i className="ri-phone-line text-accent text-xl"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-white mb-1">{t('contact.phoneLabel')}</h4>
-                        <a href={`tel:${siteInfo.contactPhone}`} className="text-white/80 hover:text-accent transition-colors">{siteInfo.contactPhone}</a>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="pt-4">
-                    <h4 className="font-medium text-white mb-3">{t('contact.followMe')}</h4>
-                    <div className="flex items-center space-x-3">
-                      {/* ... existing code with social links ... */}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
               <div className="p-8 md:p-12 bg-white">
-                <h3 className="font-clash font-semibold text-2xl text-primary mb-6">{t('contact.sendMessage')}</h3>
+                <h3 className="font-clash font-semibold text-2xl text-primary mb-6">Enviar un Mensaje</h3>
                 
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -196,10 +142,10 @@ const ContactSection = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">{t('contact.name')}</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Nombre</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder={t('common.yourName')}
+                              placeholder="Tu nombre" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -214,11 +160,11 @@ const ContactSection = () => {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">{t('contact.email')}</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Correo electrónico</FormLabel>
                           <FormControl>
                             <Input 
                               type="email" 
-                              placeholder={t('common.yourEmail')}
+                              placeholder="Tu correo electrónico" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -233,10 +179,10 @@ const ContactSection = () => {
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">{t('common.subject')}</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Asunto</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder={t('common.whatIsItAbout')}
+                              placeholder="¿De qué se trata?" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
                               {...field} 
                             />
@@ -251,11 +197,11 @@ const ContactSection = () => {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">{t('contact.message')}</FormLabel>
+                          <FormLabel className="text-sm font-medium text-text/80">Mensaje</FormLabel>
                           <FormControl>
                             <Textarea 
                               rows={5} 
-                              placeholder={t('common.yourMessage')}
+                              placeholder="Tu mensaje" 
                               className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors resize-none" 
                               {...field} 
                             />
@@ -270,7 +216,7 @@ const ContactSection = () => {
                       className="w-full bg-primary text-white rounded-md px-6 py-3 text-base font-medium hover:bg-primary/90 transition-colors"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? t('common.sending') : t('common.sendMessage')}
+                      {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
                     </Button>
                   </form>
                 </Form>

@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 import './i18n';
+import { queryClient } from './lib/queryClient';
+
+// Exponer queryClient globalmente para que pueda ser usado por otros módulos
+(window as any).queryClient = queryClient;
 
 // Import fonts
 const loadFonts = () => {

@@ -18,6 +18,8 @@ import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 import TermsOfService from "@/pages/legal/TermsOfService";
 import CookiePolicy from "@/pages/legal/CookiePolicy";
 import Layout from "@/components/layout/Layout";
+import React from 'react';
+import useScrollRestoration from './hooks/useScrollRestoration';
 
 // Componente wrapper para añadir el Layout a las rutas públicas
 const PublicRoute = ({ component: Component, ...rest }: { component: React.ComponentType<any>, path?: string }) => {
@@ -77,6 +79,8 @@ function Router() {
 }
 
 function App() {
+  useScrollRestoration();
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router />

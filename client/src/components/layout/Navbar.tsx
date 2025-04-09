@@ -3,6 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -55,6 +56,9 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
+            <div className="hidden md:block">
+              <LanguageSelector />
+            </div>
             <a
               href="#contact"
               className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -93,6 +97,9 @@ const Navbar = () => {
               {t(item.translationKey || item.label)}
             </a>
           ))}
+          <div className="py-2">
+            <LanguageSelector />
+          </div>
           <a
             href="#contact"
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"

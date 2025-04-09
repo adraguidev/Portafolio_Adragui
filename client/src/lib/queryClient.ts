@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from '@tanstack/react-query';
+import i18n from '@/i18n';
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -59,6 +60,10 @@ export const getQueryFn: <T>(options: {
     const currentLang = new URLSearchParams(window.location.search).get('lang');
     if (currentLang) {
       url.searchParams.set('lang', currentLang);
+    } else if (i18n.language && i18n.language !== 'es') {
+      // Si no hay parámetro en la URL pero hay un idioma seleccionado en i18n
+      // que no sea español, usarlo para las peticiones API
+      url.searchParams.set('lang', i18n.language);
     }
 
     const res = await fetch(url.toString(), {

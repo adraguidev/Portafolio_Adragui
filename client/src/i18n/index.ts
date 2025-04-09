@@ -33,7 +33,7 @@ i18n
       lookupQuerystring: 'lang',
       caches: [],
     },
-    lng: 'es', // Forzar español como idioma inicial
+    // Eliminamos lng: 'es' para permitir la detección por URL
     load: 'languageOnly',
     defaultLanguage: 'es',
   });

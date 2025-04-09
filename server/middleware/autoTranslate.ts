@@ -135,16 +135,14 @@ async function translateData(
   targetLang: string,
   originalLang: string = 'es'
 ): Promise<any> {
-  // Caso base: si es un string, verificar si debe traducirse
   if (typeof data === 'string') {
-    // No traducir si contiene patrones de fecha o números que deben preservarse
     if (containsUntranslatableFormat(data)) {
       return data;
     }
+    // Intentar traducir siempre si no está en el caché
     return await translateText(data, targetLang, originalLang);
   }
 
-  // Si es un array, traducir cada elemento
   if (Array.isArray(data)) {
     const translatedArray = [];
     for (const item of data) {
@@ -153,27 +151,23 @@ async function translateData(
     return translatedArray;
   }
 
-  // Si es un objeto, traducir cada valor según el campo
   if (data !== null && typeof data === 'object') {
     const translatedObject: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(data)) {
       if (shouldTranslateField(key) && typeof value === 'string' && !containsUntranslatableFormat(value)) {
-        // Traducir strings en campos traducibles que no contengan formatos especiales
         translatedObject[key] = await translateText(
           value,
           targetLang,
           originalLang
         );
       } else if (typeof value === 'object' && value !== null) {
-        // Procesar recursivamente objetos y arrays
         translatedObject[key] = await translateData(
           value,
           targetLang,
           originalLang
         );
       } else {
-        // Mantener otros valores sin cambios
         translatedObject[key] = value;
       }
     }
@@ -181,7 +175,6 @@ async function translateData(
     return translatedObject;
   }
 
-  // Para otros tipos de datos, devolver sin cambios
   return data;
 }
 

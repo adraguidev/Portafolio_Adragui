@@ -2,22 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
-import { useTranslation } from 'react-i18next';
-import { useLanguage } from '@/hooks/useLanguage';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Globe } from 'lucide-react';
+import LanguageSelector from '@/components/ui/LanguageSelector';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
-  const { t } = useTranslation();
-  const { currentLanguage, changeLanguage, supportedLanguages } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,13 +25,9 @@ const Navbar = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const languageNames = {
-    es: 'Español',
-    en: 'English',
-    fr: 'Français',
-    de: 'Deutsch',
-    it: 'Italiano',
-    pt: 'Português',
+  // Función para obtener el label del nav item según el idioma actual
+  const getNavLabel = (item: { label: string }) => {
+    return item.label;
   };
 
   return (
@@ -67,36 +53,19 @@ const Navbar = () => {
                   location === item.href.split('#')[0] ? 'after:w-full' : ''
                 }`}
               >
-                {t(item.translationKey || item.label)}
+                {getNavLabel(item)}
               </a>
             ))}
           </nav>
 
           <div className="flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-primary">
-                  <Globe className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {supportedLanguages.map((lang) => (
-                  <DropdownMenuItem
-                    key={lang}
-                    onClick={() => changeLanguage(lang)}
-                    className={currentLanguage === lang ? 'bg-accent/10' : ''}
-                  >
-                    {languageNames[lang]}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <LanguageSelector />
 
             <a
               href="#contact"
               className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
             >
-              {t('nav.contact')}
+              Contacto
             </a>
             <button
               onClick={toggleMobileMenu}
@@ -127,33 +96,18 @@ const Navbar = () => {
               className="block text-primary font-medium py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              {t(item.translationKey || item.label)}
+              {getNavLabel(item)}
             </a>
           ))}
-          <div className="py-2">
-            {supportedLanguages.map((lang) => (
-              <button
-                key={lang}
-                onClick={() => {
-                  changeLanguage(lang);
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`block w-full text-left py-2 px-4 rounded-md ${
-                  currentLanguage === lang
-                    ? 'bg-accent/10 text-primary'
-                    : 'text-primary/80'
-                }`}
-              >
-                {languageNames[lang]}
-              </button>
-            ))}
+          <div className="flex items-center py-2">
+            <LanguageSelector />
           </div>
           <a
             href="#contact"
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            {t('nav.contact')}
+            Contacto
           </a>
         </div>
       </div>

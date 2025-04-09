@@ -3,6 +3,9 @@ import { registerRoutes } from './routes';
 import { log } from './vite/log'; // ✅ seguro de importar en cualquier entorno
 import { autoTranslateMiddleware } from './middleware/autoTranslate';
 import dotenv from 'dotenv';
+import { simpleTranslateMiddleware } from './middleware/simpleTranslate';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -46,6 +49,9 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Aplicar middleware de traducción
+app.use(simpleTranslateMiddleware);
 
 (async () => {
   const server = await registerRoutes(app);

@@ -1,0 +1,23 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "about": "About me",
+    "projects": "Projects",
+    "contact": "Contact",
+    "skills": "Skills",
+    "experience": "Experience",
+    "education": "Education",
+    "languages": "Languages"
+  },
+  "home": {
+    "title": "Portfolio",
+    "subtitle": "Full Stack Developer",
+    "description": "Welcome to my professional portfolio"
+  },
+  "contact": {
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send"
+  }
+}

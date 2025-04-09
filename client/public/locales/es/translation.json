@@ -1,0 +1,23 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "about": "Sobre mí",
+    "projects": "Proyectos",
+    "contact": "Contacto",
+    "skills": "Habilidades",
+    "experience": "Experiencia",
+    "education": "Educación",
+    "languages": "Idiomas"
+  },
+  "home": {
+    "title": "Portafolio",
+    "subtitle": "Desarrollador Full Stack",
+    "description": "Bienvenido a mi portafolio profesional"
+  },
+  "contact": {
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "message": "Mensaje",
+    "send": "Enviar"
+  }
+}

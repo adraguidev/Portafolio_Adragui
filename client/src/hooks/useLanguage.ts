@@ -3,14 +3,14 @@ import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { queryClient } from '../lib/queryClient';
 
-// Lista de idiomas soportados
+// Lista de idiomas soportados con español como primero
 export const SUPPORTED_LANGUAGES = [
+  'es',
   'en',
   'fr',
   'de',
   'it',
   'pt',
-  'es',
 ] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 

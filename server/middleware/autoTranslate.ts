@@ -68,6 +68,10 @@ async function translateData(
 ): Promise<any> {
   // Caso base: si es un string, traducirlo
   if (typeof data === 'string') {
+    // Verificar si el texto parece ser HTML o JSON
+    if (data.trim().startsWith('<') || data.trim().startsWith('{') || data.trim().startsWith('[')) {
+      return data; // No traducir HTML o JSON
+    }
     return await translateText(data, targetLang, originalLang);
   }
 
@@ -85,22 +89,19 @@ async function translateData(
     const translatedObject: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(data)) {
-      if (shouldTranslateField(key) && typeof value === 'string') {
-        // Traducir strings en campos traducibles
-        translatedObject[key] = await translateText(
-          value,
-          targetLang,
-          originalLang
-        );
-      } else if (typeof value === 'object' && value !== null) {
-        // Procesar recursivamente objetos y arrays
-        translatedObject[key] = await translateData(
-          value,
-          targetLang,
-          originalLang
-        );
+      if (shouldTranslateField(key)) {
+        if (typeof value === 'string') {
+          // Traducir strings en campos traducibles
+          translatedObject[key] = await translateText(value, targetLang, originalLang);
+        } else if (typeof value === 'object' && value !== null) {
+          // Procesar recursivamente objetos y arrays
+          translatedObject[key] = await translateData(value, targetLang, originalLang);
+        } else {
+          // Mantener otros valores sin cambios
+          translatedObject[key] = value;
+        }
       } else {
-        // Mantener otros valores sin cambios
+        // Mantener campos no traducibles sin cambios
         translatedObject[key] = value;
       }
     }

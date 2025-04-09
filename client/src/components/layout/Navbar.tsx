@@ -36,8 +36,8 @@ const Navbar = () => {
   };
 
   const languageNames = {
-    en: 'English',
     es: 'Español',
+    en: 'English',
     fr: 'Français',
     de: 'Deutsch',
     it: 'Italiano',

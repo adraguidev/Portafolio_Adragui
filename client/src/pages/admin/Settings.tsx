@@ -28,7 +28,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
-import { FileUp, CheckCircle, AlertCircle } from 'lucide-react';
+import { FileUp, CheckCircle, AlertCircle, Database, RefreshCw } from 'lucide-react';
 
 // Definir tipos necesarios aquí hasta que podamos importarlos correctamente
 interface SocialLinks {
@@ -268,6 +268,7 @@ const Settings = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="general">Información General</TabsTrigger>
             <TabsTrigger value="import-export">Importar/Exportar</TabsTrigger>
+            <TabsTrigger value="translations">Traducciones</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
@@ -969,6 +970,121 @@ const Settings = () => {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                </CardFooter>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="translations">
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Gestión de caché de traducciones */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gestión de caché</CardTitle>
+                  <CardDescription>
+                    Limpiar la caché de traducciones almacenada en Redis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 mb-4">
+                    Esta operación eliminará todas las traducciones almacenadas en caché.
+                    Útil cuando hay problemas con traducciones desactualizadas o incorrectas.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        className="w-full"
+                      >
+                        <Database className="mr-2 h-4 w-4" /> Limpiar caché de traducciones
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta acción eliminará toda la caché de traducciones de Redis Cloud.
+                          Las traducciones se regenerarán a medida que los usuarios accedan al sitio,
+                          lo que puede ralentizar temporalmente el rendimiento.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => {
+                          apiRequest('POST', '/api/translations/clear-cache')
+                            .then((res) => res.json())
+                            .then((data) => {
+                              toast({
+                                title: 'Caché limpiada',
+                                description: 'La caché de traducciones ha sido limpiada correctamente',
+                                variant: 'default',
+                              });
+                            })
+                            .catch((error) => {
+                              toast({
+                                title: 'Error',
+                                description: 'No se pudo limpiar la caché de traducciones',
+                                variant: 'destructive',
+                              });
+                              console.error('Error clearing translation cache:', error);
+                            });
+                        }}>
+                          Confirmar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </CardFooter>
+              </Card>
+
+              {/* Precargar traducciones */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Precargar traducciones</CardTitle>
+                  <CardDescription>
+                    Generar y almacenar en caché traducciones para el contenido estático
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 mb-4">
+                    Esta operación traducirá todo el contenido estático a todos los idiomas soportados
+                    y almacenará los resultados en caché. Puede tardar varios minutos.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    onClick={() => {
+                      toast({
+                        title: 'Precargando traducciones',
+                        description: 'El proceso ha comenzado y puede tardar varios minutos',
+                        variant: 'default',
+                      });
+                      
+                      apiRequest('POST', '/api/translations/preload')
+                        .then((res) => res.json())
+                        .then((data) => {
+                          toast({
+                            title: 'Traducciones precargadas',
+                            description: `Se han precargado ${data.count || 'todas las'} traducciones correctamente`,
+                            variant: 'default',
+                          });
+                        })
+                        .catch((error) => {
+                          toast({
+                            title: 'Error',
+                            description: 'No se pudieron precargar las traducciones',
+                            variant: 'destructive',
+                          });
+                          console.error('Error preloading translations:', error);
+                        });
+                    }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" /> Precargar todas las traducciones
+                  </Button>
                 </CardFooter>
               </Card>
             </div>

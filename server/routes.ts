@@ -23,6 +23,9 @@ import {
   insertUserSchema,
 } from '@shared/schema';
 import { z } from 'zod';
+import { createClient } from 'redis';
+import { SUPPORTED_LANGUAGES } from '../client/src/hooks/useLanguage';
+import { translateText } from './lib/translate';
 
 // Configuración de directorios de carga
 const setupUploadDirectory = () => {
@@ -1241,6 +1244,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       tinymceApiKey: process.env.TINYMCE_API_KEY || '',
     });
+  });
+
+  // Rutas para la gestión de traducciones
+  app.post('/api/translations/clear-cache', authenticateJWT, async (req, res) => {
+    try {
+      // Conexión a Redis
+      const redisClient = createClient({
+        url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
+      });
+      
+      await redisClient.connect();
+      
+      // Obtener todas las claves de traducciones
+      const keys = await redisClient.keys('translate:*');
+      console.log(`[Redis] Encontradas ${keys.length} claves de traducciones para eliminar`);
+      
+      // Si hay claves para eliminar
+      if (keys.length > 0) {
+        // Eliminar todas las claves de traducciones
+        await redisClient.del(keys);
+      }
+      
+      // Cerrar conexión
+      await redisClient.disconnect();
+      
+      res.json({ 
+        success: true, 
+        message: 'Caché de traducciones limpiada correctamente',
+        keysDeleted: keys.length 
+      });
+    } catch (error) {
+      console.error('Error al limpiar la caché de traducciones:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error al limpiar la caché de traducciones' 
+      });
+    }
+  });
+  
+  app.post('/api/translations/preload', authenticateJWT, async (req, res) => {
+    try {
+      // Cargamos todos los archivos de traducciones
+      const esTranslations = require('../client/src/i18n/locales/es.json');
+      let translationCount = 0;
+      
+      // Conexión a Redis
+      const redisClient = createClient({
+        url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
+      });
+      
+      await redisClient.connect();
+      
+      // Para cada idioma soportado que no sea español (idioma original)
+      const targetLanguages = SUPPORTED_LANGUAGES.filter(lang => lang !== 'es');
+      
+      // Función para recorrer recursivamente un objeto de traducciones
+      const processTranslations = async (obj: any, prefix = '') => {
+        for (const key in obj) {
+          const currentKey = prefix ? `${prefix}.${key}` : key;
+          
+          if (typeof obj[key] === 'string') {
+            const text = obj[key];
+            
+            // Para cada idioma destino, traducir y guardar en caché
+            for (const targetLang of targetLanguages) {
+              const cacheKey = `translate:${targetLang}:${text}`;
+              
+              // Verificar si ya existe en caché
+              const existingTranslation = await redisClient.get(cacheKey);
+              
+              if (!existingTranslation) {
+                try {
+                  // Traducir el texto
+                  const translatedText = await translateText(text, targetLang, 'es');
+                  
+                  // Guardar en caché
+                  await redisClient.set(cacheKey, translatedText, {
+                    EX: 60 * 60 * 24 * 30, // 30 días
+                  });
+                  
+                  translationCount++;
+                  
+                  // Log cada 10 traducciones para no saturar la consola
+                  if (translationCount % 10 === 0) {
+                    console.log(`[Preload] Traducidas ${translationCount} frases...`);
+                  }
+                } catch (err) {
+                  console.error(`Error traduciendo "${text}" a ${targetLang}:`, err);
+                }
+              }
+            }
+          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            // Si es un objeto, procesarlo recursivamente
+            await processTranslations(obj[key], currentKey);
+          }
+        }
+      };
+      
+      // Iniciar el proceso de traducción
+      console.log('[Preload] Iniciando precarga de traducciones...');
+      await processTranslations(esTranslations);
+      
+      // Cerrar conexión
+      await redisClient.disconnect();
+      
+      console.log(`[Preload] Proceso completado. Se han traducido ${translationCount} textos.`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Traducciones precargadas correctamente',
+        count: translationCount 
+      });
+    } catch (error) {
+      console.error('Error al precargar traducciones:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error al precargar traducciones' 
+      });
+    }
   });
 
   const httpServer = createServer(app);

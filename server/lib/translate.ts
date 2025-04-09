@@ -105,17 +105,28 @@ export async function translateText(
         messages: [
           {
             role: 'system',
-            content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
+            content: `Eres un traductor profesional especializado en traducir contenido web. Traduce el siguiente texto de ${originalLang} a ${targetLang}. 
+
+REGLAS IMPORTANTES:
+1. NO traduzcas fechas, años, números, URLs, nombres propios, marcas, o términos técnicos
+2. NO traduzcas expresiones como "2019 - actual", "2020 - presente", etc.
+3. NO traduzcas palabras clave de programación o tecnologías (HTML, CSS, React, etc.)
+4. NO añadas explicaciones ni comentarios adicionales
+5. NO modifiques el formato del texto (mantén saltos de línea, espacios, etc.)
+6. Mantén el mismo tono y estilo del texto original
+7. Si hay alguna parte que no estás seguro de cómo traducir, déjala en el idioma original
+
+Devuelve ÚNICAMENTE el texto traducido sin ninguna explicación.`,
           },
           {
             role: 'user',
             content: text,
           },
         ],
-        temperature: 0.3,
+        temperature: 0.2,
       });
 
-      const translatedText = completion.choices[0].message.content.trim();
+      const translatedText = completion?.choices[0]?.message?.content?.trim() || text;
 
       // Guardar en caché si Redis está conectado
       if (redisConnected && redisClient.isOpen) {

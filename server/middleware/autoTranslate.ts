@@ -22,6 +22,39 @@ const UNTRANSLATABLE_FIELDS = [
   'experienceId',
   'educationId',
   'skillId',
+  'date',
+  'startDate',
+  'endDate',
+  'year',
+  'years',
+  'month',
+  'months',
+  'day',
+  'days',
+  'time',
+  'timestamp',
+  'name',
+  'phone',
+  'website',
+  'address',
+  'code',
+  'github',
+  'linkedin',
+  'twitter',
+  'facebook',
+  'instagram',
+  'youtube',
+  'url_*',
+  'link_*',
+  '*_url',
+  '*_link',
+  'actual',
+  'current',
+  'present',
+  'now',
+  'fromDate',
+  'toDate',
+  'duration',
 ];
 
 /**
@@ -31,12 +64,39 @@ const UNTRANSLATABLE_FIELDS = [
  */
 function shouldTranslateField(fieldName: string): boolean {
   // No traducir campos en la lista de no traducibles
-  if (UNTRANSLATABLE_FIELDS.includes(fieldName)) return false;
+  if (UNTRANSLATABLE_FIELDS.some(pattern => {
+    if (pattern.includes('*')) {
+      // Para patrones con comodín
+      const regex = new RegExp('^' + pattern.replace('*', '.*') + '$');
+      return regex.test(fieldName);
+    }
+    return fieldName === pattern;
+  })) return false;
 
   // No traducir campos que terminen con 'Id', 'At', etc.
-  if (/^(id|.*Id|.*At|.*_at|.*_id)$/i.test(fieldName)) return false;
+  if (/^(id|.*Id|.*At|.*_at|.*_id|.*Date|.*Year|.*Month|.*Time)$/i.test(fieldName)) return false;
 
   return true;
+}
+
+/**
+ * Función para verificar si un texto contiene un formato de fecha o número que no debe traducirse
+ * @param text Texto a verificar
+ * @returns true si el texto contiene un formato que no debe traducirse
+ */
+function containsUntranslatableFormat(text: string): boolean {
+  // Verificar si el texto parece una fecha o contiene patrones de fecha
+  const datePatterns = [
+    /\d{1,4}[-/\.]\d{1,2}[-/\.]\d{1,4}/,  // Formato fecha como 2021-01-01, 01/01/2021
+    /\b\d{4}\s*[-–—]\s*(?:\d{4}|actual|present|now|current)\b/i, // Año - Año o Año - actual
+    /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}\b/i, // Mes Año en inglés
+    /\b(?:Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]* \d{4}\b/i, // Mes Año en español
+    /\b\d{1,2} (?:de )?(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(?: de)? \d{4}\b/i, // Formato fecha en español
+    /\b\d{1,2}(?:st|nd|rd|th)? (?:of )?(?:January|February|March|April|May|June|July|August|September|October|November|December),? \d{4}\b/i, // Formato fecha en inglés
+  ];
+
+  // Verificar si el texto contiene algún patrón de fecha
+  return datePatterns.some(pattern => pattern.test(text));
 }
 
 /**
@@ -51,8 +111,12 @@ async function translateData(
   targetLang: string,
   originalLang: string = 'es'
 ): Promise<any> {
-  // Caso base: si es un string, traducirlo
+  // Caso base: si es un string, verificar si debe traducirse
   if (typeof data === 'string') {
+    // No traducir si contiene patrones de fecha o números que deben preservarse
+    if (containsUntranslatableFormat(data)) {
+      return data;
+    }
     return await translateText(data, targetLang, originalLang);
   }
 
@@ -70,8 +134,8 @@ async function translateData(
     const translatedObject: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(data)) {
-      if (shouldTranslateField(key) && typeof value === 'string') {
-        // Traducir strings en campos traducibles
+      if (shouldTranslateField(key) && typeof value === 'string' && !containsUntranslatableFormat(value)) {
+        // Traducir strings en campos traducibles que no contengan formatos especiales
         translatedObject[key] = await translateText(
           value,
           targetLang,

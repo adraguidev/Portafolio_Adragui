@@ -13,9 +13,15 @@ interface CVData {
 }
 
 const CVSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: cvData, isLoading, isError } = useQuery<CVData>({
-    queryKey: ['/api/cv'],
+    queryKey: ['/api/cv', i18n.language],
+    queryFn: async () => {
+      const response = await fetch(`/api/cv?lang=${i18n.language}`);
+      if (!response.ok) throw new Error('Error al cargar datos del CV');
+      const data = await response.json();
+      return data as CVData;
+    },
     staleTime: 1000,
     refetchOnWindowFocus: false
   });
@@ -98,7 +104,7 @@ const CVSection = () => {
                   <p className="text-text/70">No hay experiencia profesional disponible.</p>
                 </div>
               ) : (
-                cvData.experiences.map((experience) => (
+                cvData.experiences.map((experience: Experience) => (
                   <motion.div 
                     key={experience.id} 
                     className="relative pl-8 border-l-2 border-slate-200 pb-8"
@@ -157,7 +163,7 @@ const CVSection = () => {
                   <p className="text-text/70">No hay información educativa disponible.</p>
                 </div>
               ) : (
-                cvData.education.map((edu) => (
+                cvData.education.map((edu: Education) => (
                   <motion.div 
                     key={edu.id} 
                     className="relative pl-8 border-l-2 border-slate-200 pb-8"
@@ -167,7 +173,7 @@ const CVSection = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                       <h4 className="font-clash font-semibold text-xl text-primary">{edu.degree}</h4>
                       <span className="bg-slate-100 text-primary/70 px-3 py-1 rounded-full text-sm mt-1 sm:mt-0">
-                        {edu.startDate} - {edu.endDate || 'Actual'}
+                        {edu.startDate} - {edu.endDate || t('cv.current')}
                       </span>
                     </div>
                     <h5 className="text-secondary font-medium mb-2">{edu.institution}</h5>
@@ -208,7 +214,7 @@ const CVSection = () => {
                   <p className="text-text/70">No hay habilidades disponibles.</p>
                 </div>
               ) : (
-                cvData.skills.map((skill) => (
+                cvData.skills.map((skill: Skill) => (
                   <motion.div 
                     key={skill.id} 
                     className="space-y-4"

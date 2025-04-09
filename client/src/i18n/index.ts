@@ -29,10 +29,11 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['querystring', 'navigator'],
+      order: ['querystring'],
       lookupQuerystring: 'lang',
-      caches: ['cookie'],
+      caches: [],
     },
+    lng: 'es', // Forzar español como idioma inicial
     load: 'languageOnly',
     defaultLanguage: 'es',
   });

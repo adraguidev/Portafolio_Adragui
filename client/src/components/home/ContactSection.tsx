@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { SOCIAL_LINKS } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 const formSchema = insertMessageSchema.extend({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -23,6 +24,7 @@ const formSchema = insertMessageSchema.extend({
 const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const { data: siteInfo } = useQuery<{
     id: number;
@@ -73,153 +75,91 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <motion.div 
-            className="bg-slate-900 rounded-2xl overflow-hidden shadow-xl"
-            initial={{ opacity: 0, y: 20 }}
+        <div className="mb-16 text-center">
+          <motion.h2
+            className="font-clash font-bold text-4xl md:text-5xl text-primary mb-4"
+            initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <div className="grid md:grid-cols-2">
-              <div className="p-8 md:p-12 bg-[url('https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop')] bg-cover bg-center relative">
-                <div className="absolute inset-0 bg-primary/90"></div>
-                <div className="relative z-10 h-full flex flex-col">
-                  <h2 className="font-clash font-bold text-3xl md:text-4xl text-white mb-6">Conectemos</h2>
-                  <p className="text-white/80 mb-8">¿Tienes un proyecto en mente o quieres hablar sobre oportunidades? Envíame un mensaje y te responderé lo antes posible.</p>
-                  
-                  <div className="space-y-6 mt-auto">
-                    <div className="flex items-center text-white/90">
-                      <i className="ri-mail-line text-accent text-xl mr-4"></i>
-                      <span>{siteInfo?.contactEmail || 'hello@example.com'}</span>
-                    </div>
-                    <div className="flex items-center text-white/90">
-                      <i className="ri-phone-line text-accent text-xl mr-4"></i>
-                      <span>{siteInfo?.contactPhone || '+1 (555) 123-4567'}</span>
-                    </div>
-                    <div className="flex items-center text-white/90">
-                      <i className="ri-map-pin-line text-accent text-xl mr-4"></i>
-                      <span>{siteInfo?.contactLocation || 'San Francisco, CA'}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-8">
-                    <div className="flex space-x-4">
-                      {(siteInfo?.socialLinks?.github || SOCIAL_LINKS.github) && (
-                        <a href={siteInfo?.socialLinks?.github || SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                          <i className="ri-github-fill"></i>
-                        </a>
-                      )}
-                      {(siteInfo?.socialLinks?.linkedin || SOCIAL_LINKS.linkedin) && (
-                        <a href={siteInfo?.socialLinks?.linkedin || SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                          <i className="ri-linkedin-fill"></i>
-                        </a>
-                      )}
-                      {(siteInfo?.socialLinks?.twitter || SOCIAL_LINKS.twitter) && (
-                        <a href={siteInfo?.socialLinks?.twitter || SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                          <i className="ri-twitter-fill"></i>
-                        </a>
-                      )}
-                      {(siteInfo?.socialLinks?.dribbble || SOCIAL_LINKS.dribbble) && (
-                        <a href={siteInfo?.socialLinks?.dribbble || SOCIAL_LINKS.dribbble} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                          <i className="ri-dribbble-fill"></i>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
+            {t('home.contactTitle')}
+          </motion.h2>
+          <motion.p
+            className="text-text/70 max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            {t('home.contactDescription')}
+          </motion.p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <motion.div
+            className="bg-white rounded-lg p-8 shadow-sm"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h3 className="font-clash font-semibold text-xl mb-4">
+              {t('home.contactInfo')}
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <i className="ri-mail-line text-secondary text-xl mr-4"></i>
+                <a
+                  href="mailto:contact@adragui.com"
+                  className="text-text/70 hover:text-secondary transition-colors"
+                >
+                  contact@adragui.com
+                </a>
               </div>
-              
-              <div className="p-8 md:p-12 bg-white">
-                <h3 className="font-clash font-semibold text-2xl text-primary mb-6">Enviar un Mensaje</h3>
-                
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Nombre</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Tu nombre" 
-                              className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Correo electrónico</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email" 
-                              placeholder="Tu correo electrónico" 
-                              className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Asunto</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="¿De qué se trata?" 
-                              className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-text/80">Mensaje</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              rows={5} 
-                              placeholder="Tu mensaje" 
-                              className="w-full px-4 py-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-colors resize-none" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <Button 
-                      type="submit"
-                      className="w-full bg-primary text-white rounded-md px-6 py-3 text-base font-medium hover:bg-primary/90 transition-colors"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
-                    </Button>
-                  </form>
-                </Form>
+              <div className="flex items-center">
+                <i className="ri-map-pin-line text-secondary text-xl mr-4"></i>
+                <span className="text-text/70">
+                  {t('home.location')}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-lg p-8 shadow-sm"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h3 className="font-clash font-semibold text-xl mb-4">
+              {t('home.socialMedia')}
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <i className="ri-github-line text-secondary text-xl mr-4"></i>
+                <a
+                  href="https://github.com/adragui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text/70 hover:text-secondary transition-colors"
+                >
+                  GitHub
+                </a>
+              </div>
+              <div className="flex items-center">
+                <i className="ri-linkedin-line text-secondary text-xl mr-4"></i>
+                <a
+                  href="https://linkedin.com/in/adragui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text/70 hover:text-secondary transition-colors"
+                >
+                  LinkedIn
+                </a>
               </div>
             </div>
           </motion.div>

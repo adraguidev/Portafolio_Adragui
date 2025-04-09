@@ -27,26 +27,12 @@ const ArticleCard = ({ article }: { article: Article }) => {
 
   return (
     <motion.article
-      className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-md group"
+      className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       viewport={{ once: true }}
     >
-      <Link href={`/articles/${article.slug}`} className="block">
-        <div className="aspect-[16/10] relative overflow-hidden">
-          <img
-            src={article.imageUrl || ''}
-            alt={article.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div className="absolute top-4 left-4">
-            <span className="bg-accent text-primary text-xs font-medium px-3 py-1 rounded-full">
-              {article.category}
-            </span>
-          </div>
-        </div>
-      </Link>
       <div className="p-6">
         <div className="flex items-center text-sm text-text/60 mb-3">
           <span>
@@ -54,11 +40,11 @@ const ArticleCard = ({ article }: { article: Article }) => {
               ? formatDate(article.publishedAt)
               : article.published
               ? formatDate(article.updatedAt)
-              : t('common.draft', 'Borrador')}
+              : t('common.draft')}
           </span>
           <span className="mx-2">•</span>
           <span>
-            {readTime} {t('common.readTime', 'min de lectura')}
+            {readTime} {t('common.readTime')}
           </span>
         </div>
         <Link href={`/articles/${article.slug}`}>
@@ -71,7 +57,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
           href={`/articles/${article.slug}`}
           className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors"
         >
-          {t('common.readArticle', 'Leer Artículo')}
+          {t('common.readArticle')}
           <i className="ri-arrow-right-line ml-1"></i>
         </Link>
       </div>
@@ -132,10 +118,7 @@ const ArticlesSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            {t(
-              'home.articlesDescription',
-              'Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web.'
-            )}
+            {t('home.articlesDescription')}
           </motion.p>
         </div>
 
@@ -153,7 +136,7 @@ const ArticlesSection = () => {
           )}
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="text-center mt-12">
           <Link href="/articles">
             <motion.div
               className="inline-flex items-center border-b-2 border-secondary/70 text-secondary font-medium hover:border-secondary transition-colors cursor-pointer"
@@ -162,7 +145,7 @@ const ArticlesSection = () => {
               transition={{ duration: 0.5, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              {t('home.viewAllArticles', 'Ver Todos los Artículos')}
+              {t('home.viewAllArticles')}
               <i className="ri-arrow-right-line ml-2"></i>
             </motion.div>
           </Link>

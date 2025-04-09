@@ -27,6 +27,7 @@ i18n
       pt: { translation: translationPT },
     },
     fallbackLng: 'es',
+    lng: 'es', // Forzar español como idioma inicial
     supportedLngs: ['en', 'fr', 'de', 'it', 'pt', 'es'],
     debug: process.env.NODE_ENV === 'development',
     interpolation: {
@@ -61,5 +62,12 @@ i18n.on('languageChanged', (lng) => {
   // Disparar evento para que otros componentes puedan reaccionar
   document.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lng } }));
 });
+
+// Asegurar que el idioma inicial sea español si no hay preferencias guardadas
+const savedLanguage = localStorage.getItem('i18nextLng');
+if (!savedLanguage) {
+  i18n.changeLanguage('es');
+  localStorage.setItem('i18nextLng', 'es');
+}
 
 export default i18n;

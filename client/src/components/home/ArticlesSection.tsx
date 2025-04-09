@@ -3,10 +3,11 @@ import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { Article } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 const formatDate = (dateString: Date) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(navigator.language || 'es-ES', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -21,6 +22,7 @@ const calculateReadTime = (content: string) => {
 };
 
 const ArticleCard = ({ article }: { article: Article }) => {
+  const { t } = useTranslation();
   const readTime = calculateReadTime(article.content);
 
   return (
@@ -52,10 +54,12 @@ const ArticleCard = ({ article }: { article: Article }) => {
               ? formatDate(article.publishedAt)
               : article.published
               ? formatDate(article.updatedAt)
-              : 'Borrador'}
+              : t('common.draft', 'Borrador')}
           </span>
           <span className="mx-2">•</span>
-          <span>{readTime} min de lectura</span>
+          <span>
+            {readTime} {t('common.readTime', 'min de lectura')}
+          </span>
         </div>
         <Link href={`/articles/${article.slug}`}>
           <h3 className="font-clash font-semibold text-xl mb-3 group-hover:text-secondary transition-colors">
@@ -67,7 +71,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
           href={`/articles/${article.slug}`}
           className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors"
         >
-          Leer Artículo
+          {t('common.readArticle', 'Leer Artículo')}
           <i className="ri-arrow-right-line ml-1"></i>
         </Link>
       </div>
@@ -98,6 +102,7 @@ const ArticleSkeleton = () => (
 );
 
 const ArticlesSection = () => {
+  const { t } = useTranslation();
   const { data: articles, isLoading } = useQuery<Article[]>({
     queryKey: ['/api/articles'],
   });
@@ -118,7 +123,7 @@ const ArticlesSection = () => {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Últimos Artículos
+            {t('home.title')}
           </motion.h2>
           <motion.p
             className="text-text/70 max-w-2xl mx-auto"
@@ -127,8 +132,10 @@ const ArticlesSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Pensamientos, ideas y descubrimientos de mi trayectoria en el
-            desarrollo web.
+            {t(
+              'home.articlesDescription',
+              'Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web.'
+            )}
           </motion.p>
         </div>
 
@@ -155,7 +162,7 @@ const ArticlesSection = () => {
               transition={{ duration: 0.5, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              Ver Todos los Artículos
+              {t('home.viewAllArticles', 'Ver Todos los Artículos')}
               <i className="ri-arrow-right-line ml-2"></i>
             </motion.div>
           </Link>

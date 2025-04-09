@@ -21,7 +21,8 @@
   },
   "home": {
     "welcome": "Willkommen in meinem Portfolio",
-    "description": "Full-Stack-Entwickler mit Erfahrung in Web- und Mobile-Entwicklung"
+    "description": "Full-Stack-Entwickler mit Erfahrung in Web- und Mobile-Entwicklung",
+    "title": "Neueste Artikel"
   },
   "contact": {
     "title": "Kontakt",

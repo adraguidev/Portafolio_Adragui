@@ -21,7 +21,8 @@
   },
   "home": {
     "welcome": "Bem-vindo ao meu portfólio",
-    "description": "Desenvolvedor Full Stack com experiência em desenvolvimento web e mobile"
+    "description": "Desenvolvedor Full Stack com experiência em desenvolvimento web e mobile",
+    "title": "Últimos Artigos"
   },
   "contact": {
     "title": "Contato",

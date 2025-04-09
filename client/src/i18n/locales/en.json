@@ -8,7 +8,10 @@
     "edit": "Edit",
     "delete": "Delete",
     "confirm": "Confirm",
-    "back": "Back"
+    "back": "Back",
+    "draft": "Draft",
+    "readTime": "min read",
+    "readArticle": "Read Article"
   },
   "nav": {
     "home": "Home",
@@ -21,7 +24,10 @@
   },
   "home": {
     "welcome": "Welcome to my portfolio",
-    "description": "Full Stack Developer with experience in web and mobile development"
+    "description": "Full Stack Developer with experience in web and mobile development",
+    "title": "Latest Articles",
+    "articlesDescription": "Thoughts, ideas and discoveries from my journey in web development.",
+    "viewAllArticles": "View All Articles"
   },
   "contact": {
     "title": "Contact",

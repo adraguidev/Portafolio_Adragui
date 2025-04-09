@@ -8,7 +8,10 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "confirm": "Confirmar",
-    "back": "Volver"
+    "back": "Volver",
+    "draft": "Borrador",
+    "readTime": "min de lectura",
+    "readArticle": "Leer Artículo"
   },
   "nav": {
     "home": "Inicio",
@@ -21,7 +24,10 @@
   },
   "home": {
     "welcome": "Bienvenido a mi portafolio",
-    "description": "Desarrollador Full Stack con experiencia en desarrollo web y móvil"
+    "description": "Desarrollador Full Stack con experiencia en desarrollo web y móvil",
+    "title": "Últimos Artículos",
+    "articlesDescription": "Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web.",
+    "viewAllArticles": "Ver Todos los Artículos"
   },
   "contact": {
     "title": "Contacto",

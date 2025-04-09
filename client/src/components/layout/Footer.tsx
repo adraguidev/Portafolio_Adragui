@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { NAV_ITEMS, SOCIAL_LINKS } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 interface SiteInfoData {
   id: number;
@@ -17,6 +18,8 @@ interface SiteInfoData {
 }
 
 const Footer = () => {
+  const { t } = useTranslation();
+  
   // Obtener info del sitio desde la API
   const { data: siteInfo } = useQuery<SiteInfoData>({
     queryKey: ['/api/site-info'],
@@ -66,12 +69,12 @@ const Footer = () => {
           </div>
           
           <div>
-            <h4 className="font-clash font-semibold text-lg mb-4">Navegación</h4>
+            <h4 className="font-clash font-semibold text-lg mb-4">{t('footer.navigation')}</h4>
             <ul className="space-y-3">
               {NAV_ITEMS.map((item) => (
                 <li key={item.href}>
                   <a href={item.href} className="text-white/70 hover:text-accent transition-colors">
-                    {item.label}
+                    {t(item.translationKey || item.label)}
                   </a>
                 </li>
               ))}
@@ -79,12 +82,12 @@ const Footer = () => {
           </div>
           
           <div>
-            <h4 className="font-clash font-semibold text-lg mb-4">Legal</h4>
+            <h4 className="font-clash font-semibold text-lg mb-4">{t('footer.legal')}</h4>
             <ul className="space-y-3">
-              <li><Link to="/privacy-policy" className="text-white/70 hover:text-accent transition-colors">Política de Privacidad</Link></li>
-              <li><Link to="/terms-of-service" className="text-white/70 hover:text-accent transition-colors">Términos de Servicio</Link></li>
-              <li><Link to="/cookie-policy" className="text-white/70 hover:text-accent transition-colors">Política de Cookies</Link></li>
-              <li><Link to="/login" className="text-white/70 hover:text-accent transition-colors">Panel de Administración</Link></li>
+              <li><Link to="/privacy-policy" className="text-white/70 hover:text-accent transition-colors">{t('legal.privacyPolicy')}</Link></li>
+              <li><Link to="/terms-of-service" className="text-white/70 hover:text-accent transition-colors">{t('legal.termsOfService')}</Link></li>
+              <li><Link to="/cookie-policy" className="text-white/70 hover:text-accent transition-colors">{t('legal.cookiePolicy')}</Link></li>
+              <li><Link to="/login" className="text-white/70 hover:text-accent transition-colors">{t('common.adminPanel')}</Link></li>
             </ul>
           </div>
         </div>
@@ -92,7 +95,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-white/10 text-center md:text-left md:flex md:justify-between md:items-center">
           <p className="text-white/60 text-sm">&copy; {new Date().getFullYear()} Adrián Aguirre. Todos los derechos reservados.</p>
           <p className="text-white/60 text-sm mt-2 md:mt-0">
-            Hecho con <span className="text-accent">❤</span> en {siteInfo?.contactLocation || "San Francisco"}
+            {t('common.madeWith')} <span className="text-accent">❤</span> {siteInfo?.contactLocation ? `en ${siteInfo.contactLocation}` : "en Lima, Peru"}
           </p>
         </div>
       </div>

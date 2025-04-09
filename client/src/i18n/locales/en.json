@@ -25,7 +25,9 @@
     "whatIsItAbout": "What is it about?",
     "yourName": "Your name",
     "yourEmail": "Your email",
-    "yourMessage": "Your message"
+    "yourMessage": "Your message",
+    "madeWith": "Made with ❤ in",
+    "adminPanel": "Admin Panel"
   },
   "nav": {
     "home": "Home",
@@ -47,6 +49,19 @@
     "yearsExperience": "+5 years of experience",
     "operationsAnalyst": "Operations Analyst"
   },
+  "cv": {
+    "title": "Curriculum Vitae",
+    "subtitle": "My professional journey and experience in web development and design.",
+    "professionalExperience": "Professional Experience",
+    "education": "Education",
+    "skills": "Skills & Technologies",
+    "download": "Download Full CV"
+  },
+  "projects": {
+    "title": "Featured Projects",
+    "description": "A collection of my recent work in web applications, e-commerce platforms, and interactive experiences.",
+    "viewAll": "View Full Portfolio"
+  },
   "contact": {
     "title": "Contact",
     "name": "Name",
@@ -59,7 +74,13 @@
     "addressLabel": "Location",
     "emailLabel": "Email",
     "phoneLabel": "Phone",
-    "followMe": "Follow me"
+    "followMe": "Follow me",
+    "letsConnect": "Let's Connect",
+    "letsConnectDescription": "Have a project in mind or want to talk about opportunities? Send me a message and I'll get back to you as soon as possible."
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "legal": "Legal"
   },
   "legal": {
     "cookiePolicy": "Cookie Policy",

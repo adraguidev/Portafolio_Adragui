@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Experience, Education, Skill } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 interface CVData {
   experiences: Experience[];
@@ -12,6 +13,7 @@ interface CVData {
 }
 
 const CVSection = () => {
+  const { t } = useTranslation();
   const { data: cvData, isLoading, isError } = useQuery<CVData>({
     queryKey: ['/api/cv'],
     staleTime: 1000,
@@ -45,7 +47,7 @@ const CVSection = () => {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              Curriculum Vitae
+              {t('cv.title')}
             </motion.h2>
             <motion.p 
               className="text-text/70"
@@ -54,7 +56,7 @@ const CVSection = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Mi trayectoria profesional y experiencia en desarrollo web y diseño.
+              {t('cv.subtitle')}
             </motion.p>
           </div>
           
@@ -64,7 +66,7 @@ const CVSection = () => {
               <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
                 <i className="ri-briefcase-4-line"></i>
               </span>
-              Experiencia Profesional
+              {t('cv.professionalExperience')}
             </h3>
             
             <motion.div 
@@ -125,7 +127,7 @@ const CVSection = () => {
               <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
                 <i className="ri-graduation-cap-line"></i>
               </span>
-              Educación
+              {t('cv.education')}
             </h3>
             
             <motion.div 
@@ -182,7 +184,7 @@ const CVSection = () => {
               <span className="bg-secondary/10 text-secondary p-2 rounded-md mr-3">
                 <i className="ri-tools-line"></i>
               </span>
-              Habilidades y Tecnologías
+              {t('cv.skills')}
             </h3>
             
             <div className="grid md:grid-cols-2 gap-6">
@@ -237,7 +239,7 @@ const CVSection = () => {
               >
                 <a href="/api/cv/download" target="_blank">
                   <i className="ri-download-line mr-2"></i>
-                  Descargar CV Completo
+                  {t('cv.download')}
                 </a>
               </Button>
             ) : (
@@ -246,7 +248,7 @@ const CVSection = () => {
                 className="bg-primary/60 text-white font-medium cursor-not-allowed"
               >
                 <i className="ri-download-line mr-2"></i>
-                CV no disponible
+                {t('cv.download')}
               </Button>
             )}
           </div>

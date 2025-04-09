@@ -1,12 +1,12 @@
-import type { Express } from "express";
-import fs from "fs";
-import path from "path";
-import { nanoid } from "nanoid";
-import { Server } from "http";
+import type { Express } from 'express';
+import fs from 'fs';
+import path from 'path';
+import { nanoid } from 'nanoid';
+import { Server } from 'http';
 
 export async function setupVite(app: Express, server: Server) {
-  const { createServer, createLogger } = await import("vite");
-  const viteConfig = (await import("../../vite.config")).default;
+  const { createServer, createLogger } = await import('vite');
+  const viteConfig = (await import('../../vite.config')).default;
 
   const viteLogger = createLogger();
 
@@ -25,30 +25,36 @@ export async function setupVite(app: Express, server: Server) {
         process.exit(1);
       },
     },
-    appType: "custom",
+    appType: 'custom',
   });
 
   app.use(vite.middlewares);
 
-  app.use("*", async (req, res, next) => {
+  app.use('*', async (req, res, next) => {
     const url = req.originalUrl;
     try {
+      // Servir archivos JavaScript con el tipo MIME correcto
+      if (url.endsWith('.js') || url.endsWith('.ts') || url.endsWith('.tsx')) {
+        res.set('Content-Type', 'application/javascript');
+        return next();
+      }
+
       const clientTemplate = path.resolve(
         import.meta.dirname,
-        "..",
-        "..",
-        "client",
-        "index.html",
+        '..',
+        '..',
+        'client',
+        'index.html'
       );
 
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      let template = await fs.promises.readFile(clientTemplate, 'utf-8');
       template = template.replace(
         `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`,
+        `src="/src/main.tsx?v=${nanoid()}"`
       );
 
       const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+      res.status(200).set({ 'Content-Type': 'text/html' }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);

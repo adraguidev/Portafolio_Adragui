@@ -140,7 +140,7 @@ const CVSection = () => {
               className="space-y-8"
               variants={containerAnimation}
               initial="hidden"
-              whileInView="visible"
+              animate={isLoading ? "hidden" : "visible"}
               viewport={{ once: true }}
             >
               {isLoading ? (

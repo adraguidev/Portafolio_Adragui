@@ -11,7 +11,10 @@
     "back": "Back",
     "draft": "Draft",
     "readTime": "min read",
-    "readArticle": "Read Article"
+    "readArticle": "Read Article",
+    "available": "Available for work",
+    "viewCV": "View my CV",
+    "contact": "Contact me"
   },
   "nav": {
     "home": "Home",
@@ -24,10 +27,14 @@
   },
   "home": {
     "welcome": "Welcome to my portfolio",
-    "description": "Full Stack Developer with experience in web and mobile development",
-    "title": "Latest Articles",
+    "description": "I transform data into strategic decisions through analysis, visualization, and operational process improvement. With experience in creating Power BI dashboards, report automation, and operational support, I now combine my analytical background with full-stack development training to build technological solutions that generate real impact.",
+    "title": "Transforming <1>Data</1> into <2>Intelligent</2> Solutions",
     "articlesDescription": "Thoughts, ideas and discoveries from my journey in web development.",
-    "viewAllArticles": "View All Articles"
+    "viewAllArticles": "View All Articles",
+    "heroAlt": "Adrián Aguirre, Operations Analyst",
+    "name": "Adrián Aguirre",
+    "role": "Operations Analyst",
+    "experience": "+5 years of experience"
   },
   "contact": {
     "title": "Contact",

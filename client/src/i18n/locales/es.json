@@ -11,7 +11,10 @@
     "back": "Volver",
     "draft": "Borrador",
     "readTime": "min de lectura",
-    "readArticle": "Leer Artículo"
+    "readArticle": "Leer Artículo",
+    "available": "Disponible para trabajar",
+    "viewCV": "Ver mi currículum",
+    "contact": "Contáctame"
   },
   "nav": {
     "home": "Inicio",
@@ -24,10 +27,14 @@
   },
   "home": {
     "welcome": "Bienvenido a mi portafolio",
-    "description": "Desarrollador Full Stack con experiencia en desarrollo web y móvil",
-    "title": "Últimos Artículos",
+    "description": "Transformo datos en decisiones estratégicas a través del análisis, la visualización y la mejora de procesos operativos. Con experiencia en la creación de dashboards en Power BI, automatización de reportes y soporte a la operatividad, hoy combino mi trayectoria analítica con formación en desarrollo full stack para construir soluciones tecnológicas que generan impacto real.",
+    "title": "Transformando <1>Datos</1> en <2>Soluciones</2> Inteligentes",
     "articlesDescription": "Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web.",
-    "viewAllArticles": "Ver Todos los Artículos"
+    "viewAllArticles": "Ver Todos los Artículos",
+    "heroAlt": "Adrián Aguirre, analista de operaciones",
+    "name": "Adrián Aguirre",
+    "role": "Analista de Operaciones",
+    "experience": "+5 años de experiencia"
   },
   "contact": {
     "title": "Contacto",

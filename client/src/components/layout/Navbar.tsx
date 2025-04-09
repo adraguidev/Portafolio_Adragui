@@ -3,6 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -27,82 +28,82 @@ const Navbar = () => {
   };
 
   return (
-    <header
-      className={`fixed w-full top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-slate-100 transition-all ${
-        isScrolled ? 'shadow-sm' : ''
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-background/80 backdrop-blur-sm shadow-sm' : 'bg-transparent'
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-2">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-clash font-bold text-2xl text-primary">
-              AA.
-            </span>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="text-xl font-bold">
+            {t('common.welcome')}
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
             {NAV_ITEMS.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={`nav-link text-primary font-medium relative after:absolute after:content-[''] after:w-0 after:h-0.5 after:bg-accent after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full ${
-                  location === item.href.split('#')[0] ? 'after:w-full' : ''
+              <Link
+                key={item.path}
+                href={item.path}
+                className={`text-sm font-medium transition-colors ${
+                  location === item.path
+                    ? 'text-primary'
+                    : 'text-foreground/60 hover:text-foreground'
                 }`}
               >
-                {t(item.translationKey || item.label)}
-              </a>
+                {t(`nav.${item.key}`)}
+              </Link>
             ))}
-          </nav>
-
-          <div className="flex items-center space-x-4">
-            <a
-              href="#contact"
-              className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              {t('nav.contact')}
-            </a>
-            <button
-              onClick={toggleMobileMenu}
-              className="md:hidden text-primary"
-              aria-label="Toggle menu"
-            >
-              <i
-                className={`ri-${
-                  isMobileMenuOpen ? 'close' : 'menu'
-                }-line text-2xl`}
-              ></i>
-            </button>
+            <LanguageSelector />
           </div>
-        </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={`md:hidden bg-white ${
-          isMobileMenuOpen ? 'block' : 'hidden'
-        }`}
-      >
-        <div className="px-4 py-3 space-y-4">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="block text-primary font-medium py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t(item.translationKey || item.label)}
-            </a>
-          ))}
-          <a
-            href="#contact"
-            className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"
-            onClick={() => setIsMobileMenuOpen(false)}
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={toggleMobileMenu}
           >
-            {t('nav.contact')}
-          </a>
+            <span className="sr-only">Toggle menu</span>
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={isMobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+              />
+            </svg>
+          </Button>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 space-y-4">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                className={`block text-sm font-medium transition-colors ${
+                  location === item.path
+                    ? 'text-primary'
+                    : 'text-foreground/60 hover:text-foreground'
+                }`}
+              >
+                {t(`nav.${item.key}`)}
+              </Link>
+            ))}
+            <div className="pt-4">
+              <LanguageSelector />
+            </div>
+          </div>
+        )}
       </div>
-    </header>
+    </nav>
   );
 };
 

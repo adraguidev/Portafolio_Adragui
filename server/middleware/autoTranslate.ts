@@ -115,23 +115,27 @@ export function autoTranslateMiddleware(
   const targetLang = (req.query.lang as string)?.toLowerCase();
   const originalLang = 'es'; // Idioma original (por ahora fijo en español)
 
-  log(
+  console.log(
     `[TRANSLATE] Solicitud de traducción recibida - Path: ${req.path}, Lang: ${targetLang}`
   );
 
   // Validar que el idioma solicitado sea válido
   if (!targetLang || !SUPPORTED_LANGUAGES.includes(targetLang)) {
-    log(`[TRANSLATE] ⚠️ Idioma no válido o no soportado: ${targetLang}`);
+    console.log(
+      `[TRANSLATE] ⚠️ Idioma no válido o no soportado: ${targetLang}`
+    );
     return next();
   }
 
   // Si el idioma es el mismo que el original, continuar sin modificar
   if (targetLang === originalLang) {
-    log('[TRANSLATE] ℹ️ Idioma solicitado es el mismo que el original');
+    console.log('[TRANSLATE] ℹ️ Idioma solicitado es el mismo que el original');
     return next();
   }
 
-  log(`[TRANSLATE] ✅ Iniciando traducción de ${originalLang} a ${targetLang}`);
+  console.log(
+    `[TRANSLATE] ✅ Iniciando traducción de ${originalLang} a ${targetLang}`
+  );
 
   // Guardar la función original res.json
   const originalJson = res.json;
@@ -150,7 +154,7 @@ export function autoTranslateMiddleware(
       res.json = originalJson;
       return res.json(translatedBody);
     } catch (error) {
-      log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
+      console.log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
 
       // En caso de error, restaurar el método original y enviar la respuesta sin traducir
       res.json = originalJson;

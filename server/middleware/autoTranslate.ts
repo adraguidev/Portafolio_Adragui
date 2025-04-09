@@ -112,7 +112,7 @@ function containsUntranslatableFormat(text: string): boolean {
   // Verificar si el texto parece una fecha o contiene patrones de fecha
   const datePatterns = [
     /\d{1,4}[-/\.]\d{1,2}[-/\.]\d{1,4}/,  // Formato fecha como 2021-01-01, 01/01/2021
-    /\b\d{4}\s*[-–—]\s*(?:\d{4})\b/i, // Año - Año (sin incluir "actual")
+    /\b\d{4}\s*[-–—]\s*\d{4}\b/i, // Año - Año (sin incluir "actual")
     /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}\b/i, // Mes Año en inglés
     /\b(?:Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]* \d{4}\b/i, // Mes Año en español
     /\b\d{1,2} (?:de )?(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(?: de)? \d{4}\b/i, // Formato fecha en español
@@ -239,20 +239,11 @@ export function autoTranslateMiddleware(
   // Sobrescribir res.json para interceptar la respuesta
   res.json = async function (body: any) {
     try {
-      // Traducir el cuerpo de la respuesta
-      const translatedBody = await translateData(
-        body,
-        targetLang,
-        originalLang
-      );
-
-      // Restaurar el método original y enviar la respuesta traducida
+      const translatedBody = await translateData(body, targetLang, originalLang);
       res.json = originalJson;
       return originalJson.call(this, translatedBody);
     } catch (error) {
       console.log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
-
-      // En caso de error, restaurar el método original y enviar la respuesta sin traducir
       res.json = originalJson;
       return originalJson.call(this, body);
     }

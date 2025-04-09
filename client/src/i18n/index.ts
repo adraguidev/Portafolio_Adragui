@@ -12,6 +12,10 @@ import translationDE from './locales/de.json';
 import translationIT from './locales/it.json';
 import translationPT from './locales/pt.json';
 
+// Obtener el idioma de la URL si existe
+const urlParams = new URLSearchParams(window.location.search);
+const urlLang = urlParams.get('lang');
+
 // Configuración principal de i18next
 i18n
   .use(HttpBackend)
@@ -27,15 +31,15 @@ i18n
       pt: { translation: translationPT },
     },
     fallbackLng: 'es',
-    lng: 'es', // Forzar español como idioma inicial
+    lng: urlLang || 'es', // Usar el idioma de la URL o español por defecto
     supportedLngs: ['en', 'fr', 'de', 'it', 'pt', 'es'],
     debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false,
     },
     detection: {
-      // Orden de detección: 1. localStorage, 2. querystring, 3. navigator
-      order: ['localStorage', 'querystring', 'navigator'],
+      // Orden de detección: 1. querystring, 2. localStorage, 3. navigator
+      order: ['querystring', 'localStorage', 'navigator'],
       lookupQuerystring: 'lang',
       lookupLocalStorage: 'i18nextLng',
       caches: ['localStorage'],
@@ -65,7 +69,7 @@ i18n.on('languageChanged', (lng) => {
 
 // Asegurar que el idioma inicial sea español si no hay preferencias guardadas
 const savedLanguage = localStorage.getItem('i18nextLng');
-if (!savedLanguage) {
+if (!savedLanguage && !urlLang) {
   i18n.changeLanguage('es');
   localStorage.setItem('i18nextLng', 'es');
 }

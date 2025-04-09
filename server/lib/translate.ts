@@ -4,29 +4,40 @@ import OpenAI from 'openai';
 // Configuración de Redis para caché
 const redisClient = createClient({
   url: process.env.REDISCLOUD_URL || 'redis://localhost:6379',
+  socket: {
+    reconnectStrategy: (retries) => {
+      if (retries > 10) {
+        console.error('Demasiados intentos de reconexión a Redis');
+        return new Error('Demasiados intentos de reconexión');
+      }
+      return Math.min(retries * 100, 3000);
+    },
+  },
 });
 
 // Conexión a Redis
 let redisConnected = false;
 
-redisClient
-  .connect()
-  .then(() => {
-    redisConnected = true;
-    console.log('Conexión exitosa a Redis');
-  })
-  .catch((err) => {
+const connectRedis = async () => {
+  try {
+    if (!redisClient.isOpen) {
+      await redisClient.connect();
+      redisConnected = true;
+      console.log('Conexión exitosa a Redis');
+    }
+  } catch (err) {
     console.error('Error conectando a Redis:', err);
-    console.warn(
-      'Continuando sin caché Redis. Las traducciones no serán cacheadas.'
-    );
+    console.warn('Continuando sin caché Redis. Las traducciones no serán cacheadas.');
     redisConnected = false;
-  });
+  }
+};
+
+// Intentar conectar inmediatamente
+connectRedis();
 
 // Configuración del cliente OpenAI para DeepSeek
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-const DEEPSEEK_API_URL =
-  process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com/v1';
+const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com/v1';
 
 // Inicializar el cliente OpenAI
 const openai = new OpenAI({
@@ -36,14 +47,10 @@ const openai = new OpenAI({
 
 // Validar la configuración al inicio
 if (!DEEPSEEK_API_KEY) {
-  console.error(
-    '[ERROR CRÍTICO] DEEPSEEK_API_KEY no está configurada en las variables de entorno'
-  );
+  console.error('[ERROR CRÍTICO] DEEPSEEK_API_KEY no está configurada en las variables de entorno');
 }
 if (!DEEPSEEK_API_URL) {
-  console.error(
-    '[ERROR CRÍTICO] DEEPSEEK_API_URL no está configurada en las variables de entorno'
-  );
+  console.error('[ERROR CRÍTICO] DEEPSEEK_API_URL no está configurada en las variables de entorno');
 }
 
 /**
@@ -68,80 +75,59 @@ export async function translateText(
 
   try {
     // Intentar obtener de caché si Redis está conectado
-    if (redisConnected && redisClient.isOpen) {
-      const cachedTranslation = await redisClient.get(cacheKey);
-      if (cachedTranslation) {
-        console.log(
-          `[CACHE HIT] Traducción encontrada en caché para: ${text.substring(
-            0,
-            30
-          )}...`
-        );
-        return cachedTranslation;
+    if (redisConnected) {
+      try {
+        const cachedTranslation = await redisClient.get(cacheKey);
+        if (cachedTranslation) {
+          console.log(`[CACHE HIT] Traducción encontrada en caché para: ${text.substring(0, 30)}...`);
+          return cachedTranslation;
+        }
+      } catch (redisError) {
+        console.error('Error al acceder a Redis:', redisError);
+        // Continuar con la traducción si hay error en Redis
       }
     }
 
     // Si no hay caché o no está en caché, traducir usando la API
     if (!DEEPSEEK_API_KEY) {
-      const error = new Error('DEEPSEEK_API_KEY no está configurada');
-      console.error('[ERROR] No se puede traducir:', error);
-      throw error;
+      throw new Error('DEEPSEEK_API_KEY no está configurada');
     }
 
-    console.log('[DEBUG] Iniciando traducción con DeepSeek API');
-    console.log('[DEBUG] Texto a traducir:', text.substring(0, 100));
-    console.log('[DEBUG] Idioma destino:', targetLang);
+    console.log(`[TRADUCIENDO] Texto: ${text.substring(0, 30)}... a ${targetLang}`);
 
-    console.log('[DEBUG] DEEPSEEK_API_KEY configurada:', !!DEEPSEEK_API_KEY);
-    console.log('[DEBUG] DEEPSEEK_API_URL:', DEEPSEEK_API_URL);
+    const completion = await openai.chat.completions.create({
+      model: 'deepseek-chat',
+      messages: [
+        {
+          role: 'system',
+          content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
+        },
+        {
+          role: 'user',
+          content: text,
+        },
+      ],
+      temperature: 0.3,
+    });
 
-    console.log(
-      `[TRADUCIENDO] Texto: ${text.substring(0, 30)}... a ${targetLang}`
-    );
+    const translatedText = completion.choices[0]?.message?.content?.trim() || text;
 
-    try {
-      const completion = await openai.chat.completions.create({
-        model: 'deepseek-chat',
-        messages: [
-          {
-            role: 'system',
-            content: `Eres un traductor profesional. Traduce el siguiente texto de ${originalLang} a ${targetLang}. Mantén el formato y solo devuelve el texto traducido sin explicaciones ni comentarios adicionales.`,
-          },
-          {
-            role: 'user',
-            content: text,
-          },
-        ],
-        temperature: 0.3,
-      });
-
-      const translatedText = completion.choices[0].message.content.trim();
-
-      // Guardar en caché si Redis está conectado
-      if (redisConnected && redisClient.isOpen) {
+    // Guardar en caché si Redis está conectado
+    if (redisConnected) {
+      try {
         await redisClient.set(cacheKey, translatedText, {
           EX: 60 * 60 * 24 * 30, // 30 días
         });
-        console.log(
-          `[CACHE SAVE] Traducción guardada en caché para: ${text.substring(
-            0,
-            30
-          )}...`
-        );
+        console.log(`[CACHE SAVE] Traducción guardada en caché para: ${text.substring(0, 30)}...`);
+      } catch (redisError) {
+        console.error('Error al guardar en Redis:', redisError);
+        // Continuar sin caché si hay error
       }
-
-      return translatedText;
-    } catch (error) {
-      console.error('Error al traducir texto:', error);
-      throw error;
     }
+
+    return translatedText;
   } catch (error) {
     console.error('Error en la traducción:', error);
     return text; // Devolver texto original en caso de error
-  } finally {
-    // Asegurar que cualquier recurso se libere adecuadamente
-    if (!redisClient.isOpen) {
-      console.log('[DEBUG] Redis no está conectado, no es necesario cerrar');
-    }
   }
 }

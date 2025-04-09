@@ -161,12 +161,10 @@ export function autoTranslateMiddleware(
   );
 
   // Guardar la función original res.json
-  const originalJson = res.json;
+  const originalJson = res.json.bind(res);
 
   // Sobrescribir res.json para interceptar la respuesta
   res.json = function (body: any) {
-    const originalJson = res.json;
-    
     translateData(body, targetLang, originalLang)
       .then(translatedBody => {
         // Asegurarse de que las rutas de las imágenes sean absolutas
@@ -190,13 +188,13 @@ export function autoTranslateMiddleware(
 
         // Restaurar el método original y enviar la respuesta traducida
         res.json = originalJson;
-        res.json(translatedBody);
+        return res.json(translatedBody);
       })
       .catch(error => {
         console.log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
         // En caso de error, restaurar el método original y enviar la respuesta sin traducir
         res.json = originalJson;
-        res.json(body);
+        return res.json(body);
       });
 
     return res;

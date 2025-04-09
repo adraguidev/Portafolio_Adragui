@@ -1,27 +1,27 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import { useLocation } from 'wouter';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { queryClient } from '../lib/queryClient';
 
-// Lista de idiomas soportados con español como primero
+// Lista de idiomas soportados
 export const SUPPORTED_LANGUAGES = [
-  'es',
   'en',
   'fr',
   'de',
   'it',
   'pt',
+  'es',
 ] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export function useLanguage() {
   const { i18n } = useTranslation();
-  const [location, setLocation] = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Cambiar el idioma y actualizar la URL
   const changeLanguage = (newLang: SupportedLanguage) => {
-    const url = new URL(window.location.href);
-    const searchParams = new URLSearchParams(url.search);
+    const searchParams = new URLSearchParams(location.search);
 
     if (newLang === 'es') {
       // Si el idioma es español (por defecto), eliminar el parámetro lang
@@ -31,8 +31,9 @@ export function useLanguage() {
     }
 
     // Actualizar la URL
-    url.search = searchParams.toString();
-    setLocation(url.pathname + url.search);
+    const newSearch = searchParams.toString();
+    const newPath = `${location.pathname}${newSearch ? `?${newSearch}` : ''}`;
+    navigate(newPath, { replace: true });
 
     // Cambiar el idioma en i18next
     i18n.changeLanguage(newLang);
@@ -43,9 +44,8 @@ export function useLanguage() {
 
   // Sincronizar el idioma con el parámetro de URL al cargar y cuando cambie la URL
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const searchParams = new URLSearchParams(url.search);
-    const langParam = searchParams.get('lang') as SupportedLanguage | null;
+    const params = new URLSearchParams(location.search);
+    const langParam = params.get('lang') as SupportedLanguage | null;
 
     // Si no hay parámetro lang o es español, usar español
     const newLang =
@@ -54,7 +54,7 @@ export function useLanguage() {
     if (i18n.language !== newLang) {
       i18n.changeLanguage(newLang);
     }
-  }, [location, i18n]);
+  }, [location.search, i18n]);
 
   return {
     currentLanguage: i18n.language as SupportedLanguage,

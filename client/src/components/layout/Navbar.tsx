@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
-import LanguageSelector from '@/components/ui/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,11 +24,6 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  // Función para obtener el label del nav item según el idioma actual
-  const getNavLabel = (item: { label: string }) => {
-    return item.label;
   };
 
   return (
@@ -53,19 +49,17 @@ const Navbar = () => {
                   location === item.href.split('#')[0] ? 'after:w-full' : ''
                 }`}
               >
-                {getNavLabel(item)}
+                {t(item.translationKey || item.label)}
               </a>
             ))}
           </nav>
 
           <div className="flex items-center space-x-4">
-            <LanguageSelector />
-
             <a
               href="#contact"
               className="hidden md:inline-flex bg-primary text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
             >
-              Contacto
+              {t('nav.contact')}
             </a>
             <button
               onClick={toggleMobileMenu}
@@ -88,7 +82,7 @@ const Navbar = () => {
           isMobileMenuOpen ? 'block' : 'hidden'
         }`}
       >
-        <div className="px-4 py-2 space-y-2">
+        <div className="px-4 py-3 space-y-4">
           {NAV_ITEMS.map((item) => (
             <a
               key={item.href}
@@ -96,18 +90,15 @@ const Navbar = () => {
               className="block text-primary font-medium py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              {getNavLabel(item)}
+              {t(item.translationKey || item.label)}
             </a>
           ))}
-          <div className="flex items-center py-2">
-            <LanguageSelector />
-          </div>
           <a
             href="#contact"
             className="block bg-primary text-white rounded-md px-4 py-2 text-sm font-medium text-center"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Contacto
+            {t('nav.contact')}
           </a>
         </div>
       </div>

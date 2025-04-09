@@ -1299,52 +1299,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Para cada idioma soportado que no sea español (idioma original)
       const targetLanguages = SUPPORTED_LANGUAGES.filter(lang => lang !== 'es');
       
-      // Función para recorrer recursivamente un objeto de traducciones
-      const processTranslations = async (obj: any, prefix = '') => {
+      // Función para recopilar todos los textos a traducir
+      const collectTexts = (obj: any): string[] => {
+        let texts: string[] = [];
+        
         for (const key in obj) {
-          const currentKey = prefix ? `${prefix}.${key}` : key;
-          
           if (typeof obj[key] === 'string') {
-            const text = obj[key];
-            
-            // Para cada idioma destino, traducir y guardar en caché
-            for (const targetLang of targetLanguages) {
-              const cacheKey = `translate:${targetLang}:${text}`;
-              
-              // Verificar si ya existe en caché
-              const existingTranslation = await redisClient.get(cacheKey);
-              
-              if (!existingTranslation) {
-                try {
-                  // Traducir el texto
-                  const translatedText = await translateText(text, targetLang, 'es');
-                  
-                  // Guardar en caché
-                  await redisClient.set(cacheKey, translatedText, {
-                    EX: 60 * 60 * 24 * 30, // 30 días
-                  });
-                  
-                  translationCount++;
-                  
-                  // Log cada 10 traducciones para no saturar la consola
-                  if (translationCount % 10 === 0) {
-                    console.log(`[Preload] Traducidas ${translationCount} frases...`);
-                  }
-                } catch (err) {
-                  console.error(`Error traduciendo "${text}" a ${targetLang}:`, err);
-                }
-              }
-            }
+            texts.push(obj[key]);
           } else if (typeof obj[key] === 'object' && obj[key] !== null) {
             // Si es un objeto, procesarlo recursivamente
-            await processTranslations(obj[key], currentKey);
+            texts = texts.concat(collectTexts(obj[key]));
           }
         }
+        
+        return texts;
       };
       
-      // Iniciar el proceso de traducción
-      console.log('[Preload] Iniciando precarga de traducciones...');
-      await processTranslations(esTranslations);
+      // Recopilar todos los textos a traducir
+      const textsToTranslate = collectTexts(esTranslations);
+      console.log(`[Preload] Recopilados ${textsToTranslate.length} textos para traducir`);
+      
+      // Para cada idioma destino, traducir todos los textos
+      for (const targetLang of targetLanguages) {
+        console.log(`[Preload] Iniciando traducción a ${targetLang}...`);
+        
+        // Divide los textos en lotes para evitar sobrecargar la memoria
+        const batchSize = 50;
+        const textBatches = [];
+        
+        for (let i = 0; i < textsToTranslate.length; i += batchSize) {
+          textBatches.push(textsToTranslate.slice(i, i + batchSize));
+        }
+        
+        // Procesar cada lote secuencialmente
+        for (let i = 0; i < textBatches.length; i++) {
+          const batch = textBatches[i];
+          const batchStart = i * batchSize + 1;
+          const batchEnd = Math.min((i + 1) * batchSize, textsToTranslate.length);
+          
+          console.log(`[Preload] Procesando lote ${i+1}/${textBatches.length} (textos ${batchStart}-${batchEnd})`);
+          
+          // Manejar múltiples promesas en paralelo, pero con un límite para no sobrecargar
+          const promises = batch.map(async (text) => {
+            // Verificar si ya existe en caché
+            const cacheKey = `translate:${targetLang}:${text}`;
+            const existingTranslation = await redisClient.get(cacheKey);
+            
+            if (!existingTranslation) {
+              try {
+                // El sistema de procesamiento por lotes en translateText se encargará 
+                // de agrupar estas solicitudes automáticamente
+                await translateText(text, targetLang, 'es');
+                translationCount++;
+              } catch (err) {
+                console.error(`Error traduciendo "${text.substring(0, 30)}..." a ${targetLang}`);
+              }
+            }
+          });
+          
+          // Esperar a que terminen todas las traducciones del lote actual
+          await Promise.all(promises);
+          
+          // Pequeña pausa entre lotes para evitar sobrecargar la API
+          if (i < textBatches.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      }
       
       // Cerrar conexión
       await redisClient.disconnect();

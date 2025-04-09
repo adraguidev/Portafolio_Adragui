@@ -1013,12 +1013,18 @@ const Settings = () => {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction onClick={() => {
+                          toast({
+                            title: 'Limpiando caché',
+                            description: 'Esto puede tomar unos segundos...',
+                            variant: 'default',
+                          });
+                          
                           apiRequest('POST', '/api/translations/clear-cache')
                             .then((res) => res.json())
                             .then((data) => {
                               toast({
                                 title: 'Caché limpiada',
-                                description: 'La caché de traducciones ha sido limpiada correctamente',
+                                description: `Se han eliminado ${data.keysDeleted || 0} entradas de la caché de traducciones`,
                                 variant: 'default',
                               });
                             })
@@ -1050,16 +1056,25 @@ const Settings = () => {
                 <CardContent>
                   <p className="text-slate-600 mb-4">
                     Esta operación traducirá todo el contenido estático a todos los idiomas soportados
-                    y almacenará los resultados en caché. Puede tardar varios minutos.
+                    y almacenará los resultados en caché. Las traducciones se procesarán en lotes
+                    para mayor eficiencia.
                   </p>
+                  <div className="flex items-center p-2 mb-4 bg-amber-50 border border-amber-200 rounded-md text-amber-700">
+                    <i className="ri-information-line mr-2 text-amber-500"></i>
+                    <p className="text-xs">
+                      Este proceso puede tardar varios minutos. Las traducciones se harán mediante procesamiento
+                      por lotes para maximizar la eficiencia y reducir el tiempo total.
+                    </p>
+                  </div>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="flex flex-col">
                   <Button
                     onClick={() => {
                       toast({
                         title: 'Precargando traducciones',
-                        description: 'El proceso ha comenzado y puede tardar varios minutos',
+                        description: 'El proceso ha comenzado y puede tardar varios minutos. Se notificará cuando se complete.',
                         variant: 'default',
+                        duration: 10000,
                       });
                       
                       apiRequest('POST', '/api/translations/preload')
@@ -1067,7 +1082,7 @@ const Settings = () => {
                         .then((data) => {
                           toast({
                             title: 'Traducciones precargadas',
-                            description: `Se han precargado ${data.count || 'todas las'} traducciones correctamente`,
+                            description: `Se han precargado ${data.count || 0} traducciones correctamente`,
                             variant: 'default',
                           });
                         })
@@ -1081,13 +1096,62 @@ const Settings = () => {
                         });
                     }}
                     variant="outline"
-                    className="w-full"
+                    className="w-full mb-2"
                   >
                     <RefreshCw className="mr-2 h-4 w-4" /> Precargar todas las traducciones
                   </Button>
+                  <div className="w-full text-xs text-slate-500 text-center mt-2">
+                    Español → {['Inglés', 'Francés', 'Alemán', 'Italiano', 'Portugués', 'Japonés', 'Chino'].join(' • ')}
+                  </div>
                 </CardFooter>
               </Card>
             </div>
+            
+            {/* Información sobre el sistema de traducción */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Información del sistema de traducción</CardTitle>
+                <CardDescription>
+                  Detalles sobre cómo funciona el sistema de traducciones
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-md font-medium mb-2">Optimización de traducciones</h3>
+                    <p className="text-sm text-slate-600">
+                      El sistema utiliza un procesamiento por lotes (batching) que agrupa múltiples 
+                      solicitudes de traducción en una sola llamada a la API, reduciendo 
+                      significativamente el tiempo de procesamiento y los costos.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-md font-medium mb-2">Caché en Redis</h3>
+                    <p className="text-sm text-slate-600">
+                      Todas las traducciones se almacenan en Redis Cloud durante 30 días, lo que 
+                      permite una carga más rápida del sitio y reduce las llamadas a la API.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-md font-medium mb-2">Idiomas soportados</h3>
+                    <p className="text-sm text-slate-600">
+                      El sistema soporta actualmente traducciones entre español y: inglés, francés, alemán, 
+                      italiano, portugués, japonés y chino. El español es el idioma base de todas las traducciones.
+                    </p>
+                  </div>
+                  
+                  <div className="p-2 bg-slate-50 border border-slate-200 rounded-md">
+                    <p className="text-xs text-slate-600">
+                      <strong>Nota:</strong> La precarga de traducciones puede generar costos por el uso de la API de DeepSeek. 
+                      Se recomienda hacerlo solo cuando sea necesario, como después de actualizar contenido estático 
+                      o añadir nuevos idiomas al sistema.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

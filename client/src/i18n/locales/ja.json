@@ -55,7 +55,8 @@
     "professionalExperience": "職務経験",
     "education": "学歴",
     "skills": "スキルと技術",
-    "download": "完全な履歴書をダウンロード"
+    "download": "完全な履歴書をダウンロード",
+    "current": "現在"
   },
   "projects": {
     "title": "注目のプロジェクト",

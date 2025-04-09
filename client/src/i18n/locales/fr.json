@@ -55,7 +55,8 @@
     "professionalExperience": "Expérience professionnelle",
     "education": "Éducation",
     "skills": "Compétences et technologies",
-    "download": "Télécharger le CV complet"
+    "download": "Télécharger le CV complet",
+    "current": "Actuel"
   },
   "projects": {
     "title": "Projets en vedette",

@@ -143,7 +143,7 @@ const Navbar = () => {
           
           {/* Selector de idioma para móvil */}
           <div className="py-2 border-t border-gray-100">
-            <p className="text-sm text-gray-500 mb-2">Idioma</p>
+            <p className="text-sm text-gray-500 mb-2">{t('common.language')}</p>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(languages).map(([code, name]) => (
                 <button

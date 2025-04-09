@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { PROFILE_IMAGE_URL } from '@/lib/constants';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 interface SiteInfo {
   id: number;
@@ -20,6 +21,8 @@ interface SiteInfo {
 }
 
 const HeroSection = () => {
+  const { t } = useTranslation();
+  
   // Consulta para obtener la información del sitio
   const { data: siteInfo } = useQuery<SiteInfo>({
     queryKey: ['/api/site-info'],
@@ -40,13 +43,13 @@ const HeroSection = () => {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-flex items-center bg-secondary/10 text-secondary px-4 py-2 rounded-full text-sm font-medium mb-4 available-badge">
-              <span className="pulse-dot"></span> Disponible para trabajar
+              <span className="pulse-dot"></span> {t('common.availableToWork')}
             </span>
             <h1 className="font-clash font-bold text-4xl md:text-5xl lg:text-6xl text-primary mb-4 leading-tight">
-              Transformando <span className="text-secondary">Datos</span> en <span className="text-secondary">Soluciones</span> Inteligentes
+              {t('home.transformingTitle')}
             </h1>
             <p className="text-base md:text-lg text-text/80 mb-6 max-w-lg">
-              Transformo datos en decisiones estratégicas a través del análisis, la visualización y la mejora de procesos operativos. Con experiencia en la creación de dashboards en Power BI, automatización de reportes y soporte a la operatividad, hoy combino mi trayectoria analítica con formación en desarrollo full stack para construir soluciones tecnológicas que generan impacto real.
+              {t('home.transformingDescription')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
@@ -55,7 +58,7 @@ const HeroSection = () => {
                 className="bg-primary text-white hover:bg-primary/90 font-medium"
               >
                 <a href="#cv">
-                  Ver mi currículum
+                  {t('common.seeResume')}
                   <i className="ri-arrow-right-line ml-2"></i>
                 </a>
               </Button>
@@ -65,7 +68,7 @@ const HeroSection = () => {
                 size="default"
                 className="border-slate-200 text-primary hover:bg-slate-50 font-medium"
               >
-                <a href="#contact">Contáctame</a>
+                <a href="#contact">{t('common.contactMe')}</a>
               </Button>
             </div>
           </motion.div>
@@ -91,7 +94,7 @@ const HeroSection = () => {
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent pt-24 pb-6 px-6 z-20">
                 <div className="text-white">
                   <h3 className="text-xl font-semibold">Adrián Aguirre</h3>
-                  <p className="text-white/80">Analista de Operaciones</p>
+                  <p className="text-white/80">{t('home.operationsAnalyst')}</p>
                 </div>
               </div>
             </div>
@@ -101,7 +104,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <p className="text-primary font-medium text-sm">+5 años de experiencia</p>
+              <p className="text-primary font-medium text-sm">{t('home.yearsExperience')}</p>
             </motion.div>
           </motion.div>
         </div>

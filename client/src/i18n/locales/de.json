@@ -8,16 +8,7 @@
     "edit": "Bearbeiten",
     "delete": "Löschen",
     "confirm": "Bestätigen",
-    "back": "Zurück",
-    "draft": "Entwurf",
-    "readTime": "Min. Lesezeit",
-    "readArticle": "Artikel lesen",
-    "availableForWork": "Verfügbar für Arbeit",
-    "transformingData": "Transformiere",
-    "into": "in",
-    "solutions": "Lösungen",
-    "intelligent": "Intelligente",
-    "data": "Daten"
+    "back": "Zurück"
   },
   "nav": {
     "home": "Startseite",
@@ -31,10 +22,7 @@
   "home": {
     "welcome": "Willkommen in meinem Portfolio",
     "description": "Full-Stack-Entwickler mit Erfahrung in Web- und Mobile-Entwicklung",
-    "title": "Neueste Artikel",
-    "articlesDescription": "Gedanken, Ideen und Entdeckungen aus meiner Reise in der Webentwicklung.",
-    "viewAllArticles": "Alle Artikel anzeigen",
-    "heroDescription": "Ich transformiere Daten in strategische Entscheidungen durch Analyse, Visualisierung und Verbesserung operativer Prozesse. Mit Erfahrung in der Erstellung von Power BI Dashboards, Berichtsautomatisierung und operativer Unterstützung kombiniere ich heute meinen analytischen Hintergrund mit Full-Stack-Entwicklungstraining, um technologische Lösungen zu bauen, die echte Wirkung erzeugen."
+    "title": "Neueste Artikel"
   },
   "contact": {
     "title": "Kontakt",
@@ -42,82 +30,5 @@
     "email": "E-Mail",
     "message": "Nachricht",
     "send": "Nachricht senden"
-  },
-  "legal": {
-    "privacyPolicy": {
-      "title": "Datenschutzerklärung",
-      "lastUpdated": "Zuletzt aktualisiert",
-      "sections": {
-        "introduction": "Willkommen in der Datenschutzerklärung von Adrián Aguirre. Diese Richtlinie beschreibt, wie wir Ihre persönlichen Informationen sammeln, verwenden und schützen, wenn Sie unsere Website besuchen.",
-        "informationCollection": "Wir sammeln persönliche Informationen, die Sie uns direkt zur Verfügung stellen, wie Ihren Namen, Ihre E-Mail-Adresse und alle anderen Informationen, die Sie uns mitteilen möchten.",
-        "useOfInformation": "Wir verwenden die gesammelten Informationen, um:",
-        "usePoints": [
-          "Auf Ihre Anfragen und Anfragen zu antworten",
-          "Ihre Erfahrung zu personalisieren und Ihnen relevante Inhalte bereitzustellen",
-          "Unsere Website basierend auf den Informationen und dem Feedback, das wir von Ihnen erhalten, zu verbessern",
-          "Trends, Nutzung und Aktivitäten in Bezug auf unsere Website zu überwachen und zu analysieren"
-        ],
-        "cookies": {
-          "title": "Cookies und Tracking-Technologien",
-          "description": "Wir verwenden Cookies und ähnliche Tracking-Technologien, um die Aktivität auf unserer Website zu verfolgen und bestimmte Informationen zu speichern. Cookies sind Dateien mit einer kleinen Datenmenge, die einen anonymen eindeutigen Bezeichner enthalten können.",
-          "control": "Sie können Ihren Browser anweisen, alle Cookies abzulehnen oder anzuzeigen, wenn ein Cookie gesendet wird. Wenn Sie jedoch keine Cookies akzeptieren, können Sie möglicherweise einige Teile unserer Website nicht nutzen."
-        },
-        "security": {
-          "title": "Sicherheit",
-          "description": "Die Sicherheit Ihrer persönlichen Informationen ist uns wichtig, aber denken Sie daran, dass keine Methode der Übertragung über das Internet oder der elektronischen Speicherung zu 100% sicher ist."
-        },
-        "contact": "Wenn Sie Fragen zu dieser Datenschutzerklärung haben, kontaktieren Sie uns bitte."
-      }
-    },
-    "cookiePolicy": {
-      "title": "Cookie-Richtlinie",
-      "lastUpdated": "Zuletzt aktualisiert",
-      "sections": {
-        "whatAreCookies": {
-          "title": "Was sind Cookies?",
-          "description": "Cookies sind kleine Textdateien, die Websites, die Sie besuchen, auf Ihrem Computer ablegen, um Ihre Website-Erfahrung zu verbessern."
-        },
-        "typesOfCookies": {
-          "title": "Arten von Cookies, die wir verwenden",
-          "types": [
-            {
-              "name": "Essentielle Cookies",
-              "description": "Diese Cookies sind für die Funktionsweise der Website notwendig und können in unseren Systemen nicht deaktiviert werden."
-            },
-            {
-              "name": "Performance-Cookies",
-              "description": "Diese Cookies ermöglichen es uns, Besuche und Verkehrsquellen zu zählen, damit wir die Leistung unserer Website messen und verbessern können."
-            },
-            {
-              "name": "Funktionalitäts-Cookies",
-              "description": "Diese Cookies ermöglichen es der Website, erweiterte Funktionalität und Personalisierung bereitzustellen."
-            },
-            {
-              "name": "Werbe-Cookies",
-              "description": "Diese Cookies können über unsere Website von unseren Werbepartnern gesetzt werden."
-            }
-          ]
-        },
-        "control": {
-          "title": "Wie man Cookies kontrolliert",
-          "description": "Sie können Cookies nach Belieben kontrollieren und/oder löschen. Sie können alle Cookies löschen, die sich bereits auf Ihrem Computer befinden, und Sie können die meisten Browser so einstellen, dass sie verhindern, dass sie platziert werden."
-        }
-      }
-    },
-    "termsOfService": {
-      "title": "Nutzungsbedingungen",
-      "lastUpdated": "Zuletzt aktualisiert",
-      "sections": {
-        "acceptance": {
-          "title": "Annahme der Bedingungen",
-          "description": "Durch den Zugriff auf und die Nutzung dieser Website erklären Sie sich mit diesen Nutzungsbedingungen, allen geltenden Gesetzen und Vorschriften einverstanden."
-        },
-        "license": {
-          "title": "Nutzungslizenz",
-          "description": "Die Erlaubnis wird erteilt, vorübergehend eine Kopie der Materialien auf der Website von Adrián Aguirre für die persönliche, nicht kommerzielle, vorübergehende Betrachtung herunterzuladen."
-        },
-        "contact": "Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, kontaktieren Sie uns bitte."
-      }
-    }
   }
 }

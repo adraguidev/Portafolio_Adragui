@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 import { Link } from 'wouter';
+import { useTranslation } from 'react-i18next';
 
 const CookiePolicy = () => {
+  const { t } = useTranslation();
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -9,9 +12,9 @@ const CookiePolicy = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
       <div className="max-w-3xl mx-auto">
-        <h1 className="font-clash font-bold text-4xl md:text-5xl text-primary mb-8">Política de Cookies</h1>
+        <h1 className="font-clash font-bold text-4xl md:text-5xl text-primary mb-8">{t('legal.cookiePolicy')}</h1>
         
-        <p className="text-text/70 mb-8">Última actualización: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <p className="text-text/70 mb-8">{t('legal.lastUpdated')}: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
         <div className="prose prose-lg max-w-none">
           <h2>1. ¿Qué son las Cookies?</h2>

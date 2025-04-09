@@ -8,16 +8,7 @@
     "edit": "Editar",
     "delete": "Excluir",
     "confirm": "Confirmar",
-    "back": "Voltar",
-    "draft": "Rascunho",
-    "readTime": "min de leitura",
-    "readArticle": "Ler Artigo",
-    "availableForWork": "Disponível para trabalho",
-    "transformingData": "Transformando",
-    "into": "em",
-    "solutions": "Soluções",
-    "intelligent": "Inteligentes",
-    "data": "Dados"
+    "back": "Voltar"
   },
   "nav": {
     "home": "Início",
@@ -31,10 +22,7 @@
   "home": {
     "welcome": "Bem-vindo ao meu portfólio",
     "description": "Desenvolvedor Full Stack com experiência em desenvolvimento web e mobile",
-    "title": "Últimos Artigos",
-    "articlesDescription": "Pensamentos, ideias e descobertas da minha jornada no desenvolvimento web.",
-    "viewAllArticles": "Ver Todos os Artigos",
-    "heroDescription": "Transformo dados em decisões estratégicas através da análise, visualização e melhoria de processos operacionais. Com experiência na criação de dashboards em Power BI, automação de relatórios e suporte operacional, hoje combino minha trajetória analítica com formação em desenvolvimento full stack para construir soluções tecnológicas que geram impacto real."
+    "title": "Últimos Artigos"
   },
   "contact": {
     "title": "Contato",
@@ -42,82 +30,5 @@
     "email": "E-mail",
     "message": "Mensagem",
     "send": "Enviar mensagem"
-  },
-  "legal": {
-    "privacyPolicy": {
-      "title": "Política de Privacidade",
-      "lastUpdated": "Última atualização",
-      "sections": {
-        "introduction": "Bem-vindo à Política de Privacidade de Adrián Aguirre. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais quando você visita nosso site.",
-        "informationCollection": "Coletamos informações pessoais que você nos fornece diretamente, como seu nome, endereço de e-mail e qualquer outra informação que você escolha fornecer.",
-        "useOfInformation": "Usamos as informações que coletamos para:",
-        "usePoints": [
-          "Responder às suas consultas e solicitações",
-          "Personalizar sua experiência e fornecer conteúdo relevante",
-          "Melhorar nosso site com base nas informações e feedback que recebemos de você",
-          "Monitorar e analisar tendências, uso e atividades relacionadas ao nosso site"
-        ],
-        "cookies": {
-          "title": "Cookies e Tecnologias de Rastreamento",
-          "description": "Usamos cookies e tecnologias de rastreamento semelhantes para rastrear a atividade em nosso site e armazenar certas informações. Cookies são arquivos com uma pequena quantidade de dados que podem incluir um identificador único anônimo.",
-          "control": "Você pode instruir seu navegador a recusar todos os cookies ou a indicar quando um cookie está sendo enviado. No entanto, se você não aceitar cookies, talvez não consiga usar algumas partes do nosso site."
-        },
-        "security": {
-          "title": "Segurança",
-          "description": "A segurança de suas informações pessoais é importante para nós, mas lembre-se de que nenhum método de transmissão pela Internet ou método de armazenamento eletrônico é 100% seguro."
-        },
-        "contact": "Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato conosco."
-      }
-    },
-    "cookiePolicy": {
-      "title": "Política de Cookies",
-      "lastUpdated": "Última atualização",
-      "sections": {
-        "whatAreCookies": {
-          "title": "O que são Cookies?",
-          "description": "Cookies são pequenos arquivos de texto que os sites que você visita colocam em seu computador para melhorar sua experiência no site."
-        },
-        "typesOfCookies": {
-          "title": "Tipos de Cookies que Usamos",
-          "types": [
-            {
-              "name": "Cookies Essenciais",
-              "description": "Estes cookies são necessários para o funcionamento do site e não podem ser desativados em nossos sistemas."
-            },
-            {
-              "name": "Cookies de Desempenho",
-              "description": "Estes cookies nos permitem contar visitas e fontes de tráfego para que possamos medir e melhorar o desempenho do nosso site."
-            },
-            {
-              "name": "Cookies de Funcionalidade",
-              "description": "Estes cookies permitem que o site forneça funcionalidades e personalização aprimoradas."
-            },
-            {
-              "name": "Cookies de Publicidade",
-              "description": "Estes cookies podem ser definidos através do nosso site por nossos parceiros de publicidade."
-            }
-          ]
-        },
-        "control": {
-          "title": "Como Controlar os Cookies",
-          "description": "Você pode controlar e/ou excluir cookies como desejar. Você pode excluir todos os cookies que já estão no seu computador e pode configurar a maioria dos navegadores para impedir que sejam colocados."
-        }
-      }
-    },
-    "termsOfService": {
-      "title": "Termos de Serviço",
-      "lastUpdated": "Última atualização",
-      "sections": {
-        "acceptance": {
-          "title": "Aceitação dos Termos",
-          "description": "Ao acessar e usar este site, você concorda em estar vinculado a estes Termos de Serviço, todas as leis e regulamentos aplicáveis."
-        },
-        "license": {
-          "title": "Licença de Uso",
-          "description": "É concedida permissão para baixar temporariamente uma cópia dos materiais no site de Adrián Aguirre para visualização pessoal, não comercial e transitória apenas."
-        },
-        "contact": "Se você tiver alguma dúvida sobre estes Termos de Serviço, entre em contato conosco."
-      }
-    }
   }
 }

@@ -7,12 +7,21 @@ const redisClient = createClient({
 });
 
 // Conexión a Redis
-redisClient.connect().catch((err) => {
-  console.error('Error conectando a Redis:', err);
-  console.warn(
-    'Continuando sin caché Redis. Las traducciones no serán cacheadas.'
-  );
-});
+let redisConnected = false;
+
+redisClient
+  .connect()
+  .then(() => {
+    redisConnected = true;
+    console.log('Conexión exitosa a Redis');
+  })
+  .catch((err) => {
+    console.error('Error conectando a Redis:', err);
+    console.warn(
+      'Continuando sin caché Redis. Las traducciones no serán cacheadas.'
+    );
+    redisConnected = false;
+  });
 
 // Configuración del cliente OpenAI para DeepSeek
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
@@ -59,7 +68,7 @@ export async function translateText(
 
   try {
     // Intentar obtener de caché si Redis está conectado
-    if (redisClient.isOpen) {
+    if (redisConnected && redisClient.isOpen) {
       const cachedTranslation = await redisClient.get(cacheKey);
       if (cachedTranslation) {
         console.log(
@@ -109,7 +118,7 @@ export async function translateText(
       const translatedText = completion.choices[0].message.content.trim();
 
       // Guardar en caché si Redis está conectado
-      if (redisClient.isOpen) {
+      if (redisConnected && redisClient.isOpen) {
         await redisClient.set(cacheKey, translatedText, {
           EX: 60 * 60 * 24 * 30, // 30 días
         });

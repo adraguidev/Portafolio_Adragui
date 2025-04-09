@@ -1,0 +1,33 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "back": "Volver"
+  },
+  "nav": {
+    "home": "Inicio",
+    "about": "Sobre mí",
+    "projects": "Proyectos",
+    "experience": "Experiencia",
+    "education": "Educación",
+    "skills": "Habilidades",
+    "contact": "Contacto"
+  },
+  "home": {
+    "welcome": "Bienvenido a mi portafolio",
+    "description": "Desarrollador Full Stack con experiencia en desarrollo web y móvil"
+  },
+  "contact": {
+    "title": "Contacto",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "message": "Mensaje",
+    "send": "Enviar mensaje"
+  }
+}

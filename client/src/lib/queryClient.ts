@@ -52,15 +52,13 @@ export const getQueryFn: <T>(options: {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // Construir la URL con el parámetro de idioma para peticiones GET
+    // Construir la URL para peticiones GET
     const url = new URL(queryKey[0] as string, window.location.origin);
-    if (!url.searchParams.has('lang')) {
-      const userLang = navigator.language.split('-')[0];
-      // Definir idiomas soportados
-      const supportedLangs = ['en', 'fr', 'de', 'it', 'pt'];
-      // Usar el idioma del usuario si está soportado, o 'en' como fallback
-      const lang = supportedLangs.includes(userLang) ? userLang : 'en';
-      url.searchParams.append('lang', lang);
+
+    // Solo agregar el parámetro lang si está presente en la URL actual
+    const currentLang = new URLSearchParams(window.location.search).get('lang');
+    if (currentLang) {
+      url.searchParams.set('lang', currentLang);
     }
 
     const res = await fetch(url.toString(), {

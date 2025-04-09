@@ -119,8 +119,16 @@ export function autoTranslateMiddleware(
     `[TRANSLATE] Solicitud de traducción recibida - Path: ${req.path}, Lang: ${targetLang}`
   );
 
+  // Si no hay parámetro de idioma, no traducir
+  if (!req.query.lang) {
+    console.log(
+      '[TRANSLATE] ℹ️ No se solicitó traducción (sin parámetro lang)'
+    );
+    return next();
+  }
+
   // Validar que el idioma solicitado sea válido
-  if (!targetLang || !SUPPORTED_LANGUAGES.includes(targetLang)) {
+  if (!SUPPORTED_LANGUAGES.includes(targetLang)) {
     console.log(
       `[TRANSLATE] ⚠️ Idioma no válido o no soportado: ${targetLang}`
     );

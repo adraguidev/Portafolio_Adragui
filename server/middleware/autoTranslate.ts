@@ -48,7 +48,6 @@ const UNTRANSLATABLE_FIELDS = [
   'link_*',
   '*_url',
   '*_link',
-  'actual',
   'current',
   'present',
   'now',
@@ -249,13 +248,13 @@ export function autoTranslateMiddleware(
 
       // Restaurar el método original y enviar la respuesta traducida
       res.json = originalJson;
-      return res.json(translatedBody);
+      return originalJson.call(this, translatedBody);
     } catch (error) {
       console.log(`[TRANSLATE] ❌ Error al traducir respuesta: ${error}`);
 
       // En caso de error, restaurar el método original y enviar la respuesta sin traducir
       res.json = originalJson;
-      return res.json(body);
+      return originalJson.call(this, body);
     }
   };
 

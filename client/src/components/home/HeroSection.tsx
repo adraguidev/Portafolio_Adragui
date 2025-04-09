@@ -21,7 +21,7 @@ interface SiteInfo {
 }
 
 const HeroSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   // Consulta para obtener la información del sitio
   const { data: siteInfo } = useQuery<SiteInfo>({
@@ -46,7 +46,17 @@ const HeroSection = () => {
               <span className="pulse-dot"></span> {t('common.availableToWork')}
             </span>
             <h1 className="font-clash font-bold text-4xl md:text-5xl lg:text-6xl text-primary mb-4 leading-tight">
-              {t('home.transformingTitle')}
+              {i18n.language === 'es' ? (
+                <>
+                  Transformando <span className="text-secondary">Datos</span> en <span className="text-secondary">Soluciones</span> Inteligentes
+                </>
+              ) : i18n.language === 'en' ? (
+                <>
+                  Transforming <span className="text-secondary">Data</span> into <span className="text-secondary">Intelligent</span> Solutions
+                </>
+              ) : (
+                t('home.transformingTitle')
+              )}
             </h1>
             <p className="text-base md:text-lg text-text/80 mb-6 max-w-lg">
               {t('home.transformingDescription')}

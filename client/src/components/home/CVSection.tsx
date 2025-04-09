@@ -110,7 +110,7 @@ const CVSection = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                       <h4 className="font-clash font-semibold text-xl text-primary">{experience.title}</h4>
                       <span className="bg-slate-100 text-primary/70 px-3 py-1 rounded-full text-sm mt-1 sm:mt-0">
-                        {experience.startDate} - {experience.endDate || 'Actual'}
+                        {experience.startDate} - {experience.endDate || t('cv.current')}
                       </span>
                     </div>
                     <h5 className="text-secondary font-medium mb-2">{experience.company}</h5>

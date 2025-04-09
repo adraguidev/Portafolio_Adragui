@@ -11,7 +11,13 @@
     "back": "Back",
     "draft": "Draft",
     "readTime": "min read",
-    "readArticle": "Read Article"
+    "readArticle": "Read Article",
+    "availableForWork": "Available for work",
+    "transformingData": "Transforming",
+    "into": "into",
+    "solutions": "Solutions",
+    "intelligent": "Intelligent",
+    "data": "Data"
   },
   "nav": {
     "home": "Home",
@@ -27,7 +33,8 @@
     "description": "Full Stack Developer with experience in web and mobile development",
     "title": "Latest Articles",
     "articlesDescription": "Thoughts, ideas and discoveries from my journey in web development.",
-    "viewAllArticles": "View All Articles"
+    "viewAllArticles": "View All Articles",
+    "heroDescription": "I transform data into strategic decisions through analysis, visualization, and operational process improvement. With experience in creating Power BI dashboards, report automation, and operational support, I now combine my analytical background with full stack development training to build technological solutions that generate real impact."
   },
   "contact": {
     "title": "Contact",
@@ -35,5 +42,82 @@
     "email": "Email",
     "message": "Message",
     "send": "Send message"
+  },
+  "legal": {
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated",
+      "sections": {
+        "introduction": "Welcome to Adrián Aguirre's Privacy Policy. This policy describes how we collect, use, and protect your personal information when you visit our website.",
+        "informationCollection": "We collect personal information that you provide directly to us, such as your name, email address, and any other information you choose to provide.",
+        "useOfInformation": "We use the information we collect to:",
+        "usePoints": [
+          "Respond to your inquiries and requests",
+          "Personalize your experience and provide you with relevant content",
+          "Improve our website based on the information and feedback we receive from you",
+          "Monitor and analyze trends, usage, and activities related to our website"
+        ],
+        "cookies": {
+          "title": "Cookies and Tracking Technologies",
+          "description": "We use cookies and similar tracking technologies to track activity on our website and store certain information. Cookies are files with a small amount of data that may include an anonymous unique identifier.",
+          "control": "You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our website."
+        },
+        "security": {
+          "title": "Security",
+          "description": "The security of your personal information is important to us, but remember that no method of transmission over the Internet or method of electronic storage is 100% secure."
+        },
+        "contact": "If you have any questions about this Privacy Policy, please contact us."
+      }
+    },
+    "cookiePolicy": {
+      "title": "Cookie Policy",
+      "lastUpdated": "Last updated",
+      "sections": {
+        "whatAreCookies": {
+          "title": "What are Cookies?",
+          "description": "Cookies are small text files that websites you visit place on your computer to improve your website experience."
+        },
+        "typesOfCookies": {
+          "title": "Types of Cookies We Use",
+          "types": [
+            {
+              "name": "Essential Cookies",
+              "description": "These cookies are necessary for the website to function and cannot be disabled in our systems."
+            },
+            {
+              "name": "Performance Cookies",
+              "description": "These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site."
+            },
+            {
+              "name": "Functionality Cookies",
+              "description": "These cookies enable the website to provide enhanced functionality and personalization."
+            },
+            {
+              "name": "Advertising Cookies",
+              "description": "These cookies may be set through our site by our advertising partners."
+            }
+          ]
+        },
+        "control": {
+          "title": "How to Control Cookies",
+          "description": "You can control and/or delete cookies as you wish. You can delete all cookies that are already on your computer and you can set most browsers to prevent them from being placed."
+        }
+      }
+    },
+    "termsOfService": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated",
+      "sections": {
+        "acceptance": {
+          "title": "Acceptance of Terms",
+          "description": "By accessing and using this website, you agree to be bound by these Terms of Service, all applicable laws and regulations."
+        },
+        "license": {
+          "title": "Use License",
+          "description": "Permission is granted to temporarily download one copy of the materials on Adrián Aguirre's website for personal, non-commercial transitory viewing only."
+        },
+        "contact": "If you have any questions about these Terms of Service, please contact us."
+      }
+    }
   }
 }

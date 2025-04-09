@@ -8,7 +8,16 @@
     "edit": "Modifier",
     "delete": "Supprimer",
     "confirm": "Confirmer",
-    "back": "Retour"
+    "back": "Retour",
+    "draft": "Brouillon",
+    "readTime": "min de lecture",
+    "readArticle": "Lire l'article",
+    "availableForWork": "Disponible pour travailler",
+    "transformingData": "Transformer",
+    "into": "en",
+    "solutions": "Solutions",
+    "intelligent": "Intelligentes",
+    "data": "Données"
   },
   "nav": {
     "home": "Accueil",
@@ -22,7 +31,10 @@
   "home": {
     "welcome": "Bienvenue sur mon portfolio",
     "description": "Développeur Full Stack avec expérience en développement web et mobile",
-    "title": "Derniers Articles"
+    "title": "Derniers Articles",
+    "articlesDescription": "Pensées, idées et découvertes de mon parcours dans le développement web.",
+    "viewAllArticles": "Voir tous les articles",
+    "heroDescription": "Je transforme les données en décisions stratégiques grâce à l'analyse, la visualisation et l'amélioration des processus opérationnels. Avec une expérience dans la création de tableaux de bord Power BI, l'automatisation des rapports et le support opérationnel, je combine aujourd'hui mon parcours analytique avec une formation en développement full stack pour construire des solutions technologiques qui génèrent un impact réel."
   },
   "contact": {
     "title": "Contact",
@@ -30,5 +42,82 @@
     "email": "E-mail",
     "message": "Message",
     "send": "Envoyer le message"
+  },
+  "legal": {
+    "privacyPolicy": {
+      "title": "Politique de Confidentialité",
+      "lastUpdated": "Dernière mise à jour",
+      "sections": {
+        "introduction": "Bienvenue dans la Politique de Confidentialité d'Adrián Aguirre. Cette politique décrit comment nous collectons, utilisons et protégeons vos informations personnelles lorsque vous visitez notre site web.",
+        "informationCollection": "Nous collectons les informations personnelles que vous nous fournissez directement, telles que votre nom, votre adresse e-mail et toute autre information que vous choisissez de fournir.",
+        "useOfInformation": "Nous utilisons les informations que nous collectons pour :",
+        "usePoints": [
+          "Répondre à vos demandes et questions",
+          "Personnaliser votre expérience et vous fournir un contenu pertinent",
+          "Améliorer notre site web en fonction des informations et des retours que nous recevons de vous",
+          "Surveiller et analyser les tendances, l'utilisation et les activités liées à notre site web"
+        ],
+        "cookies": {
+          "title": "Cookies et Technologies de Suivi",
+          "description": "Nous utilisons des cookies et des technologies de suivi similaires pour suivre l'activité sur notre site web et stocker certaines informations. Les cookies sont des fichiers contenant une petite quantité de données qui peuvent inclure un identifiant unique anonyme.",
+          "control": "Vous pouvez demander à votre navigateur de refuser tous les cookies ou d'indiquer quand un cookie est envoyé. Cependant, si vous n'acceptez pas les cookies, vous ne pourrez peut-être pas utiliser certaines parties de notre site web."
+        },
+        "security": {
+          "title": "Sécurité",
+          "description": "La sécurité de vos informations personnelles est importante pour nous, mais n'oubliez pas qu'aucune méthode de transmission sur Internet ou méthode de stockage électronique n'est sûre à 100%."
+        },
+        "contact": "Si vous avez des questions sur cette Politique de Confidentialité, veuillez nous contacter."
+      }
+    },
+    "cookiePolicy": {
+      "title": "Politique relative aux Cookies",
+      "lastUpdated": "Dernière mise à jour",
+      "sections": {
+        "whatAreCookies": {
+          "title": "Que sont les Cookies ?",
+          "description": "Les cookies sont de petits fichiers texte que les sites web que vous visitez placent sur votre ordinateur pour améliorer votre expérience sur le site web."
+        },
+        "typesOfCookies": {
+          "title": "Types de Cookies que Nous Utilisons",
+          "types": [
+            {
+              "name": "Cookies Essentiels",
+              "description": "Ces cookies sont nécessaires au fonctionnement du site web et ne peuvent pas être désactivés dans nos systèmes."
+            },
+            {
+              "name": "Cookies de Performance",
+              "description": "Ces cookies nous permettent de compter les visites et les sources de trafic afin que nous puissions mesurer et améliorer les performances de notre site."
+            },
+            {
+              "name": "Cookies de Fonctionnalité",
+              "description": "Ces cookies permettent au site de fournir des fonctionnalités et une personnalisation améliorées."
+            },
+            {
+              "name": "Cookies Publicitaires",
+              "description": "Ces cookies peuvent être définis sur notre site par nos partenaires publicitaires."
+            }
+          ]
+        },
+        "control": {
+          "title": "Comment Contrôler les Cookies",
+          "description": "Vous pouvez contrôler et/ou supprimer les cookies comme vous le souhaitez. Vous pouvez supprimer tous les cookies déjà présents sur votre ordinateur et vous pouvez configurer la plupart des navigateurs pour les empêcher d'être placés."
+        }
+      }
+    },
+    "termsOfService": {
+      "title": "Conditions d'Utilisation",
+      "lastUpdated": "Dernière mise à jour",
+      "sections": {
+        "acceptance": {
+          "title": "Acceptation des Conditions",
+          "description": "En accédant et en utilisant ce site web, vous acceptez d'être lié par ces Conditions d'Utilisation, toutes les lois et réglementations applicables."
+        },
+        "license": {
+          "title": "Licence d'Utilisation",
+          "description": "L'autorisation est accordée de télécharger temporairement une copie des documents sur le site web d'Adrián Aguirre pour une visualisation personnelle, non commerciale et transitoire uniquement."
+        },
+        "contact": "Si vous avez des questions sur ces Conditions d'Utilisation, veuillez nous contacter."
+      }
+    }
   }
 }

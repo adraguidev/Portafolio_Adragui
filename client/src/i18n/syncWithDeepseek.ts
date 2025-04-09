@@ -15,27 +15,36 @@ export const syncDeepseekWithI18n = (language: string) => {
   currentUrl.searchParams.set('lang', language);
   window.history.replaceState({}, '', currentUrl.toString());
   
-  // Forzar recarga de datos de API si hay peticiones pendientes
-  // Como solución simple, podemos forzar una recarga de la página
-  // cuando cambiamos el idioma para que todas las API se recarguen
-  // si es una app más grande se podría usar un patrón más sofisticado
-  
   // Si ya tenemos un idioma previo y acabamos de cambiarlo, recargamos
   const prevLang = sessionStorage.getItem('currentLang');
   if (prevLang && prevLang !== language) {
-    // Opcional: recargar la página para forzar todas las traducciones
-    // window.location.reload();
+    // Recargar la página para forzar todas las traducciones
+    // Es la forma más fiable de asegurar que tanto i18next como deepseek
+    // traducen todo el contenido correctamente
+    console.log(`[Deepseek] Recargando página para aplicar idioma: ${language}`);
     
-    // Alternativa: si usas React Query, puedes invalidar todas las queries
-    try {
-      // Acceder a queryClient como propiedad global en window
-      const queryClientAny = (window as any).queryClient;
-      if (queryClientAny && typeof queryClientAny.invalidateQueries === 'function') {
-        queryClientAny.invalidateQueries();
-      }
-    } catch (error) {
-      console.error('[Deepseek] Error al invalidar queries:', error);
+    // Guardamos el idioma antes de recargar
+    sessionStorage.setItem('currentLang', language);
+    
+    // Pequeño timeout para asegurar que los cambios se guardan antes de recargar
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+    
+    return; // Terminamos aquí porque la página se va a recargar
+  }
+  
+  // Solo llegamos aquí si no se va a recargar la página (primera carga)
+  // Intentamos invalidar queries por si acaso
+  try {
+    // Acceder a queryClient como propiedad global en window
+    const queryClientAny = (window as any).queryClient;
+    if (queryClientAny && typeof queryClientAny.invalidateQueries === 'function') {
+      queryClientAny.invalidateQueries();
+      console.log('[Deepseek] Invalidadas queries para refrescar datos');
     }
+  } catch (error) {
+    console.error('[Deepseek] Error al invalidar queries:', error);
   }
   
   // Actualizar idioma actual en sessionStorage

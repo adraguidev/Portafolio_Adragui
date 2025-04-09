@@ -11,6 +11,8 @@ import translationFR from './locales/fr.json';
 import translationDE from './locales/de.json';
 import translationIT from './locales/it.json';
 import translationPT from './locales/pt.json';
+import translationJA from './locales/ja.json';
+import translationZH from './locales/zh.json';
 
 // Obtener el idioma de la URL si existe
 const urlParams = new URLSearchParams(window.location.search);
@@ -29,10 +31,12 @@ i18n
       de: { translation: translationDE },
       it: { translation: translationIT },
       pt: { translation: translationPT },
+      ja: { translation: translationJA },
+      zh: { translation: translationZH },
     },
     fallbackLng: 'es',
     lng: urlLang || 'es', // Usar el idioma de la URL o español por defecto
-    supportedLngs: ['en', 'fr', 'de', 'it', 'pt', 'es'],
+    supportedLngs: ['en', 'fr', 'de', 'it', 'pt', 'es', 'ja', 'zh'],
     debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false,

@@ -1,0 +1,92 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "save": "保存",
+    "cancel": "取消",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirm": "确认",
+    "back": "返回",
+    "draft": "草稿",
+    "readTime": "分钟阅读",
+    "readArticle": "阅读文章",
+    "language": "语言",
+    "year": "年",
+    "years": "年",
+    "experience": "经验",
+    "availableToWork": "可以工作",
+    "seeResume": "查看我的简历",
+    "contactMe": "联系我",
+    "sending": "发送中...",
+    "sendMessage": "发送消息",
+    "subject": "主题",
+    "whatIsItAbout": "关于什么？",
+    "yourName": "您的姓名",
+    "yourEmail": "您的电子邮件",
+    "yourMessage": "您的消息",
+    "madeWith": "用❤制作于",
+    "adminPanel": "管理面板"
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于",
+    "projects": "项目",
+    "experience": "经验",
+    "education": "教育",
+    "skills": "技能",
+    "contact": "联系"
+  },
+  "home": {
+    "welcome": "欢迎来到我的作品集",
+    "description": "拥有网页和移动开发经验的全栈开发者",
+    "title": "最新文章",
+    "articlesDescription": "来自我的网页开发旅程的思考、想法和发现。",
+    "viewAllArticles": "查看所有文章",
+    "transformingTitle": "将数据转化为智能解决方案",
+    "transformingDescription": "我通过分析、可视化和改进操作流程，将数据转化为战略决策。凭借创建Power BI仪表板、自动化报告和运营支持的经验，我现在将我的分析背景与全栈开发培训相结合，构建产生实际影响的技术解决方案。",
+    "yearsExperience": "5年以上经验",
+    "operationsAnalyst": "运营分析师"
+  },
+  "cv": {
+    "title": "简历",
+    "subtitle": "我在网页开发和设计方面的职业旅程和经验。",
+    "professionalExperience": "专业经验",
+    "education": "教育",
+    "skills": "技能和技术",
+    "download": "下载完整简历"
+  },
+  "projects": {
+    "title": "精选项目",
+    "description": "我在网页应用程序、电子商务平台和交互体验方面的最新作品集合。",
+    "viewAll": "查看完整作品集",
+    "viewProject": "查看项目"
+  },
+  "contact": {
+    "title": "联系",
+    "name": "姓名",
+    "email": "电子邮件",
+    "message": "消息",
+    "send": "发送消息",
+    "sendMessage": "发送消息",
+    "getInTouch": "联系",
+    "getInTouchDescription": "如果您有项目想法或想了解更多关于我的服务，请随时联系我。我很乐意帮助您。",
+    "addressLabel": "位置",
+    "emailLabel": "电子邮件",
+    "phoneLabel": "电话",
+    "followMe": "关注我",
+    "letsConnect": "让我们联系",
+    "letsConnectDescription": "您有项目想法或想讨论机会吗？给我发送消息，我会尽快回复您。"
+  },
+  "footer": {
+    "navigation": "导航",
+    "legal": "法律"
+  },
+  "legal": {
+    "cookiePolicy": "Cookie政策",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款",
+    "lastUpdated": "最近更新"
+  }
+} 

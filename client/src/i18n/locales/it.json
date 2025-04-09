@@ -8,7 +8,26 @@
     "edit": "Modifica",
     "delete": "Elimina",
     "confirm": "Conferma",
-    "back": "Indietro"
+    "back": "Indietro",
+    "draft": "Bozza",
+    "readTime": "min di lettura",
+    "readArticle": "Leggi articolo",
+    "language": "Lingua",
+    "year": "anno",
+    "years": "anni",
+    "experience": "esperienza",
+    "availableToWork": "Disponibile per lavorare",
+    "seeResume": "Vedi il mio curriculum",
+    "contactMe": "Contattami",
+    "sending": "Invio in corso...",
+    "sendMessage": "Invia messaggio",
+    "subject": "Oggetto",
+    "whatIsItAbout": "Di cosa si tratta?",
+    "yourName": "Il tuo nome",
+    "yourEmail": "La tua email",
+    "yourMessage": "Il tuo messaggio",
+    "madeWith": "Realizzato con ❤ a",
+    "adminPanel": "Pannello di amministrazione"
   },
   "nav": {
     "home": "Home",
@@ -22,13 +41,52 @@
   "home": {
     "welcome": "Benvenuto nel mio portfolio",
     "description": "Sviluppatore Full Stack con esperienza nello sviluppo web e mobile",
-    "title": "Ultimi Articoli"
+    "title": "Ultimi articoli",
+    "articlesDescription": "Pensieri, idee e scoperte dal mio percorso nello sviluppo web.",
+    "viewAllArticles": "Vedi tutti gli articoli",
+    "transformingTitle": "Trasformare i dati in soluzioni intelligenti",
+    "transformingDescription": "Trasformo i dati in decisioni strategiche attraverso l'analisi, la visualizzazione e il miglioramento dei processi operativi. Con esperienza nella creazione di dashboard in Power BI, automazione di report e supporto operativo, oggi combino il mio background analitico con la formazione in sviluppo full stack per costruire soluzioni tecnologiche che generano un impatto reale.",
+    "yearsExperience": "+5 anni di esperienza",
+    "operationsAnalyst": "Analista operativo"
+  },
+  "cv": {
+    "title": "Curriculum Vitae",
+    "subtitle": "Il mio percorso professionale ed esperienza nello sviluppo web e design.",
+    "professionalExperience": "Esperienza professionale",
+    "education": "Formazione",
+    "skills": "Competenze e tecnologie",
+    "download": "Scarica CV completo"
+  },
+  "projects": {
+    "title": "Progetti in evidenza",
+    "description": "Una collezione dei miei lavori recenti in applicazioni web, piattaforme e-commerce ed esperienze interattive.",
+    "viewAll": "Vedi portfolio completo",
+    "viewProject": "Vedi progetto"
   },
   "contact": {
     "title": "Contatti",
     "name": "Nome",
     "email": "Email",
     "message": "Messaggio",
-    "send": "Invia messaggio"
+    "send": "Invia messaggio",
+    "sendMessage": "Invia un messaggio",
+    "getInTouch": "Mettiti in contatto",
+    "getInTouchDescription": "Se hai un progetto in mente o vuoi saperne di più sui miei servizi, non esitare a contattarmi. Sarò felice di aiutarti.",
+    "addressLabel": "Posizione",
+    "emailLabel": "Email",
+    "phoneLabel": "Telefono",
+    "followMe": "Seguimi",
+    "letsConnect": "Connettiamoci",
+    "letsConnectDescription": "Hai un progetto in mente o vuoi parlare di opportunità? Inviami un messaggio e ti risponderò il prima possibile."
+  },
+  "footer": {
+    "navigation": "Navigazione",
+    "legal": "Legale"
+  },
+  "legal": {
+    "cookiePolicy": "Politica dei cookie",
+    "privacyPolicy": "Politica sulla privacy",
+    "termsOfService": "Termini di servizio",
+    "lastUpdated": "Ultimo aggiornamento"
   }
 }

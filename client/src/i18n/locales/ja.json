@@ -1,0 +1,92 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "edit": "編集",
+    "delete": "削除",
+    "confirm": "確認",
+    "back": "戻る",
+    "draft": "下書き",
+    "readTime": "分の読み時間",
+    "readArticle": "記事を読む",
+    "language": "言語",
+    "year": "年",
+    "years": "年",
+    "experience": "経験",
+    "availableToWork": "仕事可能",
+    "seeResume": "履歴書を見る",
+    "contactMe": "お問い合わせ",
+    "sending": "送信中...",
+    "sendMessage": "メッセージを送信",
+    "subject": "件名",
+    "whatIsItAbout": "何についてですか？",
+    "yourName": "お名前",
+    "yourEmail": "メールアドレス",
+    "yourMessage": "メッセージ",
+    "madeWith": "❤ で作られた",
+    "adminPanel": "管理パネル"
+  },
+  "nav": {
+    "home": "ホーム",
+    "about": "プロフィール",
+    "projects": "プロジェクト",
+    "experience": "経験",
+    "education": "学歴",
+    "skills": "スキル",
+    "contact": "お問い合わせ"
+  },
+  "home": {
+    "welcome": "ポートフォリオへようこそ",
+    "description": "ウェブおよびモバイル開発の経験を持つフルスタック開発者",
+    "title": "最新の記事",
+    "articlesDescription": "ウェブ開発の旅からの思考、アイデア、発見。",
+    "viewAllArticles": "すべての記事を見る",
+    "transformingTitle": "データをインテリジェントなソリューションに変換",
+    "transformingDescription": "分析、可視化、操作プロセスの改善を通じて、データを戦略的な決定に変換します。Power BIダッシュボードの作成、レポートの自動化、オペレーショナルサポートの経験を持ち、現在は分析的なバックグラウンドとフルスタック開発のトレーニングを組み合わせて、実際の影響を生み出す技術ソリューションを構築しています。",
+    "yearsExperience": "5年以上の経験",
+    "operationsAnalyst": "オペレーションアナリスト"
+  },
+  "cv": {
+    "title": "履歴書",
+    "subtitle": "ウェブ開発とデザインにおける私のプロフェッショナルな旅と経験。",
+    "professionalExperience": "職務経験",
+    "education": "学歴",
+    "skills": "スキルと技術",
+    "download": "完全な履歴書をダウンロード"
+  },
+  "projects": {
+    "title": "注目のプロジェクト",
+    "description": "ウェブアプリケーション、Eコマースプラットフォーム、インタラクティブな体験における最近の作品のコレクション。",
+    "viewAll": "完全なポートフォリオを見る",
+    "viewProject": "プロジェクトを見る"
+  },
+  "contact": {
+    "title": "お問い合わせ",
+    "name": "名前",
+    "email": "メール",
+    "message": "メッセージ",
+    "send": "メッセージを送信",
+    "sendMessage": "メッセージを送信する",
+    "getInTouch": "お問い合わせ",
+    "getInTouchDescription": "プロジェクトをお考えの方や、私のサービスについてもっと知りたい方は、お気軽にお問い合わせください。喜んでお手伝いします。",
+    "addressLabel": "場所",
+    "emailLabel": "メール",
+    "phoneLabel": "電話",
+    "followMe": "フォローする",
+    "letsConnect": "つながりましょう",
+    "letsConnectDescription": "プロジェクトをお考えの方や、機会について話したい方はメッセージをお送りください。できるだけ早くご返信します。"
+  },
+  "footer": {
+    "navigation": "ナビゲーション",
+    "legal": "法的事項"
+  },
+  "legal": {
+    "cookiePolicy": "クッキーポリシー",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約",
+    "lastUpdated": "最終更新日"
+  }
+} 

@@ -8,7 +8,26 @@
     "edit": "Bearbeiten",
     "delete": "Löschen",
     "confirm": "Bestätigen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "draft": "Entwurf",
+    "readTime": "Min Lesezeit",
+    "readArticle": "Artikel lesen",
+    "language": "Sprache",
+    "year": "Jahr",
+    "years": "Jahre",
+    "experience": "Erfahrung",
+    "availableToWork": "Verfügbar für Arbeit",
+    "seeResume": "Meinen Lebenslauf ansehen",
+    "contactMe": "Kontaktieren Sie mich",
+    "sending": "Wird gesendet...",
+    "sendMessage": "Nachricht senden",
+    "subject": "Betreff",
+    "whatIsItAbout": "Worum geht es?",
+    "yourName": "Ihr Name",
+    "yourEmail": "Ihre E-Mail",
+    "yourMessage": "Ihre Nachricht",
+    "madeWith": "Gemacht mit ❤ in",
+    "adminPanel": "Administrationsbereich"
   },
   "nav": {
     "home": "Startseite",
@@ -22,13 +41,52 @@
   "home": {
     "welcome": "Willkommen in meinem Portfolio",
     "description": "Full-Stack-Entwickler mit Erfahrung in Web- und Mobile-Entwicklung",
-    "title": "Neueste Artikel"
+    "title": "Neueste Artikel",
+    "articlesDescription": "Gedanken, Ideen und Entdeckungen aus meiner Reise in der Webentwicklung.",
+    "viewAllArticles": "Alle Artikel ansehen",
+    "transformingTitle": "Daten in intelligente Lösungen umwandeln",
+    "transformingDescription": "Ich wandle Daten in strategische Entscheidungen um durch Analyse, Visualisierung und Verbesserung betrieblicher Prozesse. Mit Erfahrung in der Erstellung von Power BI-Dashboards, Automatisierung von Berichten und operativer Unterstützung kombiniere ich nun meinen analytischen Hintergrund mit Full-Stack-Entwicklung, um Technologielösungen zu schaffen, die reale Auswirkungen haben.",
+    "yearsExperience": "+5 Jahre Erfahrung",
+    "operationsAnalyst": "Betriebsanalyst"
+  },
+  "cv": {
+    "title": "Lebenslauf",
+    "subtitle": "Mein beruflicher Werdegang und meine Erfahrung in der Webentwicklung und im Design.",
+    "professionalExperience": "Berufserfahrung",
+    "education": "Bildung",
+    "skills": "Fähigkeiten & Technologien",
+    "download": "Vollständigen Lebenslauf herunterladen"
+  },
+  "projects": {
+    "title": "Ausgewählte Projekte",
+    "description": "Eine Sammlung meiner neuesten Arbeiten in Web-Anwendungen, E-Commerce-Plattformen und interaktiven Erlebnissen.",
+    "viewAll": "Gesamtes Portfolio ansehen",
+    "viewProject": "Projekt ansehen"
   },
   "contact": {
     "title": "Kontakt",
     "name": "Name",
     "email": "E-Mail",
     "message": "Nachricht",
-    "send": "Nachricht senden"
+    "send": "Nachricht senden",
+    "sendMessage": "Eine Nachricht senden",
+    "getInTouch": "Kontakt aufnehmen",
+    "getInTouchDescription": "Wenn Sie ein Projekt im Sinn haben oder mehr über meine Dienstleistungen erfahren möchten, zögern Sie nicht, mich zu kontaktieren. Ich helfe Ihnen gerne weiter.",
+    "addressLabel": "Standort",
+    "emailLabel": "E-Mail",
+    "phoneLabel": "Telefon",
+    "followMe": "Folgen Sie mir",
+    "letsConnect": "Lassen Sie uns verbinden",
+    "letsConnectDescription": "Haben Sie ein Projekt im Sinn oder möchten Sie über Möglichkeiten sprechen? Schicken Sie mir eine Nachricht, und ich werde mich so schnell wie möglich bei Ihnen melden."
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "legal": "Rechtliches"
+  },
+  "legal": {
+    "cookiePolicy": "Cookie-Richtlinie",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen",
+    "lastUpdated": "Zuletzt aktualisiert"
   }
 }

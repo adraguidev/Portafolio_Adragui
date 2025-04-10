@@ -8,14 +8,18 @@ async function throwIfResNotOk(res: Response) {
 }
 
 export async function apiRequest(
+  method: string,
   url: string,
-  options: RequestInit = {}
-): Promise<any> {
+  data?: unknown | undefined
+): Promise<Response> {
   // Obtener el token de autenticación del localStorage
   const token = localStorage.getItem('token');
-  const headers: HeadersInit = {
-    ...options.headers,
-  };
+  let headers: HeadersInit = {};
+
+  // Si hay datos, incluir Content-Type
+  if (data) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   // Si hay token, agregar Authorization header
   if (token) {
@@ -23,13 +27,14 @@ export async function apiRequest(
   }
 
   const res = await fetch(url, {
-    ...options,
+    method,
     headers,
+    body: data ? JSON.stringify(data) : undefined,
     credentials: 'include',
   });
 
   await throwIfResNotOk(res);
-  return res.json();
+  return res;
 }
 
 type UnauthorizedBehavior = 'returnNull' | 'throw';
@@ -40,7 +45,7 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     // Obtener el token de autenticación del localStorage
     const token = localStorage.getItem('token');
-    const headers: HeadersInit = {};
+    let headers: HeadersInit = {};
 
     // Si hay token, agregar Authorization header
     if (token) {

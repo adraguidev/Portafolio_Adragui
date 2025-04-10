@@ -15,11 +15,6 @@ interface AuthState {
   isLoading: boolean;
 }
 
-interface LoginResponse {
-  token: string;
-  user: User;
-}
-
 export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -31,6 +26,7 @@ export const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Intentar obtener el token del localStorage
         const token = localStorage.getItem('token');
         const headers: HeadersInit = {};
         
@@ -75,25 +71,21 @@ export const useAuth = () => {
 
   const login = async (email: string, password: string): Promise<User> => {
     try {
-      const response = await apiRequest('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }) as LoginResponse;
-
-      if (response.token) {
-        localStorage.setItem('token', response.token);
+      const res = await apiRequest('POST', '/api/auth/login', { email, password });
+      const data = await res.json();
+      
+      // Guardar el token en localStorage para usarlo en futuras peticiones
+      if (data.token) {
+        localStorage.setItem('token', data.token);
       }
 
       setState({
-        user: response.user,
+        user: data.user,
         isAuthenticated: true,
         isLoading: false
       });
 
-      return response.user;
+      return data.user;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -102,33 +94,34 @@ export const useAuth = () => {
 
   const logout = async (): Promise<void> => {
     try {
-      await apiRequest('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
+      await apiRequest('POST', '/api/auth/logout', {});
+      // Eliminar el token al cerrar sesión
       localStorage.removeItem('token');
       setState({
         user: null,
         isAuthenticated: false,
         isLoading: false
       });
-      setLocation('/login');
+      setLocation('/');
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 
   const requireAuth = (callback: () => void) => {
-    if (state.isAuthenticated) {
-      callback();
-    } else {
+    if (state.isLoading) return;
+    
+    if (!state.isAuthenticated) {
       setLocation('/login');
+    } else {
+      callback();
     }
   };
 
   return {
-    ...state,
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+    isLoading: state.isLoading,
     login,
     logout,
     requireAuth
@@ -144,4 +137,6 @@ export const useAuthRedirect = (redirectAuthenticatedTo: string = '/admin') => {
       setLocation(redirectAuthenticatedTo);
     }
   }, [isAuthenticated, isLoading, redirectAuthenticatedTo, setLocation]);
+
+  return { isAuthenticated, isLoading };
 };

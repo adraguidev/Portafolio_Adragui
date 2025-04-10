@@ -8,7 +8,7 @@ import { createServer, type Server } from 'http';
 import { storage } from './storage';
 import jwt from 'jsonwebtoken';
 import session from 'express-session';
-import MemoryStore from 'memorystore';
+import pgSession from 'connect-pg-simple';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -24,6 +24,7 @@ import {
 } from '@shared/schema';
 import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
+import { Pool } from 'pg';
 
 // Configuración de directorios de carga
 const setupUploadDirectory = () => {
@@ -168,9 +169,17 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  const SessionStore = MemoryStore(session);
+// Configuración de la base de datos para sesiones
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
+const pgStore = pgSession(session);
+
+export async function registerRoutes(app: Express): Promise<Server> {
   // Asegurarse de que existe el directorio uploads
   if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads', { recursive: true });
@@ -182,16 +191,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up session middleware
   app.use(
     session({
+      store: new pgStore({
+        pool,
+        tableName: 'sessions',
+        createTableIfMissing: true
+      }),
       secret: SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-      store: new SessionStore({
-        checkPeriod: 86400000, // prune expired entries every 24h
-      }),
       cookie: {
         secure: process.env.NODE_ENV === 'production',
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      },
+        sameSite: 'lax'
+      }
     })
   );
 

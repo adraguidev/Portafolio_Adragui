@@ -46,6 +46,24 @@ if (!DEEPSEEK_API_URL) {
   );
 }
 
+// Lista de términos técnicos que deben mantenerse en inglés cuando se traduce al inglés
+const TECHNICAL_TERMS = [
+  'Responsive Design',
+  'Data Visualization',
+  'Machine Learning',
+  'Data & Analytics',
+  'Tools & Methods'
+];
+
+/**
+ * Verifica si un texto contiene términos técnicos que deben mantenerse en inglés
+ * @param text Texto a verificar
+ * @returns true si el texto contiene términos técnicos
+ */
+function containsTechnicalTerm(text: string): boolean {
+  return TECHNICAL_TERMS.some(term => text.includes(term));
+}
+
 /**
  * Traduce un texto al idioma especificado usando la API de DeepSeek
  * @param text Texto a traducir
@@ -60,6 +78,11 @@ export async function translateText(
 ): Promise<string> {
   // Si el idioma destino es el mismo que el original, devolver el texto sin cambios
   if (targetLang === originalLang || !targetLang) {
+    return text;
+  }
+
+  // Si el idioma destino es inglés y el texto contiene términos técnicos, mantener el texto original
+  if (targetLang === 'en' && containsTechnicalTerm(text)) {
     return text;
   }
 

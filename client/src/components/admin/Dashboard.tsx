@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Message, Article, Project } from '@shared/schema';
+import { formatDate } from '@/lib/utils';
 
 const Dashboard = () => {
   const { data: projects, isLoading: projectsLoading } = useQuery<Project[]>({
@@ -175,11 +176,7 @@ const Dashboard = () => {
                     <div>
                       <h4 className="font-medium text-primary mb-1">{article.title}</h4>
                       <p className="text-sm text-text/60">
-                        Last edited: {article.updatedAt ? new Date(article.updatedAt).toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric'
-                        }) : 'N/A'}
+                        Last edited: {formatDate(article.updatedAt)}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">

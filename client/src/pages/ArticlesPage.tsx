@@ -5,17 +5,12 @@ import { Article } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 import { WEBSITE_TITLE } from '@/lib/constants';
 import { Helmet } from 'react-helmet';
-
-const formatDate = (dateString: Date) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/lib/utils';
 
 const ArticleCard = ({ article }: { article: Article }) => {
+  const { t, i18n } = useTranslation();
+  
   // Estimate reading time based on content length (approx. 200 words per minute)
   const estimatedReadTime = Math.max(
     1,
@@ -49,14 +44,14 @@ const ArticleCard = ({ article }: { article: Article }) => {
         <div className="flex items-center mb-3">
           <span className="text-text/60 text-sm">
             {article.publishedAt
-              ? formatDate(article.publishedAt)
+              ? formatDate(article.publishedAt, i18n.language)
               : article.published
-              ? formatDate(article.updatedAt)
-              : 'Borrador'}
+              ? formatDate(article.updatedAt, i18n.language)
+              : t('common.draft', 'Borrador')}
           </span>
           <span className="mx-2 text-text/30">•</span>
           <span className="text-text/60 text-sm">
-            {estimatedReadTime} min de lectura
+            {estimatedReadTime} {t('common.readTime', 'min de lectura')}
           </span>
         </div>
         <h3 className="font-clash font-semibold text-xl text-primary mb-2 line-clamp-2 h-[56px]">
@@ -69,7 +64,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
           href={`/articles/${article.slug}`}
           className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors"
         >
-          Leer Artículo
+          {t('common.readArticle', 'Leer Artículo')}
           <i className="ri-arrow-right-line ml-1"></i>
         </Link>
       </div>

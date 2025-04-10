@@ -29,6 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { formatDate } from '@/lib/utils';
 
 const ArticleManagement = () => {
   const [isCreateRoute] = useRoute('/admin/articles/new');
@@ -115,15 +116,6 @@ const ArticleManagement = () => {
     articles?.filter((article) => article.published) || [];
   const draftArticles = articles?.filter((article) => !article.published) || [];
 
-  // Format date
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   // If we're on the create route, show the editor
   if (isCreateRoute) {
     return (
@@ -203,18 +195,14 @@ const ArticleManagement = () => {
             <div className="grid gap-4 md:grid-cols-2">
               {[...Array(4)].map((_, index) => (
                 <Card key={index}>
-                  <CardHeader className="p-4">
+                  <CardHeader className="p-4 pb-0">
                     <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/2" />
                   </CardHeader>
-                  <CardContent className="p-4 pt-0">
+                  <CardContent className="p-4">
                     <Skeleton className="h-4 w-full mb-2" />
                     <Skeleton className="h-4 w-5/6" />
                   </CardContent>
-                  <CardFooter className="p-4 pt-0">
-                    <Skeleton className="h-10 w-20 mr-2" />
-                    <Skeleton className="h-10 w-20" />
-                  </CardFooter>
                 </Card>
               ))}
             </div>
@@ -234,7 +222,7 @@ const ArticleManagement = () => {
                       {article.publishedAt
                         ? formatDate(article.publishedAt)
                         : article.published
-                        ? formatDate(article.updatedAt) // Si está publicado pero no tiene fecha de publicación, usar fecha de actualización
+                        ? formatDate(article.updatedAt)
                         : 'N/A'}
                     </CardDescription>
                   </CardHeader>
@@ -301,18 +289,14 @@ const ArticleManagement = () => {
             <div className="grid gap-4 md:grid-cols-2">
               {[...Array(2)].map((_, index) => (
                 <Card key={index}>
-                  <CardHeader className="p-4">
+                  <CardHeader className="p-4 pb-0">
                     <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/2" />
                   </CardHeader>
-                  <CardContent className="p-4 pt-0">
+                  <CardContent className="p-4">
                     <Skeleton className="h-4 w-full mb-2" />
                     <Skeleton className="h-4 w-5/6" />
                   </CardContent>
-                  <CardFooter className="p-4 pt-0">
-                    <Skeleton className="h-10 w-20 mr-2" />
-                    <Skeleton className="h-10 w-20" />
-                  </CardFooter>
                 </Card>
               ))}
             </div>

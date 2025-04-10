@@ -52,7 +52,10 @@ const TECHNICAL_TERMS = [
   'Data Visualization',
   'Machine Learning',
   'Data & Analytics',
-  'Tools & Methods'
+  'Tools & Methods',
+  'Frontend',
+  'Business & Insurance',
+  'Customer Success'
 ];
 
 /**

@@ -86,9 +86,9 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-4">
             {/* Selector de idioma */}
-            <div className="relative">
+            <div className="relative w-auto">
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center text-primary font-medium">
+                <DropdownMenuTrigger className="flex items-center text-primary font-medium whitespace-nowrap">
                   <i className="ri-global-line mr-1"></i>
                   <span className="hidden sm:inline">{languages[currentLanguage as keyof typeof languages]}</span>
                 </DropdownMenuTrigger>

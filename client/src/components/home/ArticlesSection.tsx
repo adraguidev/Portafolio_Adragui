@@ -5,9 +5,9 @@ import { Article } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 
-const formatDate = (dateString: Date) => {
+const formatDate = (dateString: Date, language: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString(navigator.language || 'es-ES', {
+  return date.toLocaleDateString(language || 'es-ES', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -22,7 +22,7 @@ const calculateReadTime = (content: string) => {
 };
 
 const ArticleCard = ({ article }: { article: Article }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const readTime = calculateReadTime(article.content);
 
   return (
@@ -51,9 +51,9 @@ const ArticleCard = ({ article }: { article: Article }) => {
         <div className="flex items-center text-sm text-text/60 mb-3">
           <span>
             {article.publishedAt
-              ? formatDate(article.publishedAt)
+              ? formatDate(article.publishedAt, i18n.language)
               : article.published
-              ? formatDate(article.updatedAt)
+              ? formatDate(article.updatedAt, i18n.language)
               : t('common.draft', 'Borrador')}
           </span>
           <span className="mx-2">•</span>

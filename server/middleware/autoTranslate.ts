@@ -72,8 +72,14 @@ function shouldTranslateField(fieldName: string): boolean {
     return fieldName === pattern;
   })) return false;
 
-  // No traducir campos que terminen con 'Id', 'At', etc.
-  if (/^(id|.*Id|.*At|.*_at|.*_id|.*Date|.*Year|.*Month|.*Time)$/i.test(fieldName)) return false;
+  // No traducir campos que terminen con 'Id', 'At', etc., excepto para campos de educación
+  if (fieldName.toLowerCase().includes('education')) {
+    return true;
+  }
+
+  if (/^(id|.*Id|.*At|.*_at|.*_id|.*Date|.*Year|.*Month|.*Time)$/i.test(fieldName)) {
+    return false;
+  }
 
   return true;
 }
@@ -178,8 +184,9 @@ async function translateData(
     const translatedObject: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(data)) {
-      // Preservar campos de fecha específicos
-      if (key.toLowerCase().includes('date') || key.toLowerCase().includes('at')) {
+      // Preservar campos de fecha específicos, excepto para educación
+      if (!key.toLowerCase().includes('education') && 
+          (key.toLowerCase().includes('date') || key.toLowerCase().includes('at'))) {
         translatedObject[key] = value;
         continue;
       }

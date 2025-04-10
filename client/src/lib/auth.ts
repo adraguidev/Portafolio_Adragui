@@ -119,7 +119,7 @@ export const useAuthRedirect = (redirectAuthenticatedTo: string = '/admin') => {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!isLoading && isAuthenticated && !window.location.pathname.includes('/login')) {
       setLocation(redirectAuthenticatedTo);
     }
   }, [isAuthenticated, isLoading, redirectAuthenticatedTo, setLocation]);

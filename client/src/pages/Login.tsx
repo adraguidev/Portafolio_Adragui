@@ -48,10 +48,8 @@ const Login = () => {
         title: 'Inicio de sesión exitoso',
         description: 'Bienvenido al panel de administración',
       });
-      // Esperar un momento antes de redirigir para asegurar que el estado se actualice
-      setTimeout(() => {
-        setLocation('/admin');
-      }, 100);
+      // Redirigir inmediatamente después del login exitoso
+      setLocation('/admin');
     } catch (error) {
       console.error('Login error:', error);
       toast({

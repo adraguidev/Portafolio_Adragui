@@ -9,11 +9,27 @@ export const formatDate = (dateString: string | Date | null, language: string = 
   if (!dateString) return '';
   
   try {
-    // Si es una cadena, intentar parsearla como fecha ISO
-    const date = typeof dateString === 'string' 
-      ? new Date(dateString.replace(' ', 'T')) 
-      : new Date(dateString);
-      
+    let date: Date;
+    
+    if (typeof dateString === 'string') {
+      // Intentar diferentes formatos de fecha
+      if (dateString.includes('T')) {
+        date = new Date(dateString);
+      } else if (dateString.includes(' ')) {
+        date = new Date(dateString.replace(' ', 'T'));
+      } else {
+        // Si no tiene formato específico, asumir que es una marca de tiempo
+        const timestamp = Date.parse(dateString);
+        if (isNaN(timestamp)) {
+          console.error('Invalid date string:', dateString);
+          return '';
+        }
+        date = new Date(timestamp);
+      }
+    } else {
+      date = new Date(dateString);
+    }
+    
     if (isNaN(date.getTime())) {
       console.error('Invalid date:', dateString);
       return '';

@@ -42,10 +42,15 @@ export const formatDate = (dateString: string | Date | null, language: string = 
       return '';
     }
     
-    return date.toLocaleDateString(language, {
+    // Asegurar que el idioma sea válido
+    const validLanguage = language || 'es-ES';
+    
+    // Formatear la fecha según el idioma
+    return date.toLocaleDateString(validLanguage, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'UTC' // Asegurar que se use UTC para consistencia
     });
   } catch (error) {
     console.error('Error formatting date:', error);

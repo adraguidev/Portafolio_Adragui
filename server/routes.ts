@@ -173,9 +173,9 @@ const loginLimiter = rateLimit({
 // Configuración de la base de datos para sesiones
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
+  ssl: process.env.NODE_ENV === 'production' ? {
     rejectUnauthorized: false
-  }
+  } : false
 });
 
 const pgStore = pgSession(session);
@@ -195,15 +195,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       store: new pgStore({
         pool,
         tableName: 'sessions',
-        createTableIfMissing: true
+        createTableIfMissing: true,
+        pruneSessionInterval: 60 * 60 // Limpiar sesiones expiradas cada hora
       }),
-      secret: SESSION_SECRET,
+      secret: process.env.SESSION_SECRET || 'dev-secret-key',
       resave: false,
       saveUninitialized: false,
       cookie: {
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        sameSite: 'lax'
+        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        sameSite: 'lax',
+        httpOnly: true
       }
     })
   );
@@ -299,6 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const projects = await storage.getProjects();
       res.json(projects);
     } catch (error) {
+      console.error('Error fetching projects:', error);
       res.status(500).json({ message: 'Failed to fetch projects' });
     }
   });
@@ -315,14 +318,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/projects/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid project ID' });
+      }
       const project = await storage.getProject(id);
-
       if (!project) {
         return res.status(404).json({ message: 'Project not found' });
       }
-
       res.json(project);
     } catch (error) {
+      console.error('Error fetching project:', error);
       res.status(500).json({ message: 'Failed to fetch project' });
     }
   });
@@ -900,8 +905,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Eliminar el '/' inicial si existe para archivos locales
-      const relativePath = siteInfo.cvFileUrl.startsWith('/')
-        ? siteInfo.cvFileUrl.substring(1)
+      const relativePath = siteInfo.cvFileUrl.startsWith('/') 
+        ? siteInfo.cvFileUrl.substring(1) 
         : siteInfo.cvFileUrl;
 
       const filePath = path.resolve(relativePath);

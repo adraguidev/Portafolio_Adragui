@@ -15,6 +15,11 @@ interface AuthState {
   isLoading: boolean;
 }
 
+interface LoginResponse {
+  token: string;
+  user: User;
+}
+
 export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -26,13 +31,10 @@ export const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Intentar obtener el token del localStorage
-        const encryptedToken = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
         const headers: HeadersInit = {};
         
-        if (encryptedToken) {
-          // Desencriptar el token antes de usarlo
-          const token = atob(encryptedToken);
+        if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
         
@@ -49,6 +51,8 @@ export const useAuth = () => {
             isLoading: false
           });
         } else {
+          // Si la respuesta no es ok, limpiar el token
+          localStorage.removeItem('token');
           setState({
             user: null,
             isAuthenticated: false,
@@ -56,6 +60,8 @@ export const useAuth = () => {
           });
         }
       } catch (error) {
+        console.error('Error checking auth:', error);
+        localStorage.removeItem('token');
         setState({
           user: null,
           isAuthenticated: false,
@@ -69,58 +75,60 @@ export const useAuth = () => {
 
   const login = async (email: string, password: string): Promise<User> => {
     try {
-      const res = await apiRequest('POST', '/api/auth/login', { email, password });
-      const data = await res.json();
-      
-      // Guardar el token en localStorage para usarlo en futuras peticiones
-      if (data.token) {
-        // Encriptar el token antes de guardarlo
-        const encryptedToken = btoa(data.token);
-        localStorage.setItem('token', encryptedToken);
+      const response = await apiRequest('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }) as LoginResponse;
+
+      if (response.token) {
+        localStorage.setItem('token', response.token);
       }
-      
+
       setState({
-        user: data.user,
+        user: response.user,
         isAuthenticated: true,
         isLoading: false
       });
-      
-      return data.user;
+
+      return response.user;
     } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   };
 
   const logout = async (): Promise<void> => {
     try {
-      await apiRequest('POST', '/api/auth/logout', {});
-      // Eliminar el token al cerrar sesión
+      await apiRequest('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
       localStorage.removeItem('token');
       setState({
         user: null,
         isAuthenticated: false,
         isLoading: false
       });
-      setLocation('/');
-    } catch (error) {
-      console.error('Logout error:', error);
+      setLocation('/login');
     }
   };
 
   const requireAuth = (callback: () => void) => {
-    if (state.isLoading) return;
-    
-    if (!state.isAuthenticated) {
-      setLocation('/login');
-    } else {
+    if (state.isAuthenticated) {
       callback();
+    } else {
+      setLocation('/login');
     }
   };
 
   return {
-    user: state.user,
-    isAuthenticated: state.isAuthenticated,
-    isLoading: state.isLoading,
+    ...state,
     login,
     logout,
     requireAuth
@@ -136,6 +144,4 @@ export const useAuthRedirect = (redirectAuthenticatedTo: string = '/admin') => {
       setLocation(redirectAuthenticatedTo);
     }
   }, [isAuthenticated, isLoading, redirectAuthenticatedTo, setLocation]);
-
-  return { isAuthenticated, isLoading };
 };

@@ -69,7 +69,6 @@ export const skills = pgTable("skills", {
   category: text("category").notNull(),
   items: text("items").array().notNull(),
   order: integer("order").default(0),
-  language: text("language").notNull().default('en'),
 });
 
 export const insertSkillSchema = createInsertSchema(skills).omit({

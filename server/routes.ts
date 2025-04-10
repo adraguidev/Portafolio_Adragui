@@ -836,10 +836,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CV endpoints (combines experiences, education, and skills)
   app.get('/api/cv', async (req, res) => {
     try {
-      const lang = req.query.lang as string || 'en';
       const experiences = await storage.getExperiences();
       const education = await storage.getEducation();
-      const skills = await storage.getSkills(lang);
+      const skills = await storage.getSkills();
       const siteInfo = await storage.getSiteInfo();
 
       res.json({

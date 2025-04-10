@@ -7,10 +7,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { WEBSITE_TITLE } from '@/lib/constants';
 import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/lib/utils';
 
 export default function ArticleDetail() {
   const [, params] = useRoute('/articles/:slug');
   const slug = params?.slug;
+  const { t, i18n } = useTranslation();
 
   const {
     data: article,
@@ -82,15 +85,6 @@ export default function ArticleDetail() {
     );
   }
 
-  const formatDate = (dateString: Date) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   // Estimate reading time based on content length (approx. 200 words per minute)
   const estimatedReadTime = Math.max(
     1,
@@ -143,10 +137,10 @@ export default function ArticleDetail() {
                   <div className="flex items-center text-sm text-text/60">
                     <span>
                       {article.publishedAt
-                        ? formatDate(article.publishedAt)
+                        ? formatDate(article.publishedAt, i18n.language)
                         : article.published
-                        ? formatDate(article.updatedAt)
-                        : 'Borrador'}
+                        ? formatDate(article.updatedAt, i18n.language)
+                        : t('common.draft', 'Borrador')}
                     </span>
                     <span className="mx-2">•</span>
                     <span>{estimatedReadTime} min de lectura</span>

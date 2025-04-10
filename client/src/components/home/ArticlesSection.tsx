@@ -4,27 +4,7 @@ import { motion } from 'framer-motion';
 import { Article } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
-
-const formatDate = (dateString: Date | string | null, language: string) => {
-  if (!dateString) return '';
-  
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      console.error('Invalid date:', dateString);
-      return '';
-    }
-    
-    return date.toLocaleDateString(language || 'es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  } catch (error) {
-    console.error('Error formatting date:', error);
-    return '';
-  }
-};
+import { formatDate } from '@/lib/utils';
 
 const calculateReadTime = (content: string) => {
   const wordsPerMinute = 200;
@@ -39,26 +19,21 @@ const ArticleCard = ({ article }: { article: Article }) => {
 
   return (
     <motion.article
-      className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-md group"
+      className="bg-white rounded-xl shadow-sm overflow-hidden group hover:shadow-md transition-shadow"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       viewport={{ once: true }}
     >
-      <Link href={`/articles/${article.slug}`} className="block">
-        <div className="aspect-[16/10] relative overflow-hidden">
+      {article.imageUrl && (
+        <div className="aspect-video overflow-hidden">
           <img
-            src={article.imageUrl || ''}
+            src={article.imageUrl}
             alt={article.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          <div className="absolute top-4 left-4">
-            <span className="bg-accent text-primary text-xs font-medium px-3 py-1 rounded-full">
-              {article.category}
-            </span>
-          </div>
         </div>
-      </Link>
+      )}
       <div className="p-6">
         <div className="flex items-center text-sm text-text/60 mb-3">
           <span>

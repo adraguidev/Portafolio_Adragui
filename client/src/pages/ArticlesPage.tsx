@@ -97,8 +97,9 @@ const ArticleSkeleton = () => (
 );
 
 export default function ArticlesPage() {
+  const { t, i18n } = useTranslation();
   const { data: articles, isLoading } = useQuery<Article[]>({
-    queryKey: ['/api/articles'],
+    queryKey: [`/api/articles?lang=${i18n.language}`],
   });
 
   // Filter only published articles
@@ -107,7 +108,7 @@ export default function ArticlesPage() {
   return (
     <>
       <Helmet>
-        <title>Artículos | {WEBSITE_TITLE}</title>
+        <title>{t('common.articles', 'Artículos')} | {WEBSITE_TITLE}</title>
       </Helmet>
 
       <div className="py-20">
@@ -120,7 +121,7 @@ export default function ArticlesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                Artículos
+                {t('common.articles', 'Artículos')}
               </motion.h1>
               <motion.p
                 className="text-text/70 max-w-2xl mx-auto"
@@ -128,8 +129,7 @@ export default function ArticlesPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Pensamientos, ideas y descubrimientos de mi trayectoria en el
-                desarrollo web y diseño.
+                {t('common.articlesDescription', 'Pensamientos, ideas y descubrimientos de mi trayectoria en el desarrollo web y diseño.')}
               </motion.p>
             </div>
 
@@ -139,18 +139,9 @@ export default function ArticlesPage() {
                   <ArticleSkeleton />
                   <ArticleSkeleton />
                   <ArticleSkeleton />
-                  <ArticleSkeleton />
-                  <ArticleSkeleton />
-                  <ArticleSkeleton />
                 </>
-              ) : !publishedArticles?.length ? (
-                <div className="col-span-3 text-center py-10">
-                  <p className="text-text/70">
-                    No hay artículos publicados actualmente.
-                  </p>
-                </div>
               ) : (
-                publishedArticles.map((article) => (
+                publishedArticles?.map((article) => (
                   <ArticleCard key={article.id} article={article} />
                 ))
               )}

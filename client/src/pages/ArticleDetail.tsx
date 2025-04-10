@@ -71,13 +71,13 @@ export default function ArticleDetail() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-clash font-bold text-3xl text-primary mb-6">
-              Artículo no encontrado
+              {t('common.articleNotFound', 'Artículo no encontrado')}
             </h1>
             <p className="text-text/70 mb-8">
-              Lo sentimos, no pudimos encontrar el artículo que estás buscando.
+              {t('common.articleNotFoundMessage', 'Lo sentimos, no pudimos encontrar el artículo que estás buscando.')}
             </p>
             <Link href="/articles">
-              <Button variant="secondary">Ver todos los artículos</Button>
+              <Button variant="secondary">{t('common.viewAllArticles', 'Ver todos los artículos')}</Button>
             </Link>
           </div>
         </div>
@@ -111,7 +111,7 @@ export default function ArticleDetail() {
                     className="inline-flex items-center text-sm text-text/70 hover:text-text transition-colors mr-6 -ml-2"
                   >
                     <i className="ri-arrow-left-line mr-1"></i>
-                    Volver a Artículos
+                    {t('common.backToArticles', 'Volver a Artículos')}
                   </Button>
                 </Link>
                 <span className="text-sm text-text/50">{article.category}</span>
@@ -143,7 +143,7 @@ export default function ArticleDetail() {
                         : t('common.draft', 'Borrador')}
                     </span>
                     <span className="mx-2">•</span>
-                    <span>{estimatedReadTime} min de lectura</span>
+                    <span>{estimatedReadTime} {t('common.readTime', 'min de lectura')}</span>
                   </div>
                 </div>
               </div>
@@ -176,10 +176,10 @@ export default function ArticleDetail() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="mb-6 sm:mb-0">
                   <h4 className="font-clash font-semibold text-xl text-primary mb-2">
-                    ¿Te gustó este artículo?
+                    {t('common.likeArticle', '¿Te gustó este artículo?')}
                   </h4>
                   <p className="text-text/70">
-                    Compártelo en tus redes sociales
+                    {t('common.shareArticle', 'Compártelo en tus redes sociales')}
                   </p>
                 </div>
                 <div className="flex space-x-4">

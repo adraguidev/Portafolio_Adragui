@@ -575,39 +575,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Articles routes
-  app.get('/api/articles/slug/:slug', async (req, res) => {
-    try {
-      const slug = req.params.slug;
-      const targetLang = req.query.lang as string || 'es';
-      const article = await storage.getArticleBySlug(slug);
-
-      if (!article) {
-        return res.status(404).json({ message: 'Article not found' });
-      }
-
-      // Only allow access to published articles unless authenticated
-      if (
-        !article.published &&
-        (!req.session || !req.session.isAuthenticated)
-      ) {
-        return res.status(404).json({ message: 'Article not found' });
-      }
-
-      // Apply translation if needed
-      if (targetLang !== 'es') {
-        const translatedArticle = await translateData(article, targetLang);
-        res.json(translatedArticle);
-      } else {
-        res.json(article);
-      }
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch article' });
-    }
-  });
-
   app.get('/api/articles', async (req, res) => {
     try {
-      const targetLang = req.query.lang as string || 'es';
       // Only return published articles for public access
       const published =
         req.query.published === 'true'
@@ -622,27 +591,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (!req.session || !req.session.isAuthenticated)
       ) {
         const articles = await storage.getArticles(true);
-        // Apply translation if needed
-        if (targetLang !== 'es') {
-          const translatedArticles = await Promise.all(
-            articles.map(article => translateData(article, targetLang))
-          );
-          return res.json(translatedArticles);
-        }
         return res.json(articles);
       }
 
       const articles = await storage.getArticles(published);
-      // Apply translation if needed
-      if (targetLang !== 'es') {
-        const translatedArticles = await Promise.all(
-          articles.map(article => translateData(article, targetLang))
-        );
-        return res.json(translatedArticles);
-      }
       res.json(articles);
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch articles' });
+    }
+  });
+
+  app.get('/api/articles/slug/:slug', async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const article = await storage.getArticleBySlug(slug);
+
+      if (!article) {
+        return res.status(404).json({ message: 'Article not found' });
+      }
+
+      // Only allow access to published articles unless authenticated
+      if (
+        !article.published &&
+        (!req.session || !req.session.isAuthenticated)
+      ) {
+        return res.status(404).json({ message: 'Article not found' });
+      }
+
+      res.json(article);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch article' });
     }
   });
 

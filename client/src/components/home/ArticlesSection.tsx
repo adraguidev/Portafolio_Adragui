@@ -89,9 +89,9 @@ const ArticleSkeleton = () => (
 );
 
 const ArticlesSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: articles, isLoading } = useQuery<Article[]>({
-    queryKey: ['/api/articles'],
+    queryKey: [`/api/articles?lang=${i18n.language}`],
   });
 
   // Filter only published articles and limit to 3

@@ -20,14 +20,7 @@ export default function ArticleDetail() {
     isLoading,
     error,
   } = useQuery<Article>({
-    queryKey: [`/api/articles/slug/${slug}`, i18n.language],
-    queryFn: async () => {
-      const response = await fetch(`/api/articles/slug/${slug}?lang=${i18n.language}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch article');
-      }
-      return response.json();
-    },
+    queryKey: [`/api/articles/slug/${slug}?lang=${i18n.language}`],
     enabled: !!slug,
   });
 

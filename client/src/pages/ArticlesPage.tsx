@@ -97,16 +97,8 @@ const ArticleSkeleton = () => (
 );
 
 export default function ArticlesPage() {
-  const { t, i18n } = useTranslation();
   const { data: articles, isLoading } = useQuery<Article[]>({
-    queryKey: ['/api/articles', i18n.language],
-    queryFn: async () => {
-      const response = await fetch(`/api/articles?lang=${i18n.language}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch articles');
-      }
-      return response.json();
-    },
+    queryKey: ['/api/articles'],
   });
 
   // Filter only published articles

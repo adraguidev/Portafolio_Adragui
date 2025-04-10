@@ -115,8 +115,17 @@ const heroImageUpload = multer({
   },
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const SESSION_SECRET = process.env.SESSION_SECRET || 'session-secret-key';
+// Configuración de claves secretas
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'dev-secret-key');
+const SESSION_SECRET = process.env.SESSION_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'dev-session-key');
+
+if (process.env.NODE_ENV === 'production' && (!JWT_SECRET || !SESSION_SECRET)) {
+  throw new Error('JWT_SECRET and SESSION_SECRET must be set in production');
+}
+
+if (process.env.NODE_ENV !== 'production' && (!JWT_SECRET || !SESSION_SECRET)) {
+  console.warn('Warning: Using development secrets. This is not secure for production.');
+}
 
 // Extend Request type to include user property
 declare module 'express-session' {
@@ -150,11 +159,11 @@ const authenticateJWT = (req: Request, res: Response, next: Function) => {
   }
 };
 
-// Configuración de rate limiting
+// Configuración de rate limiting para login
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 5, // 5 intentos por IP
-  message: 'Demasiados intentos de inicio de sesión, por favor intente más tarde',
+  message: { message: 'Demasiados intentos de login, por favor intente más tarde' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -181,12 +190,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }),
       cookie: {
         secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        domain: process.env.NODE_ENV === 'production' ? '.tu-dominio.com' : undefined
       },
-      name: '__Host-session', // Prefijo __Host- para mayor seguridad
     })
   );
 
@@ -225,15 +230,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = user.id;
       req.session.isAuthenticated = true;
 
-      // Set httpOnly cookie with the token
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-      });
-
       res.json({
+        token,
         user: {
           id: user.id,
           name: user.name,

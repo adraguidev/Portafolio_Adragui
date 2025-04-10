@@ -26,8 +26,19 @@ export const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Intentar obtener el token del localStorage
+        const encryptedToken = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        
+        if (encryptedToken) {
+          // Desencriptar el token antes de usarlo
+          const token = atob(encryptedToken);
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
         const res = await fetch('/api/auth/me', {
           credentials: 'include',
+          headers
         });
 
         if (res.ok) {
@@ -45,7 +56,6 @@ export const useAuth = () => {
           });
         }
       } catch (error) {
-        console.error('Auth check error:', error);
         setState({
           user: null,
           isAuthenticated: false,
@@ -62,6 +72,13 @@ export const useAuth = () => {
       const res = await apiRequest('POST', '/api/auth/login', { email, password });
       const data = await res.json();
       
+      // Guardar el token en localStorage para usarlo en futuras peticiones
+      if (data.token) {
+        // Encriptar el token antes de guardarlo
+        const encryptedToken = btoa(data.token);
+        localStorage.setItem('token', encryptedToken);
+      }
+      
       setState({
         user: data.user,
         isAuthenticated: true,
@@ -70,12 +87,6 @@ export const useAuth = () => {
       
       return data.user;
     } catch (error) {
-      console.error('Login error:', error);
-      setState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false
-      });
       throw error;
     }
   };
@@ -83,6 +94,8 @@ export const useAuth = () => {
   const logout = async (): Promise<void> => {
     try {
       await apiRequest('POST', '/api/auth/logout', {});
+      // Eliminar el token al cerrar sesión
+      localStorage.removeItem('token');
       setState({
         user: null,
         isAuthenticated: false,
@@ -119,7 +132,7 @@ export const useAuthRedirect = (redirectAuthenticatedTo: string = '/admin') => {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated && !window.location.pathname.includes('/login')) {
+    if (!isLoading && isAuthenticated) {
       setLocation(redirectAuthenticatedTo);
     }
   }, [isAuthenticated, isLoading, redirectAuthenticatedTo, setLocation]);

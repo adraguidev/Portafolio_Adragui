@@ -48,7 +48,7 @@ const Login = () => {
         title: 'Inicio de sesión exitoso',
         description: 'Bienvenido al panel de administración',
       });
-      // Redirigir inmediatamente después del login exitoso
+      // Redirigir explícitamente al dashboard después del login exitoso
       setLocation('/admin');
     } catch (error) {
       console.error('Login error:', error);

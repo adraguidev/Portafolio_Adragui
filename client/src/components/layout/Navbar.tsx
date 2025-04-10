@@ -86,25 +86,23 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-4">
             {/* Selector de idioma */}
-            <div className="relative w-auto">
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center text-primary font-medium whitespace-nowrap">
-                  <i className="ri-global-line mr-1"></i>
-                  <span className="hidden sm:inline">{languages[currentLanguage as keyof typeof languages]}</span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {Object.entries(languages).map(([code, name]) => (
-                    <DropdownMenuItem 
-                      key={code} 
-                      onClick={() => changeLanguage(code)}
-                      className={code === currentLanguage ? "font-bold" : ""}
-                    >
-                      {name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center text-primary font-medium">
+                <i className="ri-global-line mr-1"></i>
+                <span className="hidden sm:inline">{languages[currentLanguage as keyof typeof languages]}</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {Object.entries(languages).map(([code, name]) => (
+                  <DropdownMenuItem 
+                    key={code} 
+                    onClick={() => changeLanguage(code)}
+                    className={code === currentLanguage ? "font-bold" : ""}
+                  >
+                    {name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <a
               href="#contact"

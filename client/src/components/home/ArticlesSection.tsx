@@ -5,13 +5,25 @@ import { Article } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 
-const formatDate = (dateString: Date, language: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(language || 'es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+const formatDate = (dateString: Date | string | null, language: string) => {
+  if (!dateString) return '';
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date:', dateString);
+      return '';
+    }
+    
+    return date.toLocaleDateString(language || 'es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '';
+  }
 };
 
 const calculateReadTime = (content: string) => {

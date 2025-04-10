@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Sitemap: https://adragui.com/sitemap.xml
+
+# Deshabilitar la indexación de rutas de administración
+Disallow: /admin/
+Disallow: /login/
+Disallow: /api/
+
+# Deshabilitar la indexación de archivos de sistema
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /.git/ 

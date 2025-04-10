@@ -28,7 +28,10 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
-import { FileUp, CheckCircle, AlertCircle } from 'lucide-react';
+import { FileUp, CheckCircle, AlertCircle, Trash, RefreshCw, Database } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Definir tipos necesarios aquí hasta que podamos importarlos correctamente
 interface SocialLinks {
@@ -58,11 +61,26 @@ interface PortfolioData {
   siteInfo?: SiteInfo;
 }
 
+// Tipos para la caché de traducciones
+interface CacheInfo {
+  languages: { [key: string]: number };
+  totalKeys: number;
+  connected: boolean;
+}
+
+interface CacheDeleteResult {
+  deleted: number;
+  success: boolean;
+  message?: string;
+}
+
 const Settings = () => {
   const { toast } = useToast();
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+  const [languageToDelete, setLanguageToDelete] = useState<string | null>(null);
+  const [isConfirmingClearAll, setIsConfirmingClearAll] = useState(false);
 
   // Set page title
   useEffect(() => {
@@ -72,6 +90,15 @@ const Settings = () => {
   // Consulta para obtener la información del sitio
   const { data: siteInfo, isLoading } = useQuery<SiteInfo>({
     queryKey: ['/api/site-info'],
+  });
+
+  // Obtener información de la caché de traducciones
+  const {
+    data: cacheInfo,
+    isLoading: cacheLoading,
+    refetch: refetchCache
+  } = useQuery<CacheInfo>({
+    queryKey: ['/api/translations/cache-info'],
   });
 
   // Mutación para actualizar la información del sitio
@@ -179,6 +206,56 @@ const Settings = () => {
     },
   });
 
+  // Mutación para limpiar la caché de un idioma específico
+  const clearLanguageCacheMutation = useMutation({
+    mutationFn: async (lang: string) => {
+      const response = await apiRequest('DELETE', `/api/translations/cache/${lang}`);
+      const data = await response.json();
+      return data as CacheDeleteResult;
+    },
+    onSuccess: (data) => {
+      refetchCache();
+      toast({
+        title: 'Caché limpiada',
+        description: data.message || 'Se ha limpiado la caché para el idioma seleccionado',
+        variant: 'default',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: 'No se pudo limpiar la caché del idioma',
+        variant: 'destructive',
+      });
+      console.error('Error limpiando caché:', error);
+    },
+  });
+
+  // Mutación para limpiar toda la caché
+  const clearAllCacheMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('DELETE', '/api/translations/cache');
+      const data = await response.json();
+      return data as CacheDeleteResult;
+    },
+    onSuccess: (data) => {
+      refetchCache();
+      toast({
+        title: 'Caché limpiada',
+        description: data.message || 'Se ha limpiado toda la caché de traducciones',
+        variant: 'default',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: 'No se pudo limpiar la caché de traducciones',
+        variant: 'destructive',
+      });
+      console.error('Error limpiando toda la caché:', error);
+    },
+  });
+
   const handleSiteInfoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -238,6 +315,32 @@ const Settings = () => {
     reader.readAsText(selectedFile);
   };
 
+  // Función para mostrar el nombre completo de un idioma
+  const getLanguageName = (code: string): string => {
+    const languages: Record<string, string> = {
+      'en': 'Inglés',
+      'es': 'Español',
+      'fr': 'Francés',
+      'de': 'Alemán',
+      'it': 'Italiano',
+      'pt': 'Portugués',
+      'ja': 'Japonés',
+      'zh': 'Chino',
+    };
+    
+    return languages[code] || code;
+  };
+
+  // Función para confirmar y eliminar la caché de un idioma
+  const handleDeleteLanguageCache = (lang: string) => {
+    setLanguageToDelete(lang);
+  };
+
+  // Función para confirmar y eliminar toda la caché
+  const handleDeleteAllCache = () => {
+    setIsConfirmingClearAll(true);
+  };
+
   if (isLoading) {
     return (
       <AdminLayout>
@@ -268,6 +371,7 @@ const Settings = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="general">Información General</TabsTrigger>
             <TabsTrigger value="import-export">Importar/Exportar</TabsTrigger>
+            <TabsTrigger value="translations">Traducciones</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
@@ -973,7 +1077,172 @@ const Settings = () => {
               </Card>
             </div>
           </TabsContent>
+
+          <TabsContent value="translations">
+            <Card>
+              <CardHeader>
+                <CardTitle>Caché de Traducciones</CardTitle>
+                <CardDescription>
+                  Gestiona la caché de traducciones almacenadas en Redis
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {cacheLoading ? (
+                  <div className="space-y-4">
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-60 w-full" />
+                  </div>
+                ) : !cacheInfo?.connected ? (
+                  <div className="p-6 bg-amber-50 rounded-lg text-center">
+                    <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-2" />
+                    <h3 className="text-lg font-semibold mb-2">Redis no está conectado</h3>
+                    <p className="text-slate-600">
+                      No se pudo establecer conexión con el servidor Redis para gestionar la caché.
+                      Las traducciones están funcionando sin almacenamiento en caché.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-1">Estado de la Caché</h3>
+                        <p className="text-slate-600">
+                          {cacheInfo.totalKeys === 0 
+                            ? "No hay traducciones en caché actualmente." 
+                            : `Hay ${cacheInfo.totalKeys} traducciones almacenadas en caché.`}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => refetchCache()}
+                        >
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          Actualizar
+                        </Button>
+                        <Button 
+                          variant="destructive"
+                          size="sm"
+                          onClick={handleDeleteAllCache}
+                          disabled={cacheInfo.totalKeys === 0 || clearAllCacheMutation.isPending}
+                        >
+                          <Trash className="h-4 w-4 mr-2" />
+                          Limpiar Toda la Caché
+                        </Button>
+                      </div>
+                    </div>
+
+                    {cacheInfo.totalKeys > 0 && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3">Traducciones por Idioma</h3>
+                        <div className="space-y-4">
+                          {Object.entries(cacheInfo.languages).sort((a, b) => b[1] - a[1]).map(([lang, count]) => (
+                            <div key={lang} className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
+                              <div className="space-y-1 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className="font-mono uppercase">
+                                    {lang}
+                                  </Badge>
+                                  <span className="font-medium">{getLanguageName(lang)}</span>
+                                  <span className="text-slate-500 text-sm">
+                                    ({count} traducciones)
+                                  </span>
+                                </div>
+                                <Progress 
+                                  value={(count / cacheInfo.totalKeys) * 100} 
+                                  className="h-2" 
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="ml-4 text-destructive border-destructive/30 hover:bg-destructive/10"
+                                onClick={() => handleDeleteLanguageCache(lang)}
+                                disabled={clearLanguageCacheMutation.isPending}
+                              >
+                                <Trash className="h-4 w-4 mr-2" />
+                                Limpiar
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="bg-slate-50 p-4 rounded-md mt-4">
+                      <h3 className="text-sm font-medium flex items-center gap-2 mb-2">
+                        <Database className="h-4 w-4" />
+                        Información Redis
+                      </h3>
+                      <p className="text-xs text-slate-600">
+                        Las traducciones se almacenan en caché para mejorar el rendimiento y reducir las solicitudes a la API de traducción.
+                        Limpiar la caché puede ser útil cuando se han realizado cambios en el contenido o si hay traducciones incorrectas.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        {/* Diálogo de confirmación para eliminar la caché de un idioma */}
+        <AlertDialog open={!!languageToDelete} onOpenChange={(open) => !open && setLanguageToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar caché de traducciones?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {languageToDelete && (
+                  <>
+                    ¿Estás seguro de que deseas eliminar todas las traducciones almacenadas en caché para el idioma <strong>{getLanguageName(languageToDelete)} ({languageToDelete})</strong>?
+                    <br /><br />
+                    Las traducciones se regenerarán automáticamente cuando los usuarios visiten el sitio con este idioma.
+                  </>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={() => {
+                  if (languageToDelete) {
+                    clearLanguageCacheMutation.mutate(languageToDelete);
+                    setLanguageToDelete(null);
+                  }
+                }}
+              >
+                Eliminar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Diálogo de confirmación para eliminar toda la caché */}
+        <AlertDialog open={isConfirmingClearAll} onOpenChange={setIsConfirmingClearAll}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar toda la caché de traducciones?</AlertDialogTitle>
+              <AlertDialogDescription>
+                ¿Estás seguro de que deseas eliminar todas las traducciones almacenadas en caché para todos los idiomas?
+                <br /><br />
+                Las traducciones se regenerarán automáticamente cuando los usuarios visiten el sitio, pero esto puede ralentizar temporalmente la carga de páginas hasta que la caché se rellene nuevamente.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={() => {
+                  clearAllCacheMutation.mutate();
+                  setIsConfirmingClearAll(false);
+                }}
+              >
+                Eliminar Todo
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AdminLayout>
   );

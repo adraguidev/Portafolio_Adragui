@@ -23,6 +23,7 @@ import {
   insertUserSchema,
 } from '@shared/schema';
 import { z } from 'zod';
+import { getCacheInfo, clearCacheByLanguage, clearAllCache } from './lib/translate';
 
 // Configuración de directorios de carga
 const setupUploadDirectory = () => {
@@ -1241,6 +1242,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       tinymceApiKey: process.env.TINYMCE_API_KEY || '',
     });
+  });
+
+  // Rutas para gestionar la caché de traducciones
+  app.get('/api/translations/cache-info', authenticateJWT, async (req, res) => {
+    try {
+      const cacheInfo = await getCacheInfo();
+      res.json(cacheInfo);
+    } catch (error) {
+      console.error('Error obteniendo información de caché:', error);
+      res.status(500).json({ 
+        message: 'Error obteniendo información de caché de traducciones',
+        error: (error as Error).message 
+      });
+    }
+  });
+
+  // Limpiar caché para un idioma específico
+  app.delete('/api/translations/cache/:lang', authenticateJWT, async (req, res) => {
+    try {
+      const lang = req.params.lang;
+      const result = await clearCacheByLanguage(lang);
+      res.json(result);
+    } catch (error) {
+      console.error(`Error limpiando caché para idioma ${req.params.lang}:`, error);
+      res.status(500).json({ 
+        message: `Error limpiando caché para idioma ${req.params.lang}`,
+        error: (error as Error).message 
+      });
+    }
+  });
+
+  // Limpiar toda la caché de traducciones
+  app.delete('/api/translations/cache', authenticateJWT, async (req, res) => {
+    try {
+      const result = await clearAllCache();
+      res.json(result);
+    } catch (error) {
+      console.error('Error limpiando toda la caché de traducciones:', error);
+      res.status(500).json({ 
+        message: 'Error limpiando toda la caché de traducciones',
+        error: (error as Error).message 
+      });
+    }
   });
 
   const httpServer = createServer(app);

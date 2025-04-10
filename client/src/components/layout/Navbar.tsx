@@ -105,7 +105,7 @@ const Navbar = () => {
               </button>
               
               {isLangMenuOpen && (
-                <div className="absolute right-0 top-full mt-1 min-w-max rounded-md bg-white shadow-lg border border-gray-200 z-50 transition-opacity duration-200 ease-in-out">
+                <div className="absolute right-0 top-full mt-1 w-40 rounded-md bg-white shadow-lg border border-gray-200 z-50 transition-opacity duration-200 ease-in-out">
                   <div className="py-1">
                     {Object.entries(languages).map(([code, name]) => (
                       <button

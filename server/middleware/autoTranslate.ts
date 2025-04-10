@@ -155,14 +155,7 @@ async function translateData(
     const translatedObject: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(data)) {
-      // Caso especial para skills: corregir el problema de categorías invertidas
-      if (key === 'category' && data.items && Array.isArray(data.items) && 
-          ((targetLang === 'en' && originalLang === 'es') || 
-           (targetLang === 'es' && originalLang === 'en'))) {
-        // Establecer el valor original sin traducir para las categorías de skills
-        // cuando cambiamos entre español e inglés para evitar la inversión
-        translatedObject[key] = value;
-      } else if (shouldTranslateField(key) && typeof value === 'string' && !containsUntranslatableFormat(value)) {
+      if (shouldTranslateField(key) && typeof value === 'string' && !containsUntranslatableFormat(value)) {
         translatedObject[key] = await translateText(
           value,
           targetLang,

@@ -45,6 +45,7 @@ export const useAuth = () => {
           });
         }
       } catch (error) {
+        console.error('Auth check error:', error);
         setState({
           user: null,
           isAuthenticated: false,
@@ -69,6 +70,12 @@ export const useAuth = () => {
       
       return data.user;
     } catch (error) {
+      console.error('Login error:', error);
+      setState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false
+      });
       throw error;
     }
   };

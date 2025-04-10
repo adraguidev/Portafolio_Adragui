@@ -76,7 +76,7 @@ export default function ArticleDetail() {
             <p className="text-text/70 mb-8">
               {t('common.articleNotFoundMessage', 'Lo sentimos, no pudimos encontrar el artículo que estás buscando.')}
             </p>
-            <Link href="/articles">
+            <Link href={`/articles?lang=${i18n.language}`}>
               <Button variant="secondary">{t('common.viewAllArticles', 'Ver todos los artículos')}</Button>
             </Link>
           </div>
@@ -105,7 +105,7 @@ export default function ArticleDetail() {
           <div className="max-w-4xl mx-auto">
             <div className="mb-12">
               <div className="mb-4 flex items-center">
-                <Link href="/articles">
+                <Link href={`/articles?lang=${i18n.language}`}>
                   <Button
                     variant="ghost"
                     className="inline-flex items-center text-sm text-text/70 hover:text-text transition-colors mr-6 -ml-2"

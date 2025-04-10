@@ -48,14 +48,14 @@ const ArticleCard = ({ article }: { article: Article }) => {
             {readTime} {t('common.readTime', 'min de lectura')}
           </span>
         </div>
-        <Link href={`/articles/${article.slug}`}>
+        <Link href={`/articles/${article.slug}?lang=${i18n.language}`}>
           <h3 className="font-clash font-semibold text-xl mb-3 group-hover:text-secondary transition-colors">
             {article.title}
           </h3>
         </Link>
         <p className="text-text/70 text-sm mb-4">{article.summary}</p>
         <Link
-          href={`/articles/${article.slug}`}
+          href={`/articles/${article.slug}?lang=${i18n.language}`}
           className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors"
         >
           {t('common.readArticle', 'Leer Artículo')}
@@ -141,7 +141,7 @@ const ArticlesSection = () => {
         </div>
 
         <div className="mt-12 text-center">
-          <Link href="/articles">
+          <Link href={`/articles?lang=${i18n.language}`}>
             <motion.div
               className="inline-flex items-center border-b-2 border-secondary/70 text-secondary font-medium hover:border-secondary transition-colors cursor-pointer"
               initial={{ opacity: 0 }}

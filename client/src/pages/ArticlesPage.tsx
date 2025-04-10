@@ -61,7 +61,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
           {article.summary}
         </p>
         <Link
-          href={`/articles/${article.slug}`}
+          href={`/articles/${article.slug}?lang=${i18n.language}`}
           className="inline-flex items-center text-secondary font-medium text-sm hover:text-secondary/80 transition-colors"
         >
           {t('common.readArticle', 'Leer Artículo')}

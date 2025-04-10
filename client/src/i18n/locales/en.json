@@ -27,7 +27,15 @@
     "yourEmail": "Your email",
     "yourMessage": "Your message",
     "madeWith": "Made with ❤ in",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "backToArticles": "Back to Articles",
+    "articles": "Articles",
+    "articlesDescription": "Thoughts, ideas and discoveries from my journey in web development and design.",
+    "articleNotFound": "Article not found",
+    "articleNotFoundMessage": "Sorry, we couldn't find the article you were looking for.",
+    "viewAllArticles": "View all articles",
+    "likeArticle": "Did you like this article?",
+    "shareArticle": "Share it on your social networks"
   },
   "nav": {
     "home": "Home",

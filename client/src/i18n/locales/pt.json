@@ -27,7 +27,15 @@
     "yourEmail": "Seu e-mail",
     "yourMessage": "Sua mensagem",
     "madeWith": "Feito com ❤ em",
-    "adminPanel": "Painel de administração"
+    "adminPanel": "Painel de administração",
+    "backToArticles": "Voltar para Artigos",
+    "articles": "Artigos",
+    "articlesDescription": "Pensamentos, ideias e descobertas da minha jornada no desenvolvimento web e design.",
+    "articleNotFound": "Artigo não encontrado",
+    "articleNotFoundMessage": "Desculpe, não foi possível encontrar o artigo que você estava procurando.",
+    "viewAllArticles": "Ver todos os artigos",
+    "likeArticle": "Gostou deste artigo?",
+    "shareArticle": "Compartilhe em suas redes sociais"
   },
   "nav": {
     "home": "Início",

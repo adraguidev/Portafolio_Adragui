@@ -24,10 +24,18 @@
     "subject": "主题",
     "whatIsItAbout": "关于什么？",
     "yourName": "您的姓名",
-    "yourEmail": "您的电子邮件",
+    "yourEmail": "您的邮箱",
     "yourMessage": "您的消息",
     "madeWith": "用❤制作于",
-    "adminPanel": "管理面板"
+    "adminPanel": "管理面板",
+    "backToArticles": "返回文章列表",
+    "articles": "文章",
+    "articlesDescription": "我在网络开发和设计之旅中的思考、想法和发现。",
+    "articleNotFound": "文章未找到",
+    "articleNotFoundMessage": "抱歉，我们找不到您要查找的文章。",
+    "viewAllArticles": "查看所有文章",
+    "likeArticle": "您喜欢这篇文章吗？",
+    "shareArticle": "在您的社交网络上分享"
   },
   "nav": {
     "home": "首页",

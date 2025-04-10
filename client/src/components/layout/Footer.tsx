@@ -95,7 +95,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-white/10 text-center md:text-left md:flex md:justify-between md:items-center">
           <p className="text-white/60 text-sm">&copy; {new Date().getFullYear()} Adrián Aguirre. Todos los derechos reservados.</p>
           <p className="text-white/60 text-sm mt-2 md:mt-0">
-            {t('common.madeWith')} <span className="text-accent">❤</span> {siteInfo?.contactLocation ? `en ${siteInfo.contactLocation}` : "en Lima, Peru"}
+            {t('common.madeWith')} <span className="text-accent">❤</span> {siteInfo?.contactLocation ? `en ${siteInfo.contactLocation}` : "en Lima, Perú"}
           </p>
         </div>
       </div>

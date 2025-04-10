@@ -98,24 +98,24 @@ const Navbar = () => {
             <div className="relative" ref={langMenuRef}>
               <button 
                 onClick={toggleLangMenu}
-                className="flex items-center text-primary font-medium"
+                className="flex items-center text-primary font-medium rounded-md px-3 py-2 hover:bg-gray-100 transition-colors"
               >
                 <i className="ri-global-line mr-1"></i>
                 <span className="hidden sm:inline">{languages[currentLanguage as keyof typeof languages]}</span>
               </button>
               
               {isLangMenuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-40 rounded-md bg-white shadow-lg border border-gray-200 z-50">
+                <div className="absolute right-0 top-full mt-1 w-40 rounded-md bg-white shadow-lg border border-gray-200 z-50 transition-opacity duration-200 ease-in-out">
                   <div className="py-1">
                     {Object.entries(languages).map(([code, name]) => (
                       <button
                         key={code}
                         onClick={() => changeLanguage(code)}
-                        className={`w-full text-left px-4 py-2 text-sm ${
+                        className={`w-full text-left px-4 py-2 text-sm rounded-md ${
                           code === currentLanguage 
                             ? "font-bold bg-primary/5 text-primary" 
                             : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                        } transition-colors duration-200 ease-in-out`}
                       >
                         {name}
                       </button>

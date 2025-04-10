@@ -124,47 +124,6 @@ function containsUntranslatableFormat(text: string): boolean {
 }
 
 /**
- * Función que verifica si un texto parece ser un término técnico de programación
- * @param text Texto a verificar
- * @returns true si el texto parece ser un término técnico
- */
-function isTechnicalTerm(text: string): boolean {
-  // Lista de términos técnicos comunes
-  const technicalTerms = [
-    // Lenguajes y tecnologías
-    'html', 'css', 'javascript', 'js', 'typescript', 'ts', 'java', 'python', 'ruby', 'php', 'c#', 
-    'c++', 'swift', 'kotlin', 'go', 'rust', 'sql', 'nosql', 'graphql', 'api',
-    
-    // Frameworks y bibliotecas
-    'react', 'angular', 'vue', 'svelte', 'node', 'express', 'next.js', 'nuxt',
-    'django', 'flask', 'spring', 'laravel', 'rails', 'jquery', 'bootstrap',
-    'tailwind', 'material-ui', 'chakra', 'redux', 'mobx', 'vuex', 'pinia',
-    
-    // Herramientas y plataformas
-    'git', 'github', 'gitlab', 'bitbucket', 'aws', 'azure', 'gcp', 'firebase',
-    'docker', 'kubernetes', 'jenkins', 'ci/cd', 'vscode', 'intellij', 'webpack',
-    'babel', 'eslint', 'jest', 'mocha', 'cypress', 'selenium', 'postman',
-    
-    // Conceptos
-    'frontend', 'backend', 'fullstack', 'devops', 'ui', 'ux', 'seo', 'pwa',
-    'rest', 'soap', 'http', 'https', 'jwt', 'oauth', 'api', 'sdk', 'cli',
-    'mvc', 'orm', 'crud', 'ajax', 'json', 'xml', 'yaml', 'markdown', 'npm', 'yarn'
-  ];
-  
-  const lowercaseText = text.toLowerCase();
-  
-  // Verificar si coincide exactamente o es parte de una palabra técnica
-  return technicalTerms.some(term => 
-    lowercaseText === term || 
-    lowercaseText.includes(term) ||
-    // Detectar versiones (React 18, Node.js 16, etc.)
-    lowercaseText.match(new RegExp(`\\b${term}\\s+\\d+`)) ||
-    // Detectar términos con .js, .py, etc.
-    lowercaseText.match(new RegExp(`\\b${term}\\.[a-z]+\\b`))
-  );
-}
-
-/**
  * Traduce recursivamente todos los valores string en un objeto o array
  * @param data Datos a traducir (objeto, array o valor primitivo)
  * @param targetLang Idioma destino
@@ -177,7 +136,7 @@ async function translateData(
   originalLang: string = 'es'
 ): Promise<any> {
   if (typeof data === 'string') {
-    if (containsUntranslatableFormat(data) || isTechnicalTerm(data)) {
+    if (containsUntranslatableFormat(data)) {
       return data;
     }
     // Intentar traducir siempre si no está en el caché
@@ -196,22 +155,7 @@ async function translateData(
     const translatedObject: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(data)) {
-      // Tratamiento especial para arrays de skills
-      if (key === 'items' && Array.isArray(value) && 
-          data.category && typeof data.category === 'string') {
-        // Si encontramos un objeto con una categoría y un array de items, 
-        // probablemente sea un grupo de skills técnicos
-        translatedObject[key] = value.map(item => 
-          typeof item === 'string' && isTechnicalTerm(item) 
-            ? item // Si es un término técnico, preservarlo
-            : typeof item === 'string' 
-              ? translateText(item, targetLang, originalLang) 
-              : translateData(item, targetLang, originalLang)
-        );
-        
-        // Como los items son promesas debido a translateText, debemos esperar a que se resuelvan
-        translatedObject[key] = await Promise.all(translatedObject[key]);
-      } else if (shouldTranslateField(key) && typeof value === 'string' && !containsUntranslatableFormat(value) && !isTechnicalTerm(value)) {
+      if (shouldTranslateField(key) && typeof value === 'string' && !containsUntranslatableFormat(value)) {
         translatedObject[key] = await translateText(
           value,
           targetLang,

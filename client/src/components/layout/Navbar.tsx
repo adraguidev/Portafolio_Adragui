@@ -1,19 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/lib/constants';
 import { useTranslation } from 'react-i18next';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
 import i18n from '@/i18n';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
   const [location] = useLocation();
   const { t } = useTranslation();
 
@@ -22,15 +18,27 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 10);
     };
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setIsLangMenuOpen(false);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+  
+  const toggleLangMenu = () => {
+    setIsLangMenuOpen(!isLangMenuOpen);
   };
 
   const changeLanguage = (lng: string) => {
@@ -39,6 +47,7 @@ const Navbar = () => {
     const url = new URL(window.location.href);
     url.searchParams.set('lang', lng);
     window.history.replaceState({}, '', url.toString());
+    setIsLangMenuOpen(false);
   };
 
   // Obtener el idioma actual
@@ -85,25 +94,35 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            {/* Selector de idioma */}
-            <div className="relative">
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center text-primary font-medium">
-                  <i className="ri-global-line mr-1"></i>
-                  <span className="hidden sm:inline">{languages[currentLanguage as keyof typeof languages]}</span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {Object.entries(languages).map(([code, name]) => (
-                    <DropdownMenuItem 
-                      key={code} 
-                      onClick={() => changeLanguage(code)}
-                      className={code === currentLanguage ? "font-bold" : ""}
-                    >
-                      {name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+            {/* Selector de idioma personalizado */}
+            <div className="relative" ref={langMenuRef}>
+              <button 
+                onClick={toggleLangMenu}
+                className="flex items-center text-primary font-medium"
+              >
+                <i className="ri-global-line mr-1"></i>
+                <span className="hidden sm:inline">{languages[currentLanguage as keyof typeof languages]}</span>
+              </button>
+              
+              {isLangMenuOpen && (
+                <div className="absolute right-0 top-full mt-1 w-40 rounded-md bg-white shadow-lg border border-gray-200 z-50">
+                  <div className="py-1">
+                    {Object.entries(languages).map(([code, name]) => (
+                      <button
+                        key={code}
+                        onClick={() => changeLanguage(code)}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          code === currentLanguage 
+                            ? "font-bold bg-primary/5 text-primary" 
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <a

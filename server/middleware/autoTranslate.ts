@@ -109,18 +109,40 @@ function containsUntranslatableFormat(text: string): boolean {
     return true;
   }
 
+  // Verificar si el texto es un timestamp ISO o similar
+  if (text.includes('T') && (text.includes('Z') || text.includes('+'))) {
+    return true;
+  }
+
   // Verificar si el texto parece una fecha o contiene patrones de fecha
   const datePatterns = [
+    /\d{4}-\d{2}-\d{2}/, // ISO date format YYYY-MM-DD
     /\d{1,4}[-/\.]\d{1,2}[-/\.]\d{1,4}/,  // Formato fecha como 2021-01-01, 01/01/2021
     /\b\d{4}\s*[-–—]\s*\d{4}\b/i, // Año - Año (sin incluir "actual")
-    /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}\b/i, // Mes Año en inglés
-    /\b(?:Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]* \d{4}\b/i, // Mes Año en español
+    /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2},? \d{4}\b/i, // Mes día, Año en inglés
+    /\b(?:Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]* \d{1,2}(?:,| de)? \d{4}\b/i, // Mes día, Año en español
     /\b\d{1,2} (?:de )?(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(?: de)? \d{4}\b/i, // Formato fecha en español
     /\b\d{1,2}(?:st|nd|rd|th)? (?:of )?(?:January|February|March|April|May|June|July|August|September|October|November|December),? \d{4}\b/i, // Formato fecha en inglés
+    /\b(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2},? \d{4}\b/i, // Mes día, Año en inglés
+    /\b(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) \d{1,2}(?:,| de)? \d{4}\b/i, // Mes día, Año en español
   ];
 
   // Verificar si el texto contiene algún patrón de fecha
-  return datePatterns.some(pattern => pattern.test(text));
+  if (datePatterns.some(pattern => pattern.test(text))) {
+    return true;
+  }
+
+  // Verificar si es un objeto Date serializado
+  try {
+    const possibleDate = new Date(text);
+    if (!isNaN(possibleDate.getTime())) {
+      return true;
+    }
+  } catch (e) {
+    // No es una fecha válida, continuar con la verificación
+  }
+
+  return false;
 }
 
 /**
@@ -136,6 +158,7 @@ async function translateData(
   originalLang: string = 'es'
 ): Promise<any> {
   if (typeof data === 'string') {
+    // Preservar fechas y formatos especiales
     if (containsUntranslatableFormat(data)) {
       return data;
     }
@@ -155,18 +178,20 @@ async function translateData(
     const translatedObject: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(data)) {
-      if (shouldTranslateField(key) && typeof value === 'string' && !containsUntranslatableFormat(value)) {
-        translatedObject[key] = await translateText(
-          value,
-          targetLang,
-          originalLang
-        );
-      } else if (typeof value === 'object' && value !== null) {
-        translatedObject[key] = await translateData(
-          value,
-          targetLang,
-          originalLang
-        );
+      // Preservar campos de fecha específicos
+      if (key.toLowerCase().includes('date') || key.toLowerCase().includes('at')) {
+        translatedObject[key] = value;
+        continue;
+      }
+
+      if (shouldTranslateField(key)) {
+        if (typeof value === 'string' && !containsUntranslatableFormat(value)) {
+          translatedObject[key] = await translateText(value, targetLang, originalLang);
+        } else if (typeof value === 'object' && value !== null) {
+          translatedObject[key] = await translateData(value, targetLang, originalLang);
+        } else {
+          translatedObject[key] = value;
+        }
       } else {
         translatedObject[key] = value;
       }

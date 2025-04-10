@@ -23,6 +23,7 @@ import {
   insertUserSchema,
 } from '@shared/schema';
 import { z } from 'zod';
+import rateLimit from 'express-rate-limit';
 
 // Configuración de directorios de carga
 const setupUploadDirectory = () => {
@@ -149,6 +150,15 @@ const authenticateJWT = (req: Request, res: Response, next: Function) => {
   }
 };
 
+// Configuración de rate limiting
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // 5 intentos por IP
+  message: 'Demasiados intentos de inicio de sesión, por favor intente más tarde',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   const SessionStore = MemoryStore(session);
 
@@ -171,13 +181,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }),
       cookie: {
         secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        domain: process.env.NODE_ENV === 'production' ? '.tu-dominio.com' : undefined
       },
+      name: '__Host-session', // Prefijo __Host- para mayor seguridad
     })
   );
 
   // Auth routes
-  app.post('/api/auth/login', async (req, res) => {
+  app.post('/api/auth/login', loginLimiter, async (req, res) => {
     try {
       const { email, password } = req.body;
 
@@ -211,8 +225,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = user.id;
       req.session.isAuthenticated = true;
 
+      // Set httpOnly cookie with the token
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      });
+
       res.json({
-        token,
         user: {
           id: user.id,
           name: user.name,

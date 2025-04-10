@@ -12,13 +12,20 @@ export const formatDate = (dateString: string | Date | null, language: string = 
     let date: Date;
     
     if (typeof dateString === 'string') {
-      // Intentar diferentes formatos de fecha
-      if (dateString.includes('T')) {
+      // Si es un timestamp de PostgreSQL (formato ISO con Z)
+      if (dateString.endsWith('Z')) {
         date = new Date(dateString);
-      } else if (dateString.includes(' ')) {
-        date = new Date(dateString.replace(' ', 'T'));
-      } else {
-        // Si no tiene formato específico, asumir que es una marca de tiempo
+      } 
+      // Si es un timestamp de PostgreSQL sin Z
+      else if (dateString.includes('T')) {
+        date = new Date(dateString + 'Z');
+      }
+      // Si tiene formato de fecha con espacio
+      else if (dateString.includes(' ')) {
+        date = new Date(dateString.replace(' ', 'T') + 'Z');
+      }
+      // Si no tiene formato específico
+      else {
         const timestamp = Date.parse(dateString);
         if (isNaN(timestamp)) {
           console.error('Invalid date string:', dateString);

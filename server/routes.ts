@@ -12,6 +12,8 @@ import pgSession from 'connect-pg-simple';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import pkg from 'pg';
+const { Pool } = pkg;
 import {
   insertProjectSchema,
   insertExperienceSchema,
@@ -24,7 +26,6 @@ import {
 } from '@shared/schema';
 import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
-import { Pool } from 'pg';
 
 // Configuración de directorios de carga
 const setupUploadDirectory = () => {

@@ -304,27 +304,85 @@ Los estilos principales están definidos con Tailwind CSS. Puedes personalizar l
 
 Los componentes de UI utilizan shadcn/ui, que proporciona una biblioteca de componentes estilizados basados en Radix UI y Tailwind CSS. Puedes personalizarlos modificando los archivos en `client/src/components/ui/`.
 
+## Últimas Actualizaciones
+
+### Características Agregadas
+- **Sistema de Temas**: Implementación de temas claros y oscuros con persistencia de preferencias del usuario.
+- **Editor de Contenido Enriquecido**: Integración de TinyMCE para la edición de contenido en el panel de administración.
+- **Sistema de Categorías**: Organización de artículos del blog por categorías.
+- **Optimización de Imágenes**: Sistema de optimización automática para imágenes subidas.
+- **Sistema de Notificaciones**: Notificaciones en tiempo real para mensajes de contacto y actualizaciones del sitio.
+
+### Mejoras Técnicas
+- **Migración a TypeScript**: Todo el código base ha sido migrado a TypeScript para mejor tipado y mantenibilidad.
+- **Optimización de Rendimiento**: Implementación de lazy loading y code splitting.
+- **Mejoras en la API**: Endpoints optimizados y documentación completa de la API.
+- **Sistema de Backup**: Scripts automatizados para respaldo y restauración de datos.
+
+## API
+
+La documentación completa de la API se encuentra en [API.md](API.md). Incluye todos los endpoints disponibles, parámetros requeridos y ejemplos de uso.
+
+## Scripts Disponibles
+
+El proyecto incluye varios scripts útiles para el desarrollo y mantenimiento:
+
+```bash
+# Desarrollo
+npm run dev          # Inicia el servidor de desarrollo
+npm run build       # Construye la aplicación para producción
+
+# Base de Datos
+npm run db:push     # Aplica el esquema de la base de datos
+npm run db:generate # Genera migraciones de la base de datos
+
+# Utilidades
+npm run backup      # Crea un respaldo de la base de datos
+npm run restore     # Restaura un respaldo de la base de datos
+```
+
 ## Solución de Problemas
 
 ### Problemas Comunes
 
-1. **Error de conexión a la base de datos**:
-   - Verifica que PostgreSQL esté funcionando: `sudo service postgresql status`.
-   - Comprueba la URL de conexión en el archivo `.env`.
-   - Asegúrate de que el usuario tenga permisos suficientes: `GRANT ALL PRIVILEGES ON DATABASE portfolio_db TO usuario;`.
+1. **Error de Conexión a la Base de Datos**
+   - Verifica que PostgreSQL esté corriendo
+   - Comprueba que las credenciales en `.env` sean correctas
+   - Asegúrate de que la base de datos exista y sea accesible
 
-2. **Los archivos subidos no se muestran**:
-   - Verifica que el directorio `uploads/` exista y tenga permisos: `chmod 755 uploads`.
-   - Comprueba que la ruta estática esté correctamente configurada en `server/routes.ts`.
+2. **Problemas con la Carga de Archivos**
+   - Verifica los permisos del directorio `uploads/`
+   - Comprueba que el espacio en disco sea suficiente
+   - Asegúrate de que los archivos no excedan el límite de tamaño
 
-3. **Errores de autenticación**:
-   - Limpia las cookies del navegador e intenta iniciar sesión nuevamente.
-   - Verifica que las claves JWT_SECRET y SESSION_SECRET estén correctamente configuradas.
+3. **Errores de Autenticación**
+   - Verifica que el JWT_SECRET esté configurado correctamente
+   - Comprueba que las cookies estén habilitadas en el navegador
+   - Asegúrate de que la sesión no haya expirado
 
-### Registro de Eventos
+### Recursos de Ayuda
 
-Los logs del servidor se muestran en la consola durante la ejecución. Para una solución más robusta en producción, considera implementar un sistema de logging como Winston o Pino.
+- [Documentación de Drizzle ORM](https://orm.drizzle.team/)
+- [Documentación de React](https://react.dev/)
+- [Documentación de Tailwind CSS](https://tailwindcss.com/docs)
+- [Documentación de Express](https://expressjs.com/)
+
+## Contribuciones
+
+Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
+
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
 ## Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT.
+Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## Contacto
+
+Adrián Aguirre - [@adragui](https://github.com/adragui)
+
+Link del Proyecto: [https://github.com/adragui/Portafolio_Adragui](https://github.com/adragui/Portafolio_Adragui)

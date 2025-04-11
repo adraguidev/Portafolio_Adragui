@@ -53,8 +53,7 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
-  const [showDebugInfo, setShowDebugInfo] = useState(false);
-  const { config, isLoading: configLoading, error: configError } = useConfig(); // Obtener la configuración que incluye la API key de TinyMCE
+  const { config, isLoading: configLoading, error: configError } = useConfig();
   
   // Registrar en la consola el estado de la configuración
   useEffect(() => {
@@ -422,33 +421,6 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
               )}
             />
           </div>
-        </div>
-
-        {/* Información de depuración para TinyMCE */}
-        <div className="mb-8 border border-dashed border-yellow-300 bg-yellow-50 p-4 rounded-md">
-          <div className="flex justify-between items-center">
-            <h3 className="text-sm font-medium text-yellow-800">Información de Configuración TinyMCE</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setShowDebugInfo(!showDebugInfo)}
-              className="text-xs h-7"
-            >
-              {showDebugInfo ? 'Ocultar detalles' : 'Mostrar detalles'}
-            </Button>
-          </div>
-          
-          {showDebugInfo && (
-            <div className="mt-3">
-              <div className="bg-white p-3 rounded border text-xs font-mono">
-                <p><strong>API Key:</strong> {config.tinymceApiKey ? `${config.tinymceApiKey.substring(0, 8)}...` : 'No configurada'}</p>
-                <p><strong>API Key Length:</strong> {config.tinymceApiKey?.length || 0} caracteres</p>
-                <p><strong>Estado:</strong> {config.tinymceApiKey ? 'API Key configurada' : 'API Key no configurada'}</p>
-                <p className="text-red-500 mt-2">Si ves el error de "A valid API key is required", por favor verifica que la clave de API sea correcta y que esté configurada en las variables de entorno.</p>
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="flex justify-end space-x-4">

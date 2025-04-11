@@ -24,8 +24,11 @@ export const ADMIN_NAV_ITEMS = [
   { label: 'Artículos', href: '/admin/articles', icon: 'ri-article-line' },
   { label: 'Proyectos', href: '/admin/projects', icon: 'ri-folder-line' },
   { label: 'Mensajes', href: '/admin/messages', icon: 'ri-message-3-line' },
-  { label: 'Estadísticas', href: '/admin/stats', icon: 'ri-bar-chart-line' },
-  { label: 'Configuración', href: '/admin/settings', icon: 'ri-settings-4-line' }
+  {
+    label: 'Configuración',
+    href: '/admin/settings',
+    icon: 'ri-settings-4-line',
+  },
 ];
 
 export const COLORS = {

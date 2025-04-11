@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, BarChart2 } from 'lucide-react';
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -260,33 +259,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                   </li>
                 );
               })}
-              <li>
-                <Link
-                  to="/admin/messages"
-                  className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  <span>Mensajes</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/admin/stats"
-                  className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
-                >
-                  <BarChart2 className="w-5 h-5" />
-                  <span>Estadísticas</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/admin/settings"
-                  className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
-                >
-                  <i className="ri-settings-3-line text-xl"></i>
-                  <span>Configuración</span>
-                </Link>
-              </li>
             </ul>
           </nav>
         </aside>

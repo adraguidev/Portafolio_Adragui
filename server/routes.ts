@@ -198,26 +198,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Servir archivos estáticos desde el directorio uploads
   app.use('/uploads', express.static(path.resolve('uploads')));
 
+  // Configuración de sesiones
+  const sessionConfig = {
+    store: new pgStore({
+      pool,
+      tableName: 'sessions',
+      createTableIfMissing: true,
+      pruneSessionInterval: 60 * 60, // Limpiar sesiones expiradas cada hora
+      ttl: process.env.NODE_ENV === 'production' ? 3600 : 86400 // 1 hora en producción, 24 horas en desarrollo
+    }),
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: process.env.NODE_ENV === 'production' ? 3600000 : 86400000, // 1 hora en producción, 24 horas en desarrollo
+      sameSite: 'strict' as const,
+      httpOnly: true,
+      path: '/',
+      domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN : undefined
+    },
+    name: 'portfolio_session',
+    rolling: true // Renovar la cookie en cada respuesta
+  };
+
   // Set up session middleware
-  app.use(
-    session({
-      store: new pgStore({
-        pool,
-        tableName: 'sessions',
-        createTableIfMissing: true,
-        pruneSessionInterval: 60 * 60 // Limpiar sesiones expiradas cada hora
-      }),
-      secret: process.env.SESSION_SECRET || 'dev-secret-key',
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000, // 24 horas
-        sameSite: 'lax',
-        httpOnly: true
-      }
-    })
-  );
+  app.use(session(sessionConfig));
 
   // Auth routes
   app.post('/api/auth/login', loginLimiter, async (req, res) => {

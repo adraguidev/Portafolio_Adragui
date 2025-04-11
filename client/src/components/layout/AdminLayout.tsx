@@ -100,27 +100,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     },
   ];
 
-  const menuCategories = [
-    {
-      title: 'Contenido',
-      items: ADMIN_NAV_ITEMS.filter(item => 
-        ['/admin/projects', '/admin/articles'].includes(item.href)
-      ),
-    },
-    {
-      title: 'Comunicación',
-      items: ADMIN_NAV_ITEMS.filter(item => 
-        ['/admin/messages'].includes(item.href)
-      ),
-    },
-    {
-      title: 'Configuración',
-      items: ADMIN_NAV_ITEMS.filter(item => 
-        ['/admin/settings', '/admin/profile'].includes(item.href)
-      ),
-    },
-  ];
-
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
       {/* Status Bar */}
@@ -254,49 +233,38 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Admin Sidebar */}
         <aside className="bg-white w-full md:w-64 md:min-h-screen border-r border-slate-200">
           <nav className="p-4">
-            {menuCategories.map((category) => (
-              <div key={category.title} className="mb-6">
-                <h3 className="text-xs font-semibold text-text/60 uppercase tracking-wider mb-2 px-3">
-                  {category.title}
-                </h3>
-                <ul className="space-y-1">
-                  {category.items.map((item) => {
-                    const isMessageItem = item.href === '/admin/messages';
-                    const isActive = location.startsWith(item.href);
+            <ul className="space-y-1">
+              {ADMIN_NAV_ITEMS.map((item) => {
+                const isMessageItem = item.href === '/admin/messages';
+                const isActive = location.startsWith(item.href);
 
-                    return (
-                      <li key={item.href}>
-                        <Link
-                          href={item.href}
-                          className={`flex items-center space-x-3 px-3 py-2 rounded-md ${
-                            isActive
-                              ? 'bg-secondary/10 text-secondary font-medium'
-                              : 'text-text hover:bg-slate-100 transition-colors'
-                          }`}
-                        >
-                          <i className={item.icon}></i>
-                          <span>{item.label}</span>
-                          {isMessageItem && unreadMessages > 0 && (
-                            <span className="ml-auto bg-accent text-primary text-xs px-2 py-1 rounded-full">
-                              {unreadMessages}
-                            </span>
-                          )}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md ${
+                        isActive
+                          ? 'bg-secondary/10 text-secondary font-medium'
+                          : 'text-text hover:bg-slate-100 transition-colors'
+                      }`}
+                    >
+                      <i className={item.icon}></i>
+                      <span>{item.label}</span>
+                      {isMessageItem && unreadMessages > 0 && (
+                        <span className="ml-auto bg-accent text-primary text-xs px-2 py-1 rounded-full">
+                          {unreadMessages}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </nav>
         </aside>
 
         {/* Admin Content */}
-        <main className="flex-grow p-6">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </main>
+        <main className="flex-grow p-6">{children}</main>
       </div>
     </div>
   );

@@ -97,8 +97,10 @@ const Navbar = () => {
               <a
                 key={item.href}
                 href={item.href}
-                className={`nav-link text-primary font-medium relative after:absolute after:content-[''] after:w-0 after:h-0.5 after:bg-accent after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full ${
-                  location === item.href.split('#')[0] ? 'after:w-full' : ''
+                className={`nav-link text-primary font-medium relative after:absolute after:content-[''] after:w-0 after:h-[2px] after:bg-accent after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full hover:after:h-[3px] hover:text-accent ${
+                  location === item.href.split('#')[0] 
+                    ? 'after:w-full after:h-[3px] text-accent' 
+                    : ''
                 }`}
               >
                 {t(item.translationKey || item.label)}
@@ -189,7 +191,11 @@ const Navbar = () => {
                 <a
                   key={item.href}
                   href={item.href}
-                  className="block text-primary font-medium py-2 hover:bg-gray-50 rounded-md px-2 transition-colors"
+                  className={`block text-primary font-medium py-2 hover:bg-gray-50 rounded-md px-2 transition-colors relative after:absolute after:content-[''] after:w-0 after:h-[2px] after:bg-accent after:bottom-0 after:left-2 after:transition-all after:duration-300 hover:after:w-[calc(100%-1rem)] hover:after:h-[3px] hover:text-accent ${
+                    location === item.href.split('#')[0] 
+                      ? 'after:w-[calc(100%-1rem)] after:h-[3px] text-accent' 
+                      : ''
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t(item.translationKey || item.label)}

@@ -10,13 +10,37 @@ import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '@/lib/utils';
 import { useConfig } from '@/hooks/use-config';
+import { PROFILE_IMAGE_URL } from '@/lib/constants';
+
+interface SiteInfo {
+  id: number;
+  about: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  contactLocation: string | null;
+  cvFileUrl: string | null;
+  heroImageUrl: string | null;
+  socialLinks: {
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    dribbble?: string;
+  } | null;
+}
 
 export default function ArticleDetail() {
   const [, params] = useRoute('/articles/:slug');
   const slug = params?.slug;
   const { t, i18n } = useTranslation();
   const { config } = useConfig();
-  const heroImageUrl = config?.heroImageUrl || '';
+
+  // Consulta para obtener la información del sitio
+  const { data: siteInfo } = useQuery<SiteInfo>({
+    queryKey: ['/api/site-info'],
+  });
+
+  // Usar la imagen del hero desde la base de datos o la imagen por defecto
+  const heroImageUrl = siteInfo?.heroImageUrl || PROFILE_IMAGE_URL;
 
   const {
     data: article,

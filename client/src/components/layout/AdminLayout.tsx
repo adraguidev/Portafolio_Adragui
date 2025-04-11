@@ -7,11 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const [location, setLocation] = useLocation();
+  const [serverStatus, setServerStatus] = useState<'online' | 'offline'>('online');
+  const [lastUpdate, setLastUpdate] = useState<string>('');
 
   // Check if user is authenticated and redirect if not
   useEffect(() => {
@@ -19,6 +23,28 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       setLocation('/login');
     }
   }, [isAuthenticated, isLoading, setLocation]);
+
+  // Check server status
+  useEffect(() => {
+    const checkServerStatus = async () => {
+      try {
+        const response = await fetch('/api/health');
+        if (response.ok) {
+          setServerStatus('online');
+          setLastUpdate(new Date().toLocaleTimeString());
+        } else {
+          setServerStatus('offline');
+        }
+      } catch (error) {
+        setServerStatus('offline');
+      }
+    };
+
+    checkServerStatus();
+    const interval = setInterval(checkServerStatus, 30000); // Check every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Get unread messages count
   const { data: messages } = useQuery({
@@ -51,16 +77,59 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     logout();
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
-  };
+  const quickActions = [
+    {
+      label: 'Nuevo Proyecto',
+      icon: 'ri-folder-add-line',
+      href: '/admin/projects/new',
+    },
+    {
+      label: 'Nuevo Artículo',
+      icon: 'ri-article-line',
+      href: '/admin/articles/new',
+    },
+    {
+      label: 'Ver Estadísticas',
+      icon: 'ri-bar-chart-line',
+      href: '/admin/stats',
+    },
+    {
+      label: 'Configuración',
+      icon: 'ri-settings-3-line',
+      href: '/admin/settings',
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
+      {/* Status Bar */}
+      <div className="bg-slate-800 text-white text-xs py-1">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center">
+              <span className={`w-2 h-2 rounded-full mr-2 ${
+                serverStatus === 'online' ? 'bg-green-500' : 'bg-red-500'
+              }`}></span>
+              <span>Servidor: {serverStatus === 'online' ? 'En línea' : 'Desconectado'}</span>
+            </div>
+            {lastUpdate && (
+              <span>Última actualización: {lastUpdate}</span>
+            )}
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-white/60">Versión: 1.0.0</span>
+            <a 
+              href="https://github.com/adragui/portfolio" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+            >
+              <i className="ri-github-fill"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Admin Header */}
       <header className="bg-primary shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,6 +147,41 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             <div className="flex items-center space-x-4">
+              {/* Quick Actions Button */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsQuickActionsOpen(!isQuickActionsOpen)}
+                  className="text-white/80 hover:text-white transition-colors"
+                  title="Acciones rápidas"
+                >
+                  <i className="ri-flashlight-line text-xl"></i>
+                </button>
+                <AnimatePresence>
+                  {isQuickActionsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 top-full mt-1 w-48 rounded-md bg-white shadow-lg border border-gray-200 z-50"
+                    >
+                      <div className="py-1">
+                        {quickActions.map((action) => (
+                          <Link
+                            key={action.href}
+                            href={action.href}
+                            className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                          >
+                            <i className={action.icon}></i>
+                            <span>{action.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <div className="relative">
                 <Link
                   href="/admin/messages"
@@ -92,10 +196,21 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                 )}
               </div>
 
+              {/* Botón de vista previa */}
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/80 hover:text-white transition-colors"
+                title="Ver sitio web"
+              >
+                <i className="ri-external-link-line text-xl"></i>
+              </a>
+
               <div className="flex items-center space-x-2">
-                <Avatar className="w-8 h-8 bg-secondary/30">
-                  <AvatarFallback className="text-white text-sm">
-                    {user?.name ? getInitials(user.name) : 'U'}
+                <Avatar className="w-8 h-8 bg-accent/20">
+                  <AvatarFallback className="text-accent font-medium text-sm">
+                    AA
                   </AvatarFallback>
                 </Avatar>
                 <span className="hidden md:inline text-white font-medium">
@@ -121,7 +236,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             <ul className="space-y-1">
               {ADMIN_NAV_ITEMS.map((item) => {
                 const isMessageItem = item.href === '/admin/messages';
-                // Cambiar a forma manual de determinar si está activo
                 const isActive = location.startsWith(item.href);
 
                 return (

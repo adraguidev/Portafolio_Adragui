@@ -9,11 +9,14 @@ import { WEBSITE_TITLE } from '@/lib/constants';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '@/lib/utils';
+import { useConfig } from '@/hooks/use-config';
 
 export default function ArticleDetail() {
   const [, params] = useRoute('/articles/:slug');
   const slug = params?.slug;
   const { t, i18n } = useTranslation();
+  const { config } = useConfig();
+  const heroImageUrl = config?.heroImageUrl || '';
 
   const {
     data: article,
@@ -128,7 +131,7 @@ export default function ArticleDetail() {
 
               <div className="flex items-center mb-8">
                 <img
-                  src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=200&auto=format&fit=crop"
+                  src={heroImageUrl}
                   alt="Author"
                   className="w-12 h-12 rounded-full object-cover mr-4 border-2 border-white shadow-sm"
                 />

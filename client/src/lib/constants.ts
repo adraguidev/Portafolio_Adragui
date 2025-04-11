@@ -45,9 +45,11 @@ export const PROFILE_IMAGE_URL =
 // Configuración para el sistema
 export interface AppConfig {
   tinymceApiKey: string;
+  heroImageUrl: string;
 }
 
 // Estado inicial para la configuración
 export const initialConfig: AppConfig = {
   tinymceApiKey: '',
+  heroImageUrl: '',
 };

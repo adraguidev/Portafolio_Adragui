@@ -350,7 +350,7 @@ const ArticleEditor = ({ articleId, onSuccess }: ArticleEditorProps) => {
                   </div>
                   <FormControl>
                     <Switch
-                      checked={field.value}
+                      checked={!!field.value}
                       onCheckedChange={handlePublishToggle}
                     />
                   </FormControl>

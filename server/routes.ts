@@ -118,15 +118,24 @@ const heroImageUpload = multer({
 });
 
 // Configuración de claves secretas
-const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'dev-secret-key');
-const SESSION_SECRET = process.env.SESSION_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'dev-session-key');
+let JWT_SECRET: string;
+let SESSION_SECRET: string;
 
-if (process.env.NODE_ENV === 'production' && (!JWT_SECRET || !SESSION_SECRET)) {
-  throw new Error('JWT_SECRET and SESSION_SECRET must be set in production');
-}
-
-if (process.env.NODE_ENV !== 'production' && (!JWT_SECRET || !SESSION_SECRET)) {
-  console.warn('Warning: Using development secrets. This is not secure for production.');
+// Verificar que las claves secretas estén configuradas en producción
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET || !process.env.SESSION_SECRET) {
+    throw new Error('JWT_SECRET and SESSION_SECRET must be set in production environment');
+  }
+  JWT_SECRET = process.env.JWT_SECRET;
+  SESSION_SECRET = process.env.SESSION_SECRET;
+} else {
+  // En desarrollo, usar claves generadas dinámicamente si no están configuradas
+  JWT_SECRET = process.env.JWT_SECRET || 'dev-jwt-secret-' + Math.random().toString(36).substring(2);
+  SESSION_SECRET = process.env.SESSION_SECRET || 'dev-session-secret-' + Math.random().toString(36).substring(2);
+  
+  if (!process.env.JWT_SECRET || !process.env.SESSION_SECRET) {
+    console.warn('Warning: Using development keys. This is not secure for production.');
+  }
 }
 
 // Extend Request type to include user property
